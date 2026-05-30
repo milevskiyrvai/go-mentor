@@ -520,3 +520,62 @@ a{color:inherit;text-decoration:none}
 .iv-fb p{margin:0;font-size:12.5px;color:var(--ink-2);line-height:1.5}
 .iv-author{color:var(--primary-ink);font-weight:700;cursor:pointer;white-space:nowrap}
 .iv-author:hover{text-decoration:underline}
+
+/* ============================================================
+   Calendar — segmented toggle, month grid, agenda
+   ============================================================ */
+.seg{display:inline-flex;border:1px solid var(--line-2);border-radius:var(--r-sm);background:var(--surface-2);padding:2px;gap:2px}
+.seg button{border:0;background:transparent;font-family:inherit;font-size:12.5px;font-weight:600;color:var(--ink-2);padding:6px 14px;border-radius:var(--r-xs);cursor:pointer}
+.seg button:hover{color:var(--ink)}
+.seg button.active{background:var(--primary-soft);color:var(--primary-ink)}
+
+.cal-bar{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.cal-bar .mon{font-size:16px;font-weight:700;letter-spacing:-.01em;min-width:128px}
+.cal-bar .nav{display:flex;gap:4px;margin-left:auto}
+.cal-nav-btn{width:32px;height:32px;border:1px solid var(--line-2);background:var(--surface-2);border-radius:var(--r-sm);display:grid;place-items:center;cursor:pointer;color:var(--ink-2)}
+.cal-nav-btn:hover{border-color:var(--ink-3)}
+
+.cal-legend{display:flex;flex-wrap:wrap;gap:8px 16px;margin-bottom:16px}
+.cal-legend .lg{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--ink-2);font-weight:600}
+.cal-legend .sw{width:11px;height:11px;border-radius:3px;flex:0 0 11px}
+.sw.review{background:var(--primary)}
+.sw.mock{background:var(--warning)}
+.sw.real{background:var(--secondary)}
+.sw.tech{background:var(--ink-2)}
+.sw.roast{background:var(--danger)}
+.sw.custom{background:var(--line-2)}
+
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:7px}
+.cal .dow{font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);padding:0 4px 2px}
+.cal .day{min-height:98px;border:1px solid var(--line);border-radius:var(--r-sm);background:var(--surface-2);padding:7px;display:flex;flex-direction:column;gap:4px}
+.cal .day.out{background:var(--bg)}
+.cal .day.out .dn{color:var(--ink-3);opacity:.6}
+.cal .day.today{border-color:var(--primary);box-shadow:inset 0 0 0 1px var(--primary)}
+.cal .day .dn{font-size:12px;font-weight:700;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.cal .day.today .dn{color:var(--primary-ink)}
+.evt{font-size:10.5px;font-weight:600;padding:3px 7px;border-radius:var(--r-xs);border-left:3px solid var(--ink-3);background:var(--bg);color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3}
+.evt.review{border-left-color:var(--primary);background:var(--primary-soft);color:var(--primary-ink)}
+.evt.mock{border-left-color:var(--warning);background:var(--warning-soft);color:var(--warning)}
+.evt.real{border-left-color:var(--secondary);background:var(--secondary-soft);color:var(--secondary)}
+.evt.tech{border-left-color:var(--ink-2);background:var(--bg);color:var(--ink)}
+.evt.roast{border-left-color:var(--danger);background:var(--danger-soft);color:var(--danger)}
+.evt.custom{border-left-color:var(--line-2);background:var(--surface);color:var(--ink-2)}
+
+.ag-group{margin-bottom:8px}
+.ag-group .agh{font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin:16px 0 9px}
+.ag-group .agh .tdy{color:var(--primary-ink)}
+.ag-item{display:grid;grid-template-columns:60px 1fr auto;gap:14px;align-items:center;padding:13px 15px;border:1px solid var(--line);border-left-width:3px;border-radius:var(--r-sm);background:var(--surface-2);margin-bottom:9px}
+.ag-item.review{border-left-color:var(--primary)}
+.ag-item.mock{border-left-color:var(--warning)}
+.ag-item.real{border-left-color:var(--secondary)}
+.ag-item.tech{border-left-color:var(--ink-2)}
+.ag-item.roast{border-left-color:var(--danger)}
+.ag-item.custom{border-left-color:var(--line-2)}
+.ag-time{font-size:13px;font-weight:700;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.ag-tt{font-size:14px;font-weight:600;letter-spacing:-.005em}
+.ag-ds{font-size:12px;color:var(--ink-3);font-weight:600;margin-top:2px}
+.ag-tag{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:3px 9px;border-radius:999px;white-space:nowrap}
+.ag-tag.review{background:var(--primary-soft);color:var(--primary-ink)}
+.ag-tag.mock{background:var(--warning-soft);color:var(--warning)}
+.ag-tag.real{background:var(--secondary-soft);color:var(--secondary)}
+.ag-tag.custom{background:var(--bg);color:var(--ink-3);border:1px solid var(--line)}

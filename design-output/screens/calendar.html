@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1280" />
+<title>Go Mentor · Календарь</title>
+<script>{const _v=new URLSearchParams(location.search).get('v');document.documentElement.className = _v==='bd' ? 'v-b v-b-dark' : _v==='b' ? 'v-b' : 'v-a';}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="../styles/base.css" rel="stylesheet">
+</head>
+<body>
+<div class="app">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">G</div>
+      <div class="brand-name">Go Mentor<small>Платформа</small></div>
+    </div>
+    <div class="sb-user">
+      <div class="avatar">МК</div>
+      <div style="min-width:0">
+        <div class="nm">Михаил Кротов</div>
+        <div class="rl"><span class="role-dot"></span>Студент<span class="swap">⇄ роль</span></div>
+      </div>
+    </div>
+
+    <div class="sb-label">Обучение</div>
+    <div class="nav-item"><span class="ic"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></span>Дашборд</div>
+    <div class="nav-item"><span class="ic"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h10M4 12h16M4 18h7" stroke-linecap="round"/><circle cx="19" cy="6" r="1.6"/><circle cx="14" cy="18" r="1.6"/></svg></span>Roadmap</div>
+    <div class="nav-item"><span class="ic"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="9" r="6"/><path d="M9 14l-2 7 5-3 5 3-2-7" stroke-linejoin="round"/></svg></span>Достижения</div>
+    <div class="nav-item"><span class="ic"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M12 8v8M9.5 10.5h3.2a1.8 1.8 0 0 1 0 3.6H9.5" stroke-linecap="round"/></svg></span>Бонусы</div>
+    <div class="nav-item"><span class="ic"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 9h18M8 3v4" stroke-linecap="round"/></svg></span>Собеседования</div>
+    <div class="nav-item active"><span class="ic"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4" stroke-linecap="round"/></svg></span>Календарь</div>
+    <div class="nav-item"><span class="ic"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M5 20c0-3.5 3-6 7-6s7 2.5 7 6" stroke-linecap="round"/></svg></span>Профиль</div>
+
+    <div class="sb-foot"><span class="led"></span>Buddy на связи · Иван Менторов</div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <main class="main">
+    <div class="page-head">
+      <div>
+        <h1>Календарь</h1>
+        <div class="sub"><b class="num">4</b> события на ближайшую неделю · ближайшее — сегодня в 11:00</div>
+      </div>
+      <div class="right">
+        <div class="seg">
+          <button class="active" data-view="month" type="button">Месяц</button>
+          <button data-view="week" type="button">7 дней</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card card-pad" style="flex:1">
+      <div class="cal-bar">
+        <span class="mon">Май 2026</span>
+        <div class="nav">
+          <button class="cal-nav-btn" type="button" aria-label="назад"><svg class="i" style="width:16px;height:16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          <button class="cal-nav-btn" type="button" aria-label="вперёд"><svg class="i" style="width:16px;height:16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        </div>
+      </div>
+
+      <div class="cal-legend">
+        <span class="lg"><span class="sw review"></span>Ревью блока</span>
+        <span class="lg"><span class="sw mock"></span>Mock-собес</span>
+        <span class="lg"><span class="sw real"></span>Real-собес</span>
+        <span class="lg"><span class="sw tech"></span>Финальная техничка</span>
+        <span class="lg"><span class="sw roast"></span>Финальная прожарка</span>
+        <span class="lg"><span class="sw custom"></span>Другое</span>
+      </div>
+
+      <!-- ===== MONTH VIEW ===== -->
+      <div data-panel="month">
+        <div class="cal">
+          <div class="dow">Пн</div><div class="dow">Вт</div><div class="dow">Ср</div><div class="dow">Чт</div><div class="dow">Пт</div><div class="dow">Сб</div><div class="dow">Вс</div>
+
+          <div class="day out"><span class="dn">27</span></div>
+          <div class="day out"><span class="dn">28</span></div>
+          <div class="day out"><span class="dn">29</span></div>
+          <div class="day out"><span class="dn">30</span></div>
+          <div class="day"><span class="dn">1</span></div>
+          <div class="day"><span class="dn">2</span></div>
+          <div class="day"><span class="dn">3</span></div>
+
+          <div class="day"><span class="dn">4</span></div>
+          <div class="day"><span class="dn">5</span></div>
+          <div class="day"><span class="dn">6</span></div>
+          <div class="day"><span class="dn">7</span></div>
+          <div class="day"><span class="dn">8</span></div>
+          <div class="day"><span class="dn">9</span></div>
+          <div class="day"><span class="dn">10</span></div>
+
+          <div class="day"><span class="dn">11</span></div>
+          <div class="day"><span class="dn">12</span></div>
+          <div class="day"><span class="dn">13</span></div>
+          <div class="day"><span class="dn">14</span></div>
+          <div class="day"><span class="dn">15</span></div>
+          <div class="day"><span class="dn">16</span></div>
+          <div class="day"><span class="dn">17</span></div>
+
+          <div class="day"><span class="dn">18</span><span class="evt review">Ревью блока 2</span></div>
+          <div class="day"><span class="dn">19</span></div>
+          <div class="day"><span class="dn">20</span><span class="evt mock">Mock · Алгоритмы</span></div>
+          <div class="day"><span class="dn">21</span></div>
+          <div class="day"><span class="dn">22</span></div>
+          <div class="day"><span class="dn">23</span><span class="evt real">Real · Ozon</span></div>
+          <div class="day"><span class="dn">24</span></div>
+
+          <div class="day"><span class="dn">25</span></div>
+          <div class="day today"><span class="dn">26</span><span class="evt review">11:00 Ревью «Concurrency»</span></div>
+          <div class="day"><span class="dn">27</span><span class="evt mock">15:00 Mock · System Design</span></div>
+          <div class="day"><span class="dn">28</span></div>
+          <div class="day"><span class="dn">29</span><span class="evt real">12:00 Real · Яндекс</span></div>
+          <div class="day"><span class="dn">30</span><span class="evt custom">18:00 Поток · Q&amp;A</span></div>
+          <div class="day"><span class="dn">31</span></div>
+        </div>
+      </div>
+
+      <!-- ===== WEEK / AGENDA VIEW ===== -->
+      <div data-panel="week" hidden>
+        <div class="ag-group">
+          <div class="agh"><span class="tdy">Сегодня</span> · 26 мая, вторник</div>
+          <div class="ag-item review">
+            <div class="ag-time">11:00</div>
+            <div><div class="ag-tt">Ревью блока «Concurrency»</div><div class="ag-ds">с Иваном Менторовым · видеозвонок</div></div>
+            <span class="ag-tag review">Ревью</span>
+          </div>
+        </div>
+        <div class="ag-group">
+          <div class="agh">Завтра · 27 мая, среда</div>
+          <div class="ag-item mock">
+            <div class="ag-time">15:00</div>
+            <div><div class="ag-tt">Mock-собеседование · System Design</div><div class="ag-ds">с Иваном Менторовым · 60 мин</div></div>
+            <span class="ag-tag mock">Mock</span>
+          </div>
+        </div>
+        <div class="ag-group">
+          <div class="agh">29 мая, пятница</div>
+          <div class="ag-item real">
+            <div class="ag-time">12:00</div>
+            <div><div class="ag-tt">Real-собеседование · Яндекс</div><div class="ag-ds">Go Backend · технический этап</div></div>
+            <span class="ag-tag real">Real</span>
+          </div>
+        </div>
+        <div class="ag-group">
+          <div class="agh">30 мая, суббота</div>
+          <div class="ag-item custom">
+            <div class="ag-time">18:00</div>
+            <div><div class="ag-tt">Поток Go Backend · общий Q&amp;A</div><div class="ag-ds">разбор вопросов недели</div></div>
+            <span class="ag-tag custom">Другое</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+(function(){
+  const segs = document.querySelectorAll('.seg button');
+  const panels = document.querySelectorAll('[data-panel]');
+  segs.forEach(b => b.addEventListener('click', () => {
+    segs.forEach(x => x.classList.toggle('active', x === b));
+    panels.forEach(p => p.hidden = p.getAttribute('data-panel') !== b.getAttribute('data-view'));
+  }));
+})();
+</script>
+</body>
+</html>
