@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1280" />
+<title>Go Mentor · Buddy · Мои ученики</title>
+<script>{const _v=new URLSearchParams(location.search).get('v');document.documentElement.className = _v==='bd' ? 'v-b v-b-dark' : _v==='b' ? 'v-b' : 'v-a';}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="../styles/base.css" rel="stylesheet">
+</head>
+<body>
+<div class="app">
+
+  <!-- ============ SIDEBAR (Buddy) ============ -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">G</div>
+      <div class="brand-name">Go Mentor<small>Платформа</small></div>
+    </div>
+    <div class="sb-user">
+      <div class="avatar" style="background:var(--primary)">ИМ</div>
+      <div style="min-width:0">
+        <div class="nm">Иван Менторов</div>
+        <div class="rl"><span class="role-dot"></span>Buddy<span class="swap">⇄ роль</span></div>
+      </div>
+    </div>
+
+    <div class="sb-label">Наставник</div>
+    <div class="nav-item active"><span class="ic"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c0-3 2.5-5 5.5-5s5.5 2 5.5 5" stroke-linecap="round"/><path d="M16 5.5a3 3 0 0 1 0 5.8M18.5 19c0-2.3-1.2-4-3-4.6" stroke-linecap="round"/></svg></span>Мои ученики<span class="tag">2</span></div>
+    <div class="nav-item"><span class="ic"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 9h18M8 3v4" stroke-linecap="round"/></svg></span>Собеседования</div>
+    <div class="nav-item"><span class="ic"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4" stroke-linecap="round"/></svg></span>Календарь</div>
+    <div class="nav-item"><span class="ic"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M5 20c0-3.5 3-6 7-6s7 2.5 7 6" stroke-linecap="round"/></svg></span>Профиль</div>
+
+    <div class="sb-foot"><span class="led"></span>8 учеников · 2 ждут вас</div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <main class="main">
+    <div class="page-head">
+      <div>
+        <h1>Мои ученики</h1>
+        <div class="sub"><b class="num">8</b> учеников · <b class="num">2</b> ждут подтверждения блока · <b class="num">2</b> без активности</div>
+      </div>
+      <div class="right">
+        <div class="seg stu-filter" id="filter">
+          <button class="active" data-f="all" type="button">Все <span class="c">8</span></button>
+          <button data-f="waiting" type="button">Ждут <span class="c">2</span></button>
+          <button data-f="cold" type="button">Без активности <span class="c">2</span></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card flat" style="flex:1;padding:0;overflow:hidden">
+      <div class="stu-head stu-cols">
+        <div>Ученик</div>
+        <div>Текущий блок</div>
+        <div>Статус</div>
+        <div>Активность</div>
+        <div></div>
+      </div>
+      <div class="stu" id="list">
+
+        <!-- waiting -->
+        <div class="stu-row stu-cols" data-s="waiting" data-tags="waiting">
+          <div class="stu-name"><div class="avatar" style="background:var(--primary)">АП</div><div style="min-width:0"><div class="nm">Анна Петрова</div><div class="tg">@anna_petrova</div></div></div>
+          <div class="stu-block"><div class="bt"><span class="bn">04</span>Tests &amp; Benchmarks</div><div class="row2"><span class="pct">100%</span><div class="bar success"><i style="width:100%"></i></div></div></div>
+          <div><span class="pill waiting"><span class="led"></span>Ждёт вас</span></div>
+          <div class="stu-act"><span class="adot"></span>1 день назад</div>
+          <div><button class="btn secondary sm">Подтвердить блок</button></div>
+        </div>
+
+        <!-- waiting -->
+        <div class="stu-row stu-cols" data-s="waiting" data-tags="waiting">
+          <div class="stu-name"><div class="avatar" style="background:var(--secondary)">ЕМ</div><div style="min-width:0"><div class="nm">Елена Морозова</div><div class="tg">@e_morozova</div></div></div>
+          <div class="stu-block"><div class="bt"><span class="bn">05</span>Web &amp; Storage</div><div class="row2"><span class="pct">100%</span><div class="bar success"><i style="width:100%"></i></div></div></div>
+          <div><span class="pill waiting"><span class="led"></span>Ждёт вас</span></div>
+          <div class="stu-act"><span class="adot"></span>сегодня</div>
+          <div><button class="btn secondary sm">Подтвердить блок</button></div>
+        </div>
+
+        <!-- in progress -->
+        <div class="stu-row stu-cols" data-s="in_progress" data-tags="">
+          <div class="stu-name"><div class="avatar" style="background:var(--secondary)">МК</div><div style="min-width:0"><div class="nm">Михаил Кротов</div><div class="tg">@mkrotov</div></div></div>
+          <div class="stu-block"><div class="bt"><span class="bn">03</span>Concurrency</div><div class="row2"><span class="pct">62%</span><div class="bar"><i style="width:62%"></i></div></div></div>
+          <div><span class="pill in-progress"><span class="led"></span>В работе</span></div>
+          <div class="stu-act"><span class="adot"></span>1 день назад</div>
+          <div><button class="btn ghost sm">Открыть</button></div>
+        </div>
+
+        <!-- in progress -->
+        <div class="stu-row stu-cols" data-s="in_progress" data-tags="">
+          <div class="stu-name"><div class="avatar" style="background:var(--primary)">ОЗ</div><div style="min-width:0"><div class="nm">Ольга Зайцева</div><div class="tg">@olga_z</div></div></div>
+          <div class="stu-block"><div class="bt"><span class="bn">03</span>Concurrency</div><div class="row2"><span class="pct">78%</span><div class="bar"><i style="width:78%"></i></div></div></div>
+          <div><span class="pill in-progress"><span class="led"></span>В работе</span></div>
+          <div class="stu-act"><span class="adot"></span>сегодня</div>
+          <div><button class="btn ghost sm">Открыть</button></div>
+        </div>
+
+        <!-- approved recently -->
+        <div class="stu-row stu-cols" data-s="approved" data-tags="">
+          <div class="stu-name"><div class="avatar" style="background:var(--secondary)">СК</div><div style="min-width:0"><div class="nm">Сергей Кузнецов</div><div class="tg">@s_kuznetsov</div></div></div>
+          <div class="stu-block"><div class="bt"><span class="bn">02</span>Interfaces &amp; Errors</div><div class="row2"><span class="pct">100%</span><div class="bar success"><i style="width:100%"></i></div></div></div>
+          <div><span class="pill approved"><span class="led"></span>Подтверждён</span></div>
+          <div class="stu-act"><span class="adot"></span>2 дня назад</div>
+          <div><button class="btn ghost sm">Открыть</button></div>
+        </div>
+
+        <!-- in progress -->
+        <div class="stu-row stu-cols" data-s="in_progress" data-tags="">
+          <div class="stu-name"><div class="avatar" style="background:var(--primary)">МВ</div><div style="min-width:0"><div class="nm">Мария Волкова</div><div class="tg">@m_volkova</div></div></div>
+          <div class="stu-block"><div class="bt"><span class="bn">02</span>Interfaces &amp; Errors</div><div class="row2"><span class="pct">40%</span><div class="bar"><i style="width:40%"></i></div></div></div>
+          <div><span class="pill in-progress"><span class="led"></span>В работе</span></div>
+          <div class="stu-act"><span class="adot"></span>3 дня назад</div>
+          <div><button class="btn ghost sm">Открыть</button></div>
+        </div>
+
+        <!-- inactive -->
+        <div class="stu-row stu-cols" data-s="in_progress" data-tags="cold">
+          <div class="stu-name"><div class="avatar" style="background:var(--secondary)">ДС</div><div style="min-width:0"><div class="nm">Дмитрий Соколов</div><div class="tg">@dmitry_s</div></div></div>
+          <div class="stu-block"><div class="bt"><span class="bn">02</span>Interfaces &amp; Errors</div><div class="row2"><span class="pct">35%</span><div class="bar mute"><i style="width:35%"></i></div></div></div>
+          <div><span class="pill in-progress"><span class="led"></span>В работе</span></div>
+          <div class="stu-act stale"><span class="adot"></span>9 дней без активности</div>
+          <div><button class="btn ghost sm">Открыть</button></div>
+        </div>
+
+        <!-- inactive cold -->
+        <div class="stu-row stu-cols" data-s="not_started" data-tags="cold">
+          <div class="stu-name"><div class="avatar" style="background:var(--primary)">ПО</div><div style="min-width:0"><div class="nm">Павел Орлов</div><div class="tg">@pavel_orlov</div></div></div>
+          <div class="stu-block"><div class="bt"><span class="bn">01</span>Foundations</div><div class="row2"><span class="pct">8%</span><div class="bar mute"><i style="width:8%"></i></div></div></div>
+          <div><span class="pill not-started"><span class="led"></span>Не начат</span></div>
+          <div class="stu-act cold"><span class="adot"></span>14 дней без активности</div>
+          <div><button class="btn ghost sm">Открыть</button></div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+(function(){
+  const btns = document.querySelectorAll('#filter button');
+  const rows = document.querySelectorAll('#list .stu-row');
+  btns.forEach(b => b.addEventListener('click', () => {
+    btns.forEach(x => x.classList.toggle('active', x === b));
+    const f = b.getAttribute('data-f');
+    rows.forEach(r => {
+      const tags = r.getAttribute('data-tags') || '';
+      r.hidden = !(f === 'all' || tags.split(' ').includes(f));
+    });
+  }));
+})();
+</script>
+</body>
+</html>
