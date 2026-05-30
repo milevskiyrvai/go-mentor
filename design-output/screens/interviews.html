@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1280" />
+<title>Go Mentor · Собеседования</title>
+<script>{const _v=new URLSearchParams(location.search).get('v');document.documentElement.className = _v==='bd' ? 'v-b v-b-dark' : _v==='b' ? 'v-b' : 'v-a';}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="../styles/base.css" rel="stylesheet">
+</head>
+<body>
+<div class="app">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">G</div>
+      <div class="brand-name">Go Mentor<small>Платформа</small></div>
+    </div>
+    <div class="sb-user">
+      <div class="avatar">МК</div>
+      <div style="min-width:0">
+        <div class="nm">Михаил Кротов</div>
+        <div class="rl"><span class="role-dot"></span>Студент<span class="swap">⇄ роль</span></div>
+      </div>
+    </div>
+
+    <div class="sb-label">Обучение</div>
+    <div class="nav-item"><span class="ic"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></span>Дашборд</div>
+    <div class="nav-item"><span class="ic"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h10M4 12h16M4 18h7" stroke-linecap="round"/><circle cx="19" cy="6" r="1.6"/><circle cx="14" cy="18" r="1.6"/></svg></span>Roadmap</div>
+    <div class="nav-item"><span class="ic"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="9" r="6"/><path d="M9 14l-2 7 5-3 5 3-2-7" stroke-linejoin="round"/></svg></span>Достижения</div>
+    <div class="nav-item"><span class="ic"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M12 8v8M9.5 10.5h3.2a1.8 1.8 0 0 1 0 3.6H9.5" stroke-linecap="round"/></svg></span>Бонусы</div>
+    <div class="nav-item active"><span class="ic"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 9h18M8 3v4" stroke-linecap="round"/></svg></span>Собеседования</div>
+    <div class="nav-item"><span class="ic"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4" stroke-linecap="round"/></svg></span>Календарь</div>
+    <div class="nav-item"><span class="ic"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M5 20c0-3.5 3-6 7-6s7 2.5 7 6" stroke-linecap="round"/></svg></span>Профиль</div>
+
+    <div class="sb-foot"><span class="led"></span>Buddy на связи · Иван Менторов</div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <main class="main">
+    <div class="page-head">
+      <div>
+        <h1>Собеседования</h1>
+        <div class="sub"><b class="num">3</b> real · <b class="num">2</b> mock · <b class="num">1</b> оффер</div>
+      </div>
+      <div class="right">
+        <button class="btn secondary"><svg class="i" style="width:16px;height:16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg>Добавить real</button>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" data-tab="mine" type="button">Мои <span class="c num">5</span></button>
+      <button class="tab" data-tab="catalog" type="button">Общий каталог <span class="c num">12</span></button>
+    </div>
+
+    <!-- ============ TAB: MY INTERVIEWS ============ -->
+    <div data-panel="mine">
+      <div class="iv-group">
+        <div class="gh"><span class="gt">Real</span><span class="gc">добавляешь сам · видны в общем каталоге</span><span class="ln"></span></div>
+
+        <div class="iv">
+          <div class="iv-head">
+            <div class="iv-logo">OZ</div>
+            <div class="iv-tt">
+              <h4>Ozon <span class="pos">· Go Developer</span></h4>
+              <div class="iv-meta">
+                <span class="iv-chip grade">Middle</span>
+                <span class="iv-chip">Go</span><span class="iv-chip">PostgreSQL</span><span class="iv-chip">gRPC</span>
+                <span class="iv-date">· 23 мая</span>
+              </div>
+            </div>
+            <span class="pill offer"><span class="led"></span>Оффер</span>
+          </div>
+        </div>
+
+        <div class="iv">
+          <div class="iv-head">
+            <div class="iv-logo">AV</div>
+            <div class="iv-tt">
+              <h4>Авито <span class="pos">· Backend Engineer</span></h4>
+              <div class="iv-meta">
+                <span class="iv-chip grade">Junior+</span>
+                <span class="iv-chip">Go</span><span class="iv-chip">Kafka</span><span class="iv-chip">Kubernetes</span>
+                <span class="iv-date">· 14 мая</span>
+              </div>
+            </div>
+            <span class="pill reject"><span class="led"></span>Отказ</span>
+          </div>
+        </div>
+
+        <div class="iv">
+          <div class="iv-head">
+            <div class="iv-logo">YA</div>
+            <div class="iv-tt">
+              <h4>Яндекс <span class="pos">· Go Backend</span></h4>
+              <div class="iv-meta">
+                <span class="iv-chip grade">Middle</span>
+                <span class="iv-chip">Go</span><span class="iv-chip">ClickHouse</span><span class="iv-chip">REST</span>
+                <span class="iv-date">· 2 мая</span>
+              </div>
+            </div>
+            <span class="pill pending"><span class="led"></span>В процессе</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="iv-group">
+        <div class="gh"><span class="gt">Mock</span><span class="gc">назначает и проверяет Buddy</span><span class="ln"></span></div>
+
+        <div class="iv">
+          <div class="iv-head">
+            <div class="iv-logo mock">M</div>
+            <div class="iv-tt">
+              <h4>Mock · Алгоритмы и структуры данных</h4>
+              <div class="iv-meta">
+                <span class="iv-chip">Иван Менторов</span>
+                <span class="iv-date">· 20 мая</span>
+              </div>
+            </div>
+            <span class="pill completed"><span class="led"></span>Завершён</span>
+          </div>
+          <div class="iv-fb">
+            <div class="who"><span class="ava">ИМ</span>Фидбэк Buddy</div>
+            <p>Хорошо разобрал хеш-таблицы и сложности. Подтяни динамическое программирование — на «лестнице» поплыл. Коммуникация и проговаривание решения — на уровне.</p>
+          </div>
+        </div>
+
+        <div class="iv">
+          <div class="iv-head">
+            <div class="iv-logo mock">M</div>
+            <div class="iv-tt">
+              <h4>Mock · System Design</h4>
+              <div class="iv-meta">
+                <span class="iv-chip">Иван Менторов</span>
+                <span class="iv-date">· 8 мая</span>
+              </div>
+            </div>
+            <span class="pill completed"><span class="led"></span>Завершён</span>
+          </div>
+          <div class="iv-fb">
+            <div class="who"><span class="ava">ИМ</span>Фидбэк Buddy</div>
+            <p>Базовую схему «сервис + БД + кэш» собрал уверенно. В следующий раз сразу уточняй нагрузку и SLA до проектирования — это меняет решение по шардированию.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ TAB: CATALOG ============ -->
+    <div data-panel="catalog" hidden>
+      <div class="iv-group">
+        <div class="gh"><span class="gt">Real-собеседования всех учеников</span><span class="gc">12 записей · имена кликабельны</span><span class="ln"></span></div>
+
+        <div class="iv">
+          <div class="iv-head">
+            <div class="iv-logo">OZ</div>
+            <div class="iv-tt">
+              <h4>Ozon <span class="pos">· Go Developer</span></h4>
+              <div class="iv-meta">
+                <span class="iv-author">Михаил Кротов</span>
+                <span class="iv-chip grade">Middle</span>
+                <span class="iv-chip">Go</span><span class="iv-chip">gRPC</span>
+                <span class="iv-date">· 23 мая</span>
+              </div>
+            </div>
+            <span class="pill offer"><span class="led"></span>Оффер</span>
+          </div>
+        </div>
+
+        <div class="iv">
+          <div class="iv-head">
+            <div class="iv-logo">TB</div>
+            <div class="iv-tt">
+              <h4>Т-Банк <span class="pos">· Golang Developer</span></h4>
+              <div class="iv-meta">
+                <span class="iv-author">Анна Петрова</span>
+                <span class="iv-chip grade">Junior</span>
+                <span class="iv-chip">Go</span><span class="iv-chip">PostgreSQL</span>
+                <span class="iv-date">· 19 мая</span>
+              </div>
+            </div>
+            <span class="pill offer"><span class="led"></span>Оффер</span>
+          </div>
+        </div>
+
+        <div class="iv">
+          <div class="iv-head">
+            <div class="iv-logo">VK</div>
+            <div class="iv-tt">
+              <h4>VK <span class="pos">· Backend Engineer</span></h4>
+              <div class="iv-meta">
+                <span class="iv-author">Дмитрий Соколов</span>
+                <span class="iv-chip grade">Middle</span>
+                <span class="iv-chip">Go</span><span class="iv-chip">Redis</span>
+                <span class="iv-date">· 16 мая</span>
+              </div>
+            </div>
+            <span class="pill pending"><span class="led"></span>В процессе</span>
+          </div>
+        </div>
+
+        <div class="iv">
+          <div class="iv-head">
+            <div class="iv-logo">AV</div>
+            <div class="iv-tt">
+              <h4>Авито <span class="pos">· Backend Engineer</span></h4>
+              <div class="iv-meta">
+                <span class="iv-author">Михаил Кротов</span>
+                <span class="iv-chip grade">Junior+</span>
+                <span class="iv-chip">Go</span><span class="iv-chip">Kafka</span>
+                <span class="iv-date">· 14 мая</span>
+              </div>
+            </div>
+            <span class="pill reject"><span class="led"></span>Отказ</span>
+          </div>
+        </div>
+
+        <div class="iv">
+          <div class="iv-head">
+            <div class="iv-logo">SB</div>
+            <div class="iv-tt">
+              <h4>СБЕР <span class="pos">· Go Developer</span></h4>
+              <div class="iv-meta">
+                <span class="iv-author">Елена Морозова</span>
+                <span class="iv-chip grade">Middle</span>
+                <span class="iv-chip">Go</span><span class="iv-chip">Kubernetes</span>
+                <span class="iv-date">· 11 мая</span>
+              </div>
+            </div>
+            <span class="pill not-started"><span class="led"></span>Без результата</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+(function(){
+  const tabs = document.querySelectorAll('.tab');
+  const panels = document.querySelectorAll('[data-panel]');
+  tabs.forEach(t => t.addEventListener('click', () => {
+    tabs.forEach(x => x.classList.toggle('active', x === t));
+    panels.forEach(p => p.hidden = p.getAttribute('data-panel') !== t.getAttribute('data-tab'));
+  }));
+})();
+</script>
+</body>
+</html>

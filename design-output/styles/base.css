@@ -194,7 +194,7 @@ a{color:inherit;text-decoration:none}
 
 .pill{
   display:inline-flex;align-items:center;gap:6px;height:25px;padding:0 10px;border-radius:999px;
-  font-size:11.5px;font-weight:600;border:1px solid transparent;letter-spacing:var(--label-spacing);
+  font-size:11.5px;font-weight:600;border:1px solid transparent;letter-spacing:var(--label-spacing);white-space:nowrap;
 }
 .pill .led{width:6px;height:6px;border-radius:50%;background:currentColor}
 .pill.not-started{color:var(--ink-2);background:var(--bg);border-color:var(--line)}
@@ -481,3 +481,42 @@ a{color:inherit;text-decoration:none}
 .req .rt{font-size:13px;font-weight:600}
 .req .rd{font-size:11px;color:var(--ink-3);font-weight:600;margin-top:1px}
 .req .pill{margin-left:auto}
+
+/* ============================================================
+   Interviews — tabs, interview cards, catalog
+   ============================================================ */
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--line)}
+.tab{
+  padding:10px 16px;font-size:13.5px;font-weight:600;color:var(--ink-2);cursor:pointer;
+  border:0;background:transparent;font-family:inherit;border-bottom:2px solid transparent;margin-bottom:-1px;
+  display:inline-flex;align-items:center;gap:7px;
+}
+.tab:hover{color:var(--ink)}
+.tab.active{color:var(--ink);border-bottom-color:var(--primary)}
+.tab .c{font-size:11px;font-weight:700;color:var(--ink-3);background:var(--bg);padding:1px 7px;border-radius:999px;font-variant-numeric:tabular-nums}
+.tab.active .c{color:var(--primary-ink);background:var(--primary-soft)}
+
+.iv-group{margin-bottom:8px}
+.iv-group .gh{display:flex;align-items:center;gap:9px;margin:18px 0 12px}
+.iv-group .gh .gt{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2)}
+.iv-group .gh .gc{font-size:11.5px;color:var(--ink-3);font-weight:600}
+.iv-group .gh .ln{flex:1;height:1px;background:var(--line)}
+
+.iv{border:1px solid var(--line);background:var(--surface);border-radius:var(--r);padding:16px 18px;box-shadow:var(--shadow-sm);margin-bottom:12px}
+.iv:hover{border-color:var(--line-2)}
+.iv-head{display:flex;align-items:flex-start;gap:13px}
+.iv-logo{width:42px;height:42px;flex:0 0 42px;border-radius:var(--r-sm);background:var(--bg);border:1px solid var(--line);display:grid;place-items:center;font-weight:800;font-size:14px;color:var(--ink-2);letter-spacing:-.02em}
+.iv-logo.mock{background:var(--secondary-soft);color:var(--secondary);border-color:transparent}
+.iv-tt{flex:1;min-width:0}
+.iv-tt h4{margin:0;font-size:15px;font-weight:700;letter-spacing:-.01em}
+.iv-tt h4 .pos{color:var(--ink-2);font-weight:600}
+.iv-meta{font-size:12px;color:var(--ink-2);margin-top:6px;display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.iv-chip{font-size:11px;font-weight:700;padding:2px 9px;border-radius:999px;background:var(--bg);border:1px solid var(--line);color:var(--ink-2);letter-spacing:.01em;white-space:nowrap}
+.iv-chip.grade{background:var(--primary-soft);border-color:transparent;color:var(--primary-ink)}
+.iv-date{font-size:11.5px;color:var(--ink-3);font-weight:600;white-space:nowrap}
+.iv-fb{margin-top:13px;padding:12px 14px;border-radius:var(--r-sm);background:var(--bg);border:1px solid var(--line)}
+.iv-fb .who{font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:5px;display:flex;align-items:center;gap:7px}
+.iv-fb .who .ava{width:18px;height:18px;border-radius:5px;background:var(--primary);color:var(--surface-2);display:grid;place-items:center;font-size:9px;font-weight:700;letter-spacing:0}
+.iv-fb p{margin:0;font-size:12.5px;color:var(--ink-2);line-height:1.5}
+.iv-author{color:var(--primary-ink);font-weight:700;cursor:pointer;white-space:nowrap}
+.iv-author:hover{text-decoration:underline}
