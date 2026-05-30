@@ -1,0 +1,17 @@
+DROP TABLE IF EXISTS notifications;
+DROP TABLE IF EXISTS activity_events;
+DROP TABLE IF EXISTS calendar_events;
+DROP TABLE IF EXISTS one_on_one_requests;
+DROP TABLE IF EXISTS discount_conversions;
+DROP TABLE IF EXISTS bonus_transactions;
+DROP TABLE IF EXISTS user_achievements;
+DROP TABLE IF EXISTS achievements;
+DROP TABLE IF EXISTS interviews;
+DROP TABLE IF EXISTS final_checks;
+DROP TABLE IF EXISTS block_progress;
+DROP TABLE IF EXISTS material_progress;
+DROP TABLE IF EXISTS roadmap_materials;
+DROP TABLE IF EXISTS roadmap_blocks;
+DROP TABLE IF EXISTS student_buddy_assignments;
+DROP TABLE IF EXISTS user_roles;
+DROP TABLE IF EXISTS users;

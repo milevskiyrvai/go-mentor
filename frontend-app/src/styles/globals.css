@@ -1,0 +1,308 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #07080a;
+  --surface: #0f1014;
+  --elevated: #16181e;
+  --border: #262830;
+  --border-bright: #363842;
+  --primary: #d4ff3d;
+  --primary-dim: rgba(212, 255, 61, 0.28);
+  --secondary: #ff3d9a;
+  --secondary-dim: rgba(255, 61, 154, 0.3);
+  --success: #7be38c;
+  --warning: #ffdb3d;
+  --danger: #ff5b5b;
+  --text: #f0f0f2;
+  --text-2: #8a8a92;
+  --text-3: #50525c;
+
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 14px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+body {
+  background:
+    radial-gradient(900px 600px at 12% -10%, rgba(212, 255, 61, 0.06), transparent 70%),
+    radial-gradient(900px 600px at 88% -10%, rgba(255, 61, 154, 0.06), transparent 70%),
+    var(--bg);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+::selection {
+  background: var(--primary);
+  color: #001613;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 6px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-bright);
+}
+
+input,
+textarea,
+button,
+select {
+  font-family: inherit;
+  color: inherit;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: 1px solid rgba(212, 255, 61, 0.4);
+}
+
+/* ---------- Reusable component utilities ---------- */
+
+.font-mono {
+  font-family: "JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+
+.caption {
+  font-size: 11px;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--text-3);
+}
+
+.hex-clip {
+  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+}
+
+.gradient-text {
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.pbar-fill {
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  box-shadow: 0 0 14px rgba(212, 255, 61, 0.3);
+}
+
+.led-pulse {
+  animation: pulseDot 1.5s ease-in-out infinite;
+}
+
+@keyframes pulseDot {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+/* ---------- Buttons ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 18px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    background 0.15s,
+    transform 0.05s;
+}
+.btn:hover {
+  border-color: var(--border-bright);
+  background: var(--elevated);
+}
+.btn:active {
+  transform: translateY(1px);
+}
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.btn-primary {
+  background: var(--primary);
+  color: #001613;
+  border-color: transparent;
+  font-weight: 600;
+  box-shadow: 0 0 18px rgba(212, 255, 61, 0.25);
+}
+.btn-primary:hover {
+  background: #c0eb2c;
+}
+.btn-secondary {
+  background: var(--secondary);
+  color: #fff;
+  border-color: transparent;
+  font-weight: 600;
+  box-shadow: 0 0 18px rgba(255, 61, 154, 0.25);
+}
+.btn-secondary:hover {
+  background: #e9358a;
+}
+.btn-ghost {
+  background: transparent;
+}
+.btn-sm {
+  height: 32px;
+  padding: 0 12px;
+  font-size: 13px;
+}
+
+/* ---------- Inputs ---------- */
+.input,
+.textarea,
+.select {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  padding: 10px 14px;
+  font-size: 14px;
+  transition: border-color 0.15s;
+}
+.input:hover,
+.textarea:hover,
+.select:hover {
+  border-color: var(--border-bright);
+}
+.input::placeholder,
+.textarea::placeholder {
+  color: var(--text-3);
+}
+
+/* ---------- Card ---------- */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+
+.elevated {
+  background: var(--elevated);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+
+/* ---------- Status badge ---------- */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text-2);
+  font-weight: 500;
+}
+.status-badge .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--text-3);
+}
+.status-badge.success {
+  color: var(--success);
+}
+.status-badge.success .dot {
+  background: var(--success);
+  box-shadow: 0 0 8px var(--success);
+}
+.status-badge.warning {
+  color: var(--warning);
+}
+.status-badge.warning .dot {
+  background: var(--warning);
+  box-shadow: 0 0 8px var(--warning);
+  animation: pulseDot 1.5s ease-in-out infinite;
+}
+.status-badge.primary {
+  color: var(--primary);
+}
+.status-badge.primary .dot {
+  background: var(--primary);
+  box-shadow: 0 0 8px var(--primary);
+}
+.status-badge.danger {
+  color: var(--danger);
+}
+.status-badge.danger .dot {
+  background: var(--danger);
+  box-shadow: 0 0 8px var(--danger);
+}
+.status-badge.secondary {
+  color: var(--secondary);
+}
+.status-badge.secondary .dot {
+  background: var(--secondary);
+  box-shadow: 0 0 8px var(--secondary);
+}
+
+/* ---------- Pill (small label) ---------- */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 9px;
+  border-radius: 999px;
+  font-size: 10.5px;
+  font-family: "JetBrains Mono", monospace;
+  letter-spacing: 0.06em;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text-2);
+}
+.pill.required {
+  border-color: rgba(212, 255, 61, 0.4);
+  color: var(--primary);
+}
+.pill.optional {
+  color: var(--text-3);
+}

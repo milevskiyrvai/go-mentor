@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1440" />
+<title>Go Mentor · Student · Roadmap v2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#07080A;
+    --surface:#0F1014;
+    --elevated:#16181E;
+    --elevated-2:#1B1E26;
+    --border:#262830;
+    --border-bright:#363842;
+    --primary:#D4FF3D;
+    --primary-dim: color-mix(in oklab, #D4FF3D 28%, transparent);
+    --secondary:#FF3D9A;
+    --secondary-dim: color-mix(in oklab, #FF3D9A 30%, transparent);
+    --success:#7BE38C;
+    --warning:#FFDB3D;
+    --danger:#FF5B5B;
+    --text:#F0F0F2;
+    --text-2:#8A8A92;
+    --text-3:#50525C;
+    --mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+    --sans:"Inter", system-ui, -apple-system, sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+  body{
+    background:
+      radial-gradient(900px 600px at 0% -5%, color-mix(in oklab, var(--primary) 7%, transparent), transparent 60%),
+      radial-gradient(900px 600px at 100% 110%, color-mix(in oklab, var(--secondary) 8%, transparent), transparent 60%),
+      var(--bg);
+    min-height:100vh;
+  }
+  ::selection{background:var(--primary);color:#001613}
+
+  .app{
+    width:1440px;margin:0 auto;padding:24px;display:grid;grid-template-columns:260px 1fr;gap:24px;
+  }
+
+  /* ========== SIDEBAR (system) ========== */
+  .sidebar{
+    background:var(--surface);border:1px solid var(--border);border-radius:14px;
+    padding:14px;display:flex;flex-direction:column;gap:6px;
+    position:sticky;top:24px;align-self:start;
+    min-height:calc(100vh - 48px);
+  }
+  .sb-user{
+    display:flex;align-items:center;gap:12px;padding:12px;border-radius:10px;
+    border:1px solid var(--border);background:var(--bg);margin-bottom:6px;
+  }
+  .avatar{
+    width:38px;height:38px;border-radius:9px;
+    background:linear-gradient(140deg, var(--secondary), var(--primary));
+    display:grid;place-items:center;color:color-mix(in oklab, var(--primary) 20%, black);
+    font-family:var(--mono);font-weight:700;font-size:13px;flex:0 0 38px;
+  }
+  .sb-user .info{flex:1;min-width:0}
+  .sb-user .name{font-size:13px;font-weight:600;line-height:1.1}
+  .sb-user .role{display:flex;align-items:center;gap:6px;font-size:10px;color:var(--text-2);font-family:var(--mono);text-transform:uppercase;letter-spacing:.12em;margin-top:5px}
+  .sb-user .role .dot{width:5px;height:5px;border-radius:50%;background:var(--primary);box-shadow:0 0 8px var(--primary)}
+  .sb-user .switcher{font-family:var(--mono);color:var(--text-3);font-size:11px;line-height:1}
+  .sb-section{font-family:var(--mono);font-size:9.5px;text-transform:uppercase;letter-spacing:.18em;color:var(--text-3);padding:14px 12px 6px}
+  .sb-item{
+    display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;color:var(--text-2);
+    font-size:13px;cursor:pointer;position:relative;letter-spacing:-.005em;
+  }
+  .sb-item:hover{background:var(--elevated);color:var(--text)}
+  .sb-item.active{color:var(--text);background:var(--elevated)}
+  .sb-item.active::before{content:"";position:absolute;left:-14px;top:8px;bottom:8px;width:3px;border-radius:2px;background:var(--primary);box-shadow:0 0 14px var(--primary)}
+  .sb-item .ic{
+    width:20px;height:20px;border:1px solid var(--border-bright);border-radius:6px;display:grid;place-items:center;
+    color:var(--text-3);font-family:var(--mono);font-size:10px;font-weight:700;flex:0 0 20px;
+  }
+  .sb-item.active .ic{color:var(--primary);border-color:color-mix(in oklab, var(--primary) 60%, transparent);background:color-mix(in oklab, var(--primary) 10%, transparent);box-shadow:0 0 14px color-mix(in oklab, var(--primary) 25%, transparent)}
+  .sb-num{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--text-2);font-weight:500}
+  .sb-pill-mini{
+    display:inline-flex;align-items:center;height:18px;padding:0 7px;border-radius:999px;
+    font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.04em;margin-left:auto;
+    background:color-mix(in oklab, var(--secondary) 15%, transparent);
+    border:1px solid color-mix(in oklab, var(--secondary) 40%, transparent);
+    color:#FFB8DA;
+  }
+  .sb-foot{
+    margin-top:auto;border-top:1px solid var(--border);padding-top:14px;font-family:var(--mono);font-size:10px;color:var(--text-3);letter-spacing:.12em;
+    display:flex;align-items:center;gap:8px;text-transform:uppercase;
+  }
+  .sb-foot .led{width:6px;height:6px;border-radius:50%;background:var(--success);box-shadow:0 0 10px var(--success)}
+
+  /* ========== Main ========== */
+  .main{display:flex;flex-direction:column;gap:24px;min-width:0}
+
+  .crumbs{
+    display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:10.5px;color:var(--text-3);letter-spacing:.1em;text-transform:uppercase;
+  }
+  .crumbs span.live{color:var(--primary);display:inline-flex;align-items:center;gap:6px}
+  .crumbs span.live .dot{width:5px;height:5px;border-radius:50%;background:var(--primary);box-shadow:0 0 8px var(--primary)}
+  .crumbs .sep{color:var(--text-3)}
+  .crumbs .right{margin-left:auto;display:flex;gap:14px;color:var(--text-3)}
+
+  /* Page header */
+  .pagehead{
+    display:flex;align-items:flex-end;justify-content:space-between;gap:24px;padding-bottom:18px;border-bottom:1px solid var(--border);
+  }
+  .pagehead .lead{font-family:var(--mono);font-size:11px;color:var(--text-3);letter-spacing:.18em;text-transform:uppercase;margin-bottom:8px;display:inline-flex;align-items:center;gap:10px}
+  .pagehead .lead .dot{width:5px;height:5px;border-radius:50%;background:var(--primary);box-shadow:0 0 8px var(--primary)}
+  .pagehead h1{margin:0;font-size:36px;font-weight:700;letter-spacing:-.02em;line-height:1}
+  .pagehead h1 em{font-style:normal;background:linear-gradient(90deg,var(--primary),var(--secondary));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .pagehead .desc{margin:14px 0 0;color:var(--text-2);font-size:13.5px;line-height:1.55;max-width:60ch}
+  .pagehead .desc b{color:var(--text);font-weight:600}
+  .pagehead .desc .accent{color:var(--primary);font-weight:600}
+  .pagehead .desc .warn{color:var(--warning);font-weight:600}
+  .pagehead .right-col{
+    display:flex;flex-direction:column;align-items:flex-end;gap:12px;flex:0 0 auto;
+  }
+  .pagehead .stats-row{display:flex;align-items:center;gap:8px}
+  .stat-chip{
+    display:inline-flex;align-items:center;gap:8px;height:32px;padding:0 12px;border-radius:8px;
+    background:var(--surface);border:1px solid var(--border);font-size:12.5px;color:var(--text-2);
+  }
+  .stat-chip b{color:var(--text);font-weight:600;font-family:var(--mono)}
+  .stat-chip .lbl{font-family:var(--mono);font-size:10px;color:var(--text-3);text-transform:uppercase;letter-spacing:.12em;margin-right:4px}
+
+  /* ========== Roadmap (full-width version of C.02) ========== */
+  .roadmap-list{display:flex;flex-direction:column;gap:18px}
+
+  .roadmap{
+    border:1px solid var(--border);background:var(--elevated);border-radius:14px;
+    padding:24px 26px;display:flex;flex-direction:column;gap:18px;position:relative;overflow:hidden;
+    cursor:pointer;transition:border-color .2s, transform .15s;
+  }
+  .roadmap:hover{border-color:var(--border-bright);transform:translateY(-2px)}
+  .roadmap::before{
+    content:"";position:absolute;left:0;right:0;top:0;height:140px;pointer-events:none;
+    background:radial-gradient(closest-side at 0% 0%, color-mix(in oklab, var(--accent, var(--primary)) 8%, transparent), transparent 65%);
+  }
+  .roadmap[data-status="approved"]{--accent:var(--success)}
+  .roadmap[data-status="in_progress"]{--accent:var(--primary)}
+  .roadmap[data-status="waiting"]{--accent:var(--warning)}
+  .roadmap[data-status="not_started"]{--accent:var(--text-3)}
+
+  .roadmap[data-status="in_progress"]{
+    border-color:color-mix(in oklab, var(--primary) 35%, var(--border));
+    box-shadow:0 0 0 1px color-mix(in oklab, var(--primary) 12%, transparent), 0 30px 60px -40px color-mix(in oklab, var(--primary) 35%, transparent);
+  }
+
+  .roadmap-head{display:flex;align-items:center;gap:18px;position:relative;z-index:1}
+  .roadmap-num{
+    width:64px;height:64px;border-radius:14px;background:var(--bg);border:1px solid var(--border);
+    display:grid;place-items:center;font-family:var(--mono);font-weight:700;color:var(--text-2);font-size:24px;letter-spacing:-.02em;flex:0 0 64px;
+    position:relative;
+  }
+  .roadmap[data-status="approved"] .roadmap-num{color:var(--success);box-shadow:inset 0 0 0 1px color-mix(in oklab, var(--success) 35%, transparent), 0 0 24px -12px var(--success);background:color-mix(in oklab, var(--success) 5%, var(--bg))}
+  .roadmap[data-status="approved"] .roadmap-num::after{
+    content:"";position:absolute;top:-4px;right:-4px;width:20px;height:20px;border-radius:50%;background:var(--success);
+    box-shadow:0 0 14px color-mix(in oklab, var(--success) 60%, transparent), 0 0 0 3px var(--elevated);
+  }
+  .roadmap[data-status="approved"] .roadmap-num::before{
+    content:"✓";position:absolute;top:-4px;right:-4px;width:20px;height:20px;border-radius:50%;
+    color:#072c12;font-family:var(--mono);font-weight:700;font-size:11px;display:grid;place-items:center;z-index:2;
+  }
+  .roadmap[data-status="in_progress"] .roadmap-num{
+    color:var(--primary);border-color:var(--primary);
+    background:color-mix(in oklab, var(--primary) 10%, var(--bg));
+    box-shadow:inset 0 0 0 1px color-mix(in oklab, var(--primary) 40%, transparent), 0 0 28px -8px var(--primary);
+  }
+  .roadmap[data-status="waiting"] .roadmap-num{
+    color:var(--warning);border-color:color-mix(in oklab, var(--warning) 35%, transparent);
+    background:color-mix(in oklab, var(--warning) 5%, var(--bg));
+    box-shadow:inset 0 0 0 1px color-mix(in oklab, var(--warning) 25%, transparent), 0 0 22px -10px var(--warning);
+  }
+
+  .roadmap-title{display:flex;flex-direction:column;gap:6px;flex:1;min-width:0}
+  .roadmap-title .super{
+    font-family:var(--mono);font-size:10px;color:var(--text-3);letter-spacing:.16em;text-transform:uppercase;display:flex;align-items:center;gap:8px;
+  }
+  .roadmap-title h4{margin:0;font-size:22px;font-weight:700;letter-spacing:-.01em;line-height:1.1}
+  .roadmap-title small{font-size:13px;color:var(--text-2);line-height:1.5;display:block;margin-top:4px}
+
+  .roadmap-right{display:flex;align-items:center;gap:14px;flex:0 0 auto}
+
+  /* status badge — from C.06 */
+  .badge{
+    display:inline-flex;align-items:center;gap:8px;
+    height:30px;padding:0 12px;border-radius:999px;border:1px solid var(--border);
+    background:var(--bg);font-size:12px;font-weight:500;color:var(--text-2);letter-spacing:-.005em;
+    white-space:nowrap;
+  }
+  .badge .ledr{width:7px;height:7px;border-radius:50%;background:currentColor;box-shadow:0 0 8px currentColor}
+  .badge.not-started{color:var(--text-2)}
+  .badge.not-started .ledr{background:var(--text-3);box-shadow:none}
+  .badge.in-progress{color:var(--primary);background:color-mix(in oklab, var(--primary) 8%, transparent);border-color:color-mix(in oklab, var(--primary) 30%, transparent)}
+  .badge.waiting{color:var(--warning);background:color-mix(in oklab, var(--warning) 8%, transparent);border-color:color-mix(in oklab, var(--warning) 30%, transparent)}
+  .badge.waiting .ledr{animation:pulse 1.6s ease-in-out infinite}
+  .badge.approved{color:var(--success);background:color-mix(in oklab, var(--success) 8%, transparent);border-color:color-mix(in oklab, var(--success) 30%, transparent)}
+  @keyframes pulse{
+    0%, 100%{box-shadow:0 0 0 0 color-mix(in oklab, var(--warning) 50%, transparent); opacity:1}
+    50%{box-shadow:0 0 0 6px color-mix(in oklab, var(--warning) 0%, transparent); opacity:.7}
+  }
+
+  .chevron{
+    width:30px;height:30px;border-radius:8px;border:1px solid var(--border);display:grid;place-items:center;
+    color:var(--text-3);font-family:var(--mono);font-weight:700;font-size:12px;background:var(--bg);transition:transform .2s;
+  }
+  .roadmap.expanded .chevron{
+    color:var(--primary);border-color:color-mix(in oklab, var(--primary) 40%, transparent);
+    background:color-mix(in oklab, var(--primary) 10%, transparent);
+    box-shadow:0 0 14px color-mix(in oklab, var(--primary) 30%, transparent);
+    transform:rotate(180deg);
+  }
+
+  .roadmap-progress{display:flex;align-items:center;gap:14px;position:relative;z-index:1}
+  .pbar{flex:1;height:8px;border-radius:4px;background:var(--bg);overflow:hidden;border:1px solid var(--border);position:relative}
+  .pbar > i{display:block;height:100%;background:linear-gradient(90deg,var(--primary),var(--secondary));box-shadow:0 0 14px color-mix(in oklab, var(--primary) 30%, transparent)}
+  .pbar.warn > i{background:linear-gradient(90deg, var(--warning), color-mix(in oklab, var(--warning) 50%, var(--secondary)));box-shadow:0 0 14px color-mix(in oklab, var(--warning) 35%, transparent)}
+  .pbar.success > i{background:linear-gradient(90deg, var(--success), color-mix(in oklab, var(--success) 50%, var(--primary)));box-shadow:0 0 14px color-mix(in oklab, var(--success) 30%, transparent)}
+  .pbar.mute > i{background:#2A2D38}
+  .ppct{font-family:var(--mono);font-weight:700;font-size:16px;color:var(--text);min-width:54px;text-align:right;letter-spacing:-.01em}
+  .roadmap[data-status="approved"] .ppct{color:var(--success)}
+  .roadmap[data-status="in_progress"] .ppct{color:var(--primary)}
+  .roadmap[data-status="waiting"] .ppct{color:var(--warning)}
+  .roadmap[data-status="not_started"] .ppct{color:var(--text-3)}
+
+  /* 4-section grid */
+  .roadmap-sections{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;position:relative;z-index:1}
+  .rs{
+    border:1px solid var(--border);background:var(--bg);border-radius:9px;
+    padding:14px 16px;display:flex;flex-direction:column;gap:8px;position:relative;
+  }
+  .rs .rs-lbl{font-size:10px;color:var(--text-3);text-transform:uppercase;letter-spacing:.14em;font-family:var(--mono);display:flex;align-items:center;gap:8px}
+  .rs .rs-lbl .num{color:var(--text-3);opacity:.7}
+  .rs .rs-val{font-family:var(--mono);font-size:18px;font-weight:700;letter-spacing:-.01em;color:var(--text)}
+  .rs .rs-val em{color:var(--text-3);font-style:normal;font-weight:500}
+  .rs .rs-bar{height:3px;border-radius:2px;background:var(--surface);overflow:hidden;border:1px solid var(--border)}
+  .rs .rs-bar > i{display:block;height:100%}
+  .rs.done .rs-val{color:var(--success)}
+  .rs.done .rs-bar > i{background:var(--success);width:100%;box-shadow:0 0 8px color-mix(in oklab, var(--success) 40%, transparent)}
+  .rs.active .rs-val{color:var(--primary)}
+  .rs.active .rs-bar > i{background:linear-gradient(90deg, var(--primary), var(--secondary));box-shadow:0 0 8px var(--primary-dim)}
+  .rs.warn .rs-val{color:var(--warning)}
+  .rs.warn .rs-bar > i{background:var(--warning);box-shadow:0 0 8px color-mix(in oklab, var(--warning) 35%, transparent);width:100%}
+  .rs.mute .rs-bar > i{background:#2A2D38;width:0}
+
+  /* ========== Inline expansion of block 03 ========== */
+  .expansion{
+    margin-top:-2px;border:1px solid color-mix(in oklab, var(--primary) 30%, var(--border));border-top:none;
+    background:linear-gradient(180deg, color-mix(in oklab, var(--primary) 4%, var(--surface)) 0%, var(--surface) 30%);
+    border-radius:0 0 14px 14px;
+    padding:24px 26px 22px;
+    margin-bottom:0;position:relative;
+    box-shadow:0 30px 80px -50px color-mix(in oklab, var(--primary) 40%, transparent);
+  }
+  .roadmap.expanded{border-radius:14px 14px 0 0;border-bottom-color:color-mix(in oklab, var(--primary) 20%, var(--border))}
+
+  .exp-head{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+  .exp-head .super{font-family:var(--mono);font-size:10px;color:var(--text-3);letter-spacing:.16em;text-transform:uppercase}
+  .exp-head h5{margin:0;font-size:17px;font-weight:700;letter-spacing:-.01em;display:flex;align-items:center;gap:12px}
+  .exp-head h5 .frac{font-family:var(--mono);font-weight:700;color:var(--primary);font-size:14px}
+  .exp-head .right{margin-left:auto;display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;color:var(--text-3);letter-spacing:.04em}
+  .exp-head .right b{color:var(--text-2);font-weight:500}
+
+  /* section tabs (inside expansion) */
+  .sec-tabs{
+    display:flex;align-items:center;gap:6px;padding:5px;border-radius:10px;background:var(--bg);border:1px solid var(--border);
+    margin-bottom:18px;width:fit-content;
+  }
+  .sec-tabs button{
+    height:30px;padding:0 12px;border:0;background:transparent;color:var(--text-2);font-family:var(--sans);font-size:12.5px;cursor:pointer;
+    border-radius:7px;display:inline-flex;align-items:center;gap:8px;letter-spacing:-.005em;
+  }
+  .sec-tabs button .ct{
+    font-family:var(--mono);font-size:10px;color:var(--text-3);font-weight:600;background:var(--surface);
+    border:1px solid var(--border);padding:1px 6px;border-radius:999px;
+  }
+  .sec-tabs button.active{background:var(--elevated);color:var(--text);box-shadow:inset 0 0 0 1px color-mix(in oklab, var(--primary) 40%, transparent)}
+  .sec-tabs button.active .ct{color:var(--primary);border-color:color-mix(in oklab, var(--primary) 40%, transparent);background:color-mix(in oklab, var(--primary) 10%, transparent)}
+  .sec-tabs button.done{color:var(--success)}
+  .sec-tabs button.done .ct{color:var(--success)}
+
+  /* ========== Material card C.03 stack ========== */
+  .mat-stack{display:flex;flex-direction:column;gap:10px}
+  .mat{
+    display:grid;grid-template-columns:120px 1fr auto;gap:16px;
+    background:var(--elevated);border:1px solid var(--border);border-radius:10px;padding:14px;align-items:center;
+    position:relative;cursor:pointer;transition:border-color .15s, transform .15s;
+  }
+  .mat:hover{border-color:var(--border-bright);transform:translateY(-1px)}
+  .mat.viewed{background:color-mix(in oklab, var(--primary) 3%, var(--elevated));border-color:color-mix(in oklab, var(--primary) 22%, var(--border))}
+  .mat.viewed::before{
+    content:"";position:absolute;left:0;top:14px;bottom:14px;width:3px;border-radius:0 3px 3px 0;background:var(--primary);box-shadow:0 0 10px var(--primary-dim);
+  }
+  .mat.current{
+    border-color:var(--primary);
+    background:color-mix(in oklab, var(--primary) 6%, var(--elevated));
+    box-shadow:0 0 0 1px color-mix(in oklab, var(--primary) 25%, transparent), 0 0 30px -10px var(--primary);
+  }
+  .mat.current::before{
+    content:"";position:absolute;left:0;top:14px;bottom:14px;width:3px;border-radius:0 3px 3px 0;background:var(--primary);box-shadow:0 0 12px var(--primary);
+  }
+  .mat-thumb{
+    width:120px;height:72px;border-radius:7px;background:var(--bg);border:1px solid var(--border);
+    position:relative;overflow:hidden;flex:0 0 120px;
+  }
+  .mat-thumb.yt{background:repeating-linear-gradient(135deg,#1a0f12 0 8px,#221015 8px 16px)}
+  .mat-thumb.gh{background:repeating-linear-gradient(135deg,#0e1620 0 8px,#101926 8px 16px)}
+  .mat-thumb.art{background:repeating-linear-gradient(135deg,#0f1a1a 0 8px,#0f1f1d 8px 16px)}
+  .mat-thumb.file{background:repeating-linear-gradient(135deg,#171221 0 8px,#1a1326 8px 16px)}
+  .mat-thumb::after{
+    content:attr(data-icon);position:absolute;inset:0;display:grid;place-items:center;
+    font-family:var(--mono);font-weight:700;font-size:11px;color:var(--text-2);letter-spacing:.1em;
+  }
+  .mat-body{display:flex;flex-direction:column;gap:6px;min-width:0}
+  .mat-meta{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:10.5px;color:var(--text-3);letter-spacing:.06em}
+  .mat-meta .src{color:var(--text-2)}
+  .mat-meta .dotty{width:3px;height:3px;border-radius:50%;background:var(--text-3)}
+  .pill-mini{
+    display:inline-flex;align-items:center;height:18px;padding:0 7px;border-radius:999px;
+    font-size:10px;font-weight:600;letter-spacing:.04em;
+  }
+  .pill-mini.req{background:color-mix(in oklab, var(--primary) 12%, transparent);color:var(--primary);border:1px solid color-mix(in oklab, var(--primary) 35%, transparent)}
+  .pill-mini.opt{background:transparent;color:var(--text-3);border:1px solid var(--border)}
+  .mat-title{font-size:14px;font-weight:600;letter-spacing:-.005em;text-overflow:ellipsis;overflow:hidden;white-space:nowrap}
+  .mat-desc{font-size:12px;color:var(--text-2);line-height:1.5;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+  .checker{
+    width:26px;height:26px;border-radius:7px;border:1.5px solid var(--border-bright);background:var(--bg);
+    display:grid;place-items:center;color:transparent;cursor:pointer;flex:0 0 26px;
+  }
+  .checker.checked{background:var(--primary);border-color:var(--primary);color: color-mix(in oklab, var(--primary) 25%, black);box-shadow:0 0 14px color-mix(in oklab, var(--primary) 50%, transparent)}
+
+  /* "current" pin replacing checker */
+  .now-pin{
+    width:auto;height:26px;padding:0 9px;border-radius:7px;border:1px solid var(--primary);
+    background:color-mix(in oklab, var(--primary) 14%, transparent);color:var(--primary);
+    font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+    display:inline-flex;align-items:center;gap:6px;box-shadow:0 0 14px color-mix(in oklab, var(--primary) 35%, transparent);
+  }
+  .now-pin .blink{width:6px;height:6px;border-radius:50%;background:var(--primary);box-shadow:0 0 8px var(--primary);animation:blip 1.4s ease-in-out infinite}
+  @keyframes blip{50%{opacity:.3}}
+
+  .show-more{
+    margin-top:18px;display:flex;align-items:center;gap:12px;
+    color:var(--text-2);font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;cursor:pointer;
+    padding:10px 14px;border:1px dashed var(--border);border-radius:10px;text-transform:uppercase;
+  }
+  .show-more:hover{color:var(--text);border-color:var(--border-bright)}
+  .show-more .chev{color:var(--primary);font-family:var(--mono);font-weight:700}
+  .show-more .ct{margin-left:auto;color:var(--text-3)}
+  .show-more .ct b{color:var(--text-2)}
+
+  /* ========== Footer hint ========== */
+  .footer-hint{
+    margin-top:6px;display:flex;align-items:center;gap:14px;padding:14px 18px;
+    background:var(--surface);border:1px solid var(--border);border-radius:12px;
+    color:var(--text-2);font-size:12.5px;line-height:1.55;
+  }
+  .footer-hint .ic{
+    width:28px;height:28px;border-radius:7px;background:color-mix(in oklab, var(--primary) 10%, transparent);
+    border:1px solid color-mix(in oklab, var(--primary) 35%, transparent);color:var(--primary);
+    display:grid;place-items:center;font-family:var(--mono);font-weight:700;font-size:13px;flex:0 0 28px;
+  }
+  .footer-hint b{color:var(--text);font-weight:600}
+  .footer-hint code{font-family:var(--mono);background:var(--bg);border:1px solid var(--border);padding:1px 7px;border-radius:5px;color:var(--primary);font-size:11.5px}
+  .footer-hint .arr{margin-left:auto;font-family:var(--mono);color:var(--primary);font-weight:700}
+
+</style>
+</head>
+<body>
+
+<div class="app" data-screen-label="06 Student · Roadmap v2">
+
+  <!-- ========== SIDEBAR ========== -->
+  <aside class="sidebar">
+    <div class="sb-user">
+      <div class="avatar">МК</div>
+      <div class="info">
+        <div class="name">Михаил Кротов</div>
+        <div class="role"><span class="dot"></span>Student</div>
+      </div>
+      <span class="switcher">⇅</span>
+    </div>
+
+    <div class="sb-section">Обучение</div>
+    <div class="sb-item">
+      <div class="ic">R</div>
+      <span>Мой прогресс</span>
+    </div>
+    <div class="sb-item active">
+      <div class="ic">M</div>
+      <span>Roadmap</span>
+      <span class="sb-num">3 / 5</span>
+    </div>
+    <div class="sb-item">
+      <div class="ic">A</div>
+      <span>Ачивки</span>
+      <span class="sb-pill-mini">9</span>
+    </div>
+    <div class="sb-item">
+      <div class="ic">L</div>
+      <span>Материалы</span>
+    </div>
+
+    <div class="sb-section">Экономика</div>
+    <div class="sb-item">
+      <div class="ic">$</div>
+      <span>Бонусы</span>
+      <span class="sb-num">3 420</span>
+    </div>
+    <div class="sb-item">
+      <div class="ic">%</div>
+      <span>Скидка</span>
+      <span class="sb-num">9.2%</span>
+    </div>
+
+    <div class="sb-section">Профиль</div>
+    <div class="sb-item">
+      <div class="ic">U</div>
+      <span>Профиль</span>
+    </div>
+    <div class="sb-item">
+      <div class="ic">⚙</div>
+      <span>Настройки</span>
+    </div>
+
+    <div class="sb-foot">
+      <span class="led"></span>
+      <span>v0.1 · CLOSED ALPHA</span>
+    </div>
+  </aside>
+
+  <!-- ========== MAIN ========== -->
+  <main class="main">
+
+    <!-- Crumbs -->
+    <div class="crumbs">
+      <span>GO_MENTOR</span>
+      <span class="sep">/</span>
+      <span>STUDENT</span>
+      <span class="sep">/</span>
+      <span class="live"><span class="dot"></span>ROADMAP</span>
+      <span class="right">
+        <span>NODE_01 · MSK</span>
+        <span>26.05.2026 · 14:48</span>
+      </span>
+    </div>
+
+    <!-- Page Head -->
+    <header class="pagehead">
+      <div>
+        <div class="lead"><span class="dot"></span><span>// MAP OF KNOWLEDGE</span></div>
+        <h1>Маршрут <em>обучения</em></h1>
+        <p class="desc"><b>5 блоков</b> · <span style="color:var(--success);font-weight:600">3 закрыто</span> · <span class="accent">1 в работе</span> · <span class="warn">1 ждёт Buddy</span> · 0 не начато. <b style="color:var(--text-2);font-weight:500">Открывай в любом порядке — как в Notion.</b></p>
+      </div>
+      <div class="right-col">
+        <div class="stats-row">
+          <span class="stat-chip"><span class="lbl">PROG</span><b>62%</b></span>
+          <span class="stat-chip"><span class="lbl">MAT</span><b>34 / 56</b></span>
+          <span class="stat-chip"><span class="lbl">ETA</span><b>~22 дн</b></span>
+        </div>
+      </div>
+    </header>
+
+    <!-- ========== ROADMAP BLOCK CARDS ========== -->
+    <section class="roadmap-list">
+
+      <!-- ===== Block 01 — approved ===== -->
+      <article class="roadmap" data-status="approved">
+        <div class="roadmap-head">
+          <div class="roadmap-num">01</div>
+          <div class="roadmap-title">
+            <span class="super"><span>BLOCK 01</span></span>
+            <h4>Foundations</h4>
+            <small>Синтаксис, типы, структуры, slices &amp; maps, базовые идиомы Go.</small>
+          </div>
+          <div class="roadmap-right">
+            <span class="badge approved"><span class="ledr"></span>Закрыт</span>
+            <div class="chevron">↓</div>
+          </div>
+        </div>
+        <div class="roadmap-progress">
+          <div class="pbar success"><i style="width:100%"></i></div>
+          <div class="ppct">100%</div>
+        </div>
+        <div class="roadmap-sections">
+          <div class="rs done">
+            <span class="rs-lbl"><span class="num">01</span>Теория</span>
+            <span class="rs-val">12 / 12</span>
+            <div class="rs-bar"><i></i></div>
+          </div>
+          <div class="rs done">
+            <span class="rs-lbl"><span class="num">02</span>Вопросы</span>
+            <span class="rs-val">10 / 10</span>
+            <div class="rs-bar"><i></i></div>
+          </div>
+          <div class="rs done">
+            <span class="rs-lbl"><span class="num">03</span>Практика</span>
+            <span class="rs-val">6 / 6</span>
+            <div class="rs-bar"><i></i></div>
+          </div>
+          <div class="rs done">
+            <span class="rs-lbl"><span class="num">04</span>Домашка</span>
+            <span class="rs-val">2 / 2</span>
+            <div class="rs-bar"><i></i></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- ===== Block 02 — approved ===== -->
+      <article class="roadmap" data-status="approved">
+        <div class="roadmap-head">
+          <div class="roadmap-num">02</div>
+          <div class="roadmap-title">
+            <span class="super"><span>BLOCK 02</span></span>
+            <h4>Interfaces &amp; Errors</h4>
+            <small>Дизайн интерфейсов, error wrapping, sentinel-ошибки, errors.Is / As.</small>
+          </div>
+          <div class="roadmap-right">
+            <span class="badge approved"><span class="ledr"></span>Закрыт</span>
+            <div class="chevron">↓</div>
+          </div>
+        </div>
+        <div class="roadmap-progress">
+          <div class="pbar success"><i style="width:100%"></i></div>
+          <div class="ppct">100%</div>
+        </div>
+        <div class="roadmap-sections">
+          <div class="rs done">
+            <span class="rs-lbl"><span class="num">01</span>Теория</span>
+            <span class="rs-val">8 / 8</span>
+            <div class="rs-bar"><i></i></div>
+          </div>
+          <div class="rs done">
+            <span class="rs-lbl"><span class="num">02</span>Вопросы</span>
+            <span class="rs-val">6 / 6</span>
+            <div class="rs-bar"><i></i></div>
+          </div>
+          <div class="rs done">
+            <span class="rs-lbl"><span class="num">03</span>Практика</span>
+            <span class="rs-val">4 / 4</span>
+            <div class="rs-bar"><i></i></div>
+          </div>
+          <div class="rs done">
+            <span class="rs-lbl"><span class="num">04</span>Домашка</span>
+            <span class="rs-val">1 / 1</span>
+            <div class="rs-bar"><i></i></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- ===== Block 03 — in_progress · EXPANDED ===== -->
+      <article class="roadmap expanded" data-status="in_progress">
+        <div class="roadmap-head">
+          <div class="roadmap-num">03</div>
+          <div class="roadmap-title">
+            <span class="super"><span style="color:var(--primary);font-weight:600">BLOCK 03 · СЕЙЧАС ОТКРЫТ</span></span>
+            <h4>Concurrency</h4>
+            <small>Горутины, каналы, select, sync-примитивы, контексты и graceful shutdown.</small>
+          </div>
+          <div class="roadmap-right">
+            <span class="badge in-progress"><span class="ledr"></span>В работе · 62%</span>
+            <div class="chevron">↓</div>
+          </div>
+        </div>
+        <div class="roadmap-progress">
+          <div class="pbar"><i style="width:62%"></i></div>
+          <div class="ppct">62%</div>
+        </div>
+        <div class="roadmap-sections">
+          <div class="rs done">
+            <span class="rs-lbl"><span class="num">01</span>Теория</span>
+            <span class="rs-val">10 / 10</span>
+            <div class="rs-bar"><i></i></div>
+          </div>
+          <div class="rs done">
+            <span class="rs-lbl"><span class="num">02</span>Вопросы</span>
+            <span class="rs-val">8 / 8</span>
+            <div class="rs-bar"><i></i></div>
+          </div>
+          <div class="rs active">
+            <span class="rs-lbl"><span class="num">03</span>Практика</span>
+            <span class="rs-val">3 / 5</span>
+            <div class="rs-bar"><i style="width:60%"></i></div>
+          </div>
+          <div class="rs mute">
+            <span class="rs-lbl"><span class="num">04</span>Домашка</span>
+            <span class="rs-val"><em>0 / 1</em></span>
+            <div class="rs-bar"><i></i></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- ========== EXPANSION (attached to block 03) ========== -->
+      <div class="expansion">
+
+        <div class="exp-head">
+          <span class="super">// SECTION 03</span>
+          <h5>Практика <span class="frac">3 / 5</span></h5>
+          <span class="right"><b>осталось 2</b> · одно — текущий материал</span>
+        </div>
+
+        <!-- Section tabs (Практика active) -->
+        <div class="sec-tabs">
+          <button class="done"><span>Теория</span><span class="ct">10/10 ✓</span></button>
+          <button class="done"><span>Вопросы</span><span class="ct">8/8 ✓</span></button>
+          <button class="active"><span>Практика</span><span class="ct">3/5</span></button>
+          <button><span>Домашка</span><span class="ct">0/1</span></button>
+        </div>
+
+        <!-- Material list (5 items, exact spec content) -->
+        <div class="mat-stack">
+
+          <!-- M1 — YouTube · req · viewed -->
+          <div class="mat viewed">
+            <div class="mat-thumb yt" data-icon="▶ YOUTUBE"></div>
+            <div class="mat-body">
+              <div class="mat-meta">
+                <span class="pill-mini req">Обязательно</span>
+                <span class="src">youtube.com</span>
+                <span class="dotty"></span><span>28 мин</span>
+                <span class="dotty"></span><span>RU субтитры</span>
+              </div>
+              <div class="mat-title">Concurrency patterns in Go: pipelines &amp; fan-out</div>
+              <div class="mat-desc">Классический разбор: пайплайны на каналах, корректная отмена через context, паттерн fan-out / fan-in.</div>
+            </div>
+            <div class="checker checked" title="Просмотрено">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 7"/></svg>
+            </div>
+          </div>
+
+          <!-- M2 — GitHub · req · viewed -->
+          <div class="mat viewed">
+            <div class="mat-thumb gh" data-icon="◍ GITHUB"></div>
+            <div class="mat-body">
+              <div class="mat-meta">
+                <span class="pill-mini req">Обязательно</span>
+                <span class="src">github.com/golang/go</span>
+                <span class="dotty"></span><span>~30 мин чтения</span>
+                <span class="dotty"></span><span>EN</span>
+              </div>
+              <div class="mat-title">sync: WaitGroup internals — исходник и design notes</div>
+              <div class="mat-desc">Внутреннее устройство примитивов: счётчики, runtime hooks, гарантии порядка, atomic-операции.</div>
+            </div>
+            <div class="checker checked" title="Просмотрено">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 7"/></svg>
+            </div>
+          </div>
+
+          <!-- M3 — Article · req · viewed -->
+          <div class="mat viewed">
+            <div class="mat-thumb art" data-icon="¶ ARTICLE"></div>
+            <div class="mat-body">
+              <div class="mat-meta">
+                <span class="pill-mini req">Обязательно</span>
+                <span class="src">go.dev/blog</span>
+                <span class="dotty"></span><span>12 мин чтения</span>
+                <span class="dotty"></span><span>EN</span>
+              </div>
+              <div class="mat-title">Effective error wrapping: errors.Is, As и собственные типы</div>
+              <div class="mat-desc">Когда использовать sentinel-ошибки, а когда — типизированные с дополнительным контекстом.</div>
+            </div>
+            <div class="checker checked" title="Просмотрено">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 7"/></svg>
+            </div>
+          </div>
+
+          <!-- M4 — YouTube · req · NOT viewed (current) -->
+          <div class="mat current">
+            <div class="mat-thumb yt" data-icon="▶ YOUTUBE"></div>
+            <div class="mat-body">
+              <div class="mat-meta">
+                <span class="pill-mini req">Обязательно</span>
+                <span class="src">youtube.com</span>
+                <span class="dotty"></span><span>34 мин</span>
+                <span class="dotty"></span><span>EN</span>
+              </div>
+              <div class="mat-title">Context cancellation deep dive — Mat Ryer</div>
+              <div class="mat-desc">Жизненный цикл context.Context, передача через слои, корректная отмена пайплайнов и graceful shutdown.</div>
+            </div>
+            <div class="now-pin" title="Текущий материал"><span class="blink"></span>сейчас</div>
+          </div>
+
+          <!-- M5 — PDF file · opt · NOT viewed -->
+          <div class="mat">
+            <div class="mat-thumb file" data-icon="▤ PDF"></div>
+            <div class="mat-body">
+              <div class="mat-meta">
+                <span class="pill-mini opt">Опционально</span>
+                <span class="src">go-mentor.io · file</span>
+                <span class="dotty"></span><span>1.4 MB</span>
+                <span class="dotty"></span><span>RU</span>
+              </div>
+              <div class="mat-title">Memory model cheatsheet (внутренний раздаточный)</div>
+              <div class="mat-desc">Happens-before, гарантии каналов, atomic-пакет. Распечатай и держи рядом на собесе.</div>
+            </div>
+            <div class="checker" title="Не просмотрено"></div>
+          </div>
+
+        </div>
+
+        <!-- show more sections -->
+        <div class="show-more">
+          <span class="chev">↓</span>
+          <span>Показать остальные секции (Теория, Вопросы, Домашка)</span>
+          <span class="ct"><b>18</b> материалов · <b>0</b> остались</span>
+        </div>
+
+      </div>
+
+      <!-- ===== Block 04 — waiting ===== -->
+      <article class="roadmap" data-status="waiting">
+        <div class="roadmap-head">
+          <div class="roadmap-num">04</div>
+          <div class="roadmap-title">
+            <span class="super"><span>BLOCK 04</span></span>
+            <h4>Tests &amp; Benchmarks</h4>
+            <small>Покрытие, table-driven тесты, профайлинг, бенчмарки, race-detector.</small>
+          </div>
+          <div class="roadmap-right">
+            <span class="badge waiting"><span class="ledr"></span>Ждёт Buddy</span>
+            <div class="chevron">↓</div>
+          </div>
+        </div>
+        <div class="roadmap-progress">
+          <div class="pbar warn"><i style="width:100%"></i></div>
+          <div class="ppct">100%</div>
+        </div>
+        <div class="roadmap-sections">
+          <div class="rs warn">
+            <span class="rs-lbl"><span class="num">01</span>Теория</span>
+            <span class="rs-val">8 / 8</span>
+            <div class="rs-bar"><i></i></div>
+          </div>
+          <div class="rs warn">
+            <span class="rs-lbl"><span class="num">02</span>Вопросы</span>
+            <span class="rs-val">6 / 6</span>
+            <div class="rs-bar"><i></i></div>
+          </div>
+          <div class="rs warn">
+            <span class="rs-lbl"><span class="num">03</span>Практика</span>
+            <span class="rs-val">4 / 4</span>
+            <div class="rs-bar"><i></i></div>
+          </div>
+          <div class="rs warn">
+            <span class="rs-lbl"><span class="num">04</span>Домашка</span>
+            <span class="rs-val">1 / 1</span>
+            <div class="rs-bar"><i></i></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- ===== Block 05 — not_started ===== -->
+      <article class="roadmap" data-status="not_started">
+        <div class="roadmap-head">
+          <div class="roadmap-num">05</div>
+          <div class="roadmap-title">
+            <span class="super"><span>BLOCK 05 · FINAL</span></span>
+            <h4>Production Go</h4>
+            <small>Деплой, observability, конфиги, graceful shutdown, паттерны для prod-нагрузки.</small>
+          </div>
+          <div class="roadmap-right">
+            <span class="badge not-started"><span class="ledr"></span>Не начат</span>
+            <div class="chevron">↓</div>
+          </div>
+        </div>
+        <div class="roadmap-progress">
+          <div class="pbar mute"><i style="width:0%"></i></div>
+          <div class="ppct">0%</div>
+        </div>
+        <div class="roadmap-sections">
+          <div class="rs mute">
+            <span class="rs-lbl"><span class="num">01</span>Теория</span>
+            <span class="rs-val"><em>0 / 10</em></span>
+            <div class="rs-bar"><i></i></div>
+          </div>
+          <div class="rs mute">
+            <span class="rs-lbl"><span class="num">02</span>Вопросы</span>
+            <span class="rs-val"><em>0 / 7</em></span>
+            <div class="rs-bar"><i></i></div>
+          </div>
+          <div class="rs mute">
+            <span class="rs-lbl"><span class="num">03</span>Практика</span>
+            <span class="rs-val"><em>0 / 5</em></span>
+            <div class="rs-bar"><i></i></div>
+          </div>
+          <div class="rs mute">
+            <span class="rs-lbl"><span class="num">04</span>Домашка</span>
+            <span class="rs-val"><em>0 / 2</em></span>
+            <div class="rs-bar"><i></i></div>
+          </div>
+        </div>
+      </article>
+
+    </section>
+
+    <!-- ========== FOOTER HINT ========== -->
+    <div class="footer-hint">
+      <div class="ic">i</div>
+      <span>После закрытия всех <b>5 блоков</b> откроется <b>финальная аттестация</b> — техничка + прожарка — в <code>/student/dashboard</code>.</span>
+      <span class="arr">→</span>
+    </div>
+
+  </main>
+</div>
+
+</body>
+</html>

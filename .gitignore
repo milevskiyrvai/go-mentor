@@ -1,0 +1,28 @@
+# Go
+backend/bin/
+backend/tmp/
+backend/*.exe
+backend/coverage.out
+
+# Node
+node_modules/
+dist/
+.vite/
+*.local
+
+# Env
+.env
+.env.local
+*.env.production
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+postgres_data/

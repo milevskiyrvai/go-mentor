@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1440" />
+<title>Go Mentor · Student · Roadmap</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#07080A;
+    --surface:#0F1014;
+    --elevated:#16181E;
+    --elevated-2:#1B1E26;
+    --border:#262830;
+    --border-bright:#363842;
+    --primary:#D4FF3D;
+    --primary-dim: color-mix(in oklab, #D4FF3D 28%, transparent);
+    --secondary:#FF3D9A;
+    --secondary-dim: color-mix(in oklab, #FF3D9A 30%, transparent);
+    --success:#7BE38C;
+    --warning:#FFDB3D;
+    --danger:#FF5B5B;
+    --text:#F0F0F2;
+    --text-2:#8A8A92;
+    --text-3:#50525C;
+    --mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+    --sans:"Inter", system-ui, -apple-system, sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+  body{
+    background:
+      radial-gradient(900px 600px at 0% -5%, color-mix(in oklab, var(--primary) 7%, transparent), transparent 60%),
+      radial-gradient(900px 600px at 100% 110%, color-mix(in oklab, var(--secondary) 8%, transparent), transparent 60%),
+      var(--bg);
+    min-height:100vh;
+  }
+  ::selection{background:var(--primary);color:#001613}
+
+  .app{
+    width:1440px;margin:0 auto;padding:24px;display:grid;grid-template-columns:260px 1fr;gap:24px;
+  }
+
+  /* ========== SIDEBAR (same as dashboard) ========== */
+  .sidebar{
+    background:var(--surface);border:1px solid var(--border);border-radius:14px;
+    padding:14px;display:flex;flex-direction:column;gap:6px;
+    position:sticky;top:24px;align-self:start;
+    min-height:calc(100vh - 48px);
+  }
+  .sb-user{
+    display:flex;align-items:center;gap:12px;padding:12px;border-radius:10px;
+    border:1px solid var(--border);background:var(--bg);margin-bottom:6px;
+  }
+  .avatar{
+    width:38px;height:38px;border-radius:9px;
+    background:linear-gradient(140deg, var(--secondary), var(--primary));
+    display:grid;place-items:center;color:color-mix(in oklab, var(--primary) 20%, black);
+    font-family:var(--mono);font-weight:700;font-size:13px;flex:0 0 38px;
+  }
+  .sb-user .info{flex:1;min-width:0}
+  .sb-user .name{font-size:13px;font-weight:600;line-height:1.1}
+  .sb-user .role{display:flex;align-items:center;gap:6px;font-size:10px;color:var(--text-2);font-family:var(--mono);text-transform:uppercase;letter-spacing:.12em;margin-top:5px}
+  .sb-user .role .dot{width:5px;height:5px;border-radius:50%;background:var(--primary);box-shadow:0 0 8px var(--primary)}
+  .sb-user .switcher{font-family:var(--mono);color:var(--text-3);font-size:11px;line-height:1}
+  .sb-section{font-family:var(--mono);font-size:9.5px;text-transform:uppercase;letter-spacing:.18em;color:var(--text-3);padding:14px 12px 6px}
+  .sb-item{
+    display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;color:var(--text-2);
+    font-size:13px;cursor:pointer;position:relative;letter-spacing:-.005em;
+  }
+  .sb-item:hover{background:var(--elevated);color:var(--text)}
+  .sb-item.active{color:var(--text);background:var(--elevated)}
+  .sb-item.active::before{content:"";position:absolute;left:-14px;top:8px;bottom:8px;width:3px;border-radius:2px;background:var(--primary);box-shadow:0 0 14px var(--primary)}
+  .sb-item .ic{
+    width:20px;height:20px;border:1px solid var(--border-bright);border-radius:6px;display:grid;place-items:center;
+    color:var(--text-3);font-family:var(--mono);font-size:10px;font-weight:700;flex:0 0 20px;
+  }
+  .sb-item.active .ic{color:var(--primary);border-color:color-mix(in oklab, var(--primary) 60%, transparent);background:color-mix(in oklab, var(--primary) 10%, transparent);box-shadow:0 0 14px color-mix(in oklab, var(--primary) 25%, transparent)}
+  .sb-num{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--text-2);font-weight:500}
+  .pill-mini{
+    display:inline-flex;align-items:center;height:18px;padding:0 7px;border-radius:999px;
+    font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.04em;margin-left:auto;
+    background:color-mix(in oklab, var(--secondary) 15%, transparent);
+    border:1px solid color-mix(in oklab, var(--secondary) 40%, transparent);
+    color:#FFB8DA;
+  }
+  .sb-foot{
+    margin-top:auto;border-top:1px solid var(--border);padding-top:14px;font-family:var(--mono);font-size:10px;color:var(--text-3);letter-spacing:.12em;
+    display:flex;align-items:center;gap:8px;text-transform:uppercase;
+  }
+  .sb-foot .led{width:6px;height:6px;border-radius:50%;background:var(--success);box-shadow:0 0 10px var(--success)}
+
+  /* ========== Main ========== */
+  .main{display:flex;flex-direction:column;gap:24px;min-width:0}
+  .crumbs{
+    display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:10.5px;color:var(--text-3);letter-spacing:.1em;text-transform:uppercase;
+  }
+  .crumbs span.live{color:var(--primary);display:inline-flex;align-items:center;gap:6px}
+  .crumbs span.live .dot{width:5px;height:5px;border-radius:50%;background:var(--primary);box-shadow:0 0 8px var(--primary)}
+  .crumbs .sep{color:var(--text-3)}
+  .crumbs .right{margin-left:auto;display:flex;gap:14px;color:var(--text-3)}
+
+  /* Page header */
+  .pagehead{
+    display:flex;align-items:flex-end;gap:24px;padding-bottom:14px;border-bottom:1px solid var(--border);
+  }
+  .pagehead h1{
+    margin:0;font-size:36px;font-weight:700;letter-spacing:-.02em;line-height:1;
+  }
+  .pagehead h1 em{font-style:normal;background:linear-gradient(90deg,var(--primary),var(--secondary));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .pagehead .lead{font-family:var(--mono);font-size:11px;color:var(--text-3);letter-spacing:.16em;text-transform:uppercase;margin-bottom:6px}
+  .pagehead .col{display:flex;flex-direction:column;gap:8px;flex:1}
+  .pagehead .summary{
+    display:flex;align-items:center;gap:14px;
+  }
+  .pagehead .summary .chip{
+    display:inline-flex;align-items:center;gap:8px;height:30px;padding:0 12px;border-radius:999px;
+    background:var(--surface);border:1px solid var(--border);font-size:12.5px;color:var(--text-2);
+  }
+  .pagehead .summary .chip b{color:var(--text);font-weight:600}
+  .pagehead .summary .chip .dot{width:6px;height:6px;border-radius:50%;background:var(--primary);box-shadow:0 0 10px var(--primary)}
+  .pagehead .summary .chip .dot.warn{background:var(--warning);box-shadow:0 0 10px var(--warning)}
+  .pagehead .right-actions{display:flex;align-items:center;gap:10px;margin-left:auto}
+  .btn{
+    height:36px;padding:0 14px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text-2);
+    font-size:13px;font-family:var(--sans);letter-spacing:-.005em;cursor:pointer;display:inline-flex;align-items:center;gap:8px;
+  }
+  .btn:hover{border-color:var(--border-bright);color:var(--text)}
+  .btn .arr{font-family:var(--mono);font-weight:700}
+
+  /* ===== STEPPER ROW ===== */
+  .stepper{
+    display:grid;grid-template-columns:repeat(5, 1fr);gap:0;position:relative;
+  }
+  .stepper::before{
+    content:"";position:absolute;left:24px;right:24px;top:32px;height:2px;
+    background:linear-gradient(90deg,
+      var(--success) 0%,
+      var(--success) 32%,
+      var(--primary) 32%,
+      var(--primary) 52%,
+      var(--border) 52%,
+      var(--border) 100%);
+    border-radius:2px;z-index:0;
+  }
+  .step{
+    position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:14px;padding:0 8px;cursor:pointer;
+  }
+  .step .num{
+    width:64px;height:64px;border-radius:18px;display:grid;place-items:center;
+    font-family:var(--mono);font-weight:700;font-size:24px;letter-spacing:-.02em;
+    background:var(--surface);border:1px solid var(--border);position:relative;color:var(--text-2);
+    transition:transform .2s, box-shadow .2s;
+  }
+  .step[data-status="approved"] .num{
+    color:var(--success);border-color:color-mix(in oklab, var(--success) 50%, transparent);
+    background:color-mix(in oklab, var(--success) 6%, var(--surface));
+    box-shadow:inset 0 0 0 1px color-mix(in oklab, var(--success) 30%, transparent), 0 0 24px -10px var(--success);
+  }
+  .step[data-status="approved"] .num::after{
+    content:"";position:absolute;top:-4px;right:-4px;width:22px;height:22px;border-radius:50%;background:var(--success);
+    box-shadow:0 0 16px color-mix(in oklab, var(--success) 60%, transparent), 0 0 0 3px var(--bg);
+    background-image:linear-gradient(rgba(0,0,0,.15),rgba(0,0,0,.15));
+  }
+  .step[data-status="approved"] .num::before{
+    content:"✓";position:absolute;top:-4px;right:-4px;width:22px;height:22px;border-radius:50%;
+    color:#072c12;font-family:var(--mono);font-weight:700;font-size:12px;display:grid;place-items:center;z-index:2;
+  }
+  .step[data-status="in_progress"] .num{
+    color:var(--primary);border-color:var(--primary);
+    background:color-mix(in oklab, var(--primary) 10%, var(--surface));
+    box-shadow:0 0 0 4px color-mix(in oklab, var(--primary) 12%, transparent), 0 0 36px -8px var(--primary);
+  }
+  .step[data-status="in_progress"] .num::after{
+    content:"";position:absolute;inset:-6px;border-radius:22px;border:1px dashed color-mix(in oklab, var(--primary) 50%, transparent);
+    animation:rot 22s linear infinite;
+  }
+  @keyframes rot{to{transform:rotate(360deg)}}
+  .step[data-status="waiting"] .num{
+    color:var(--warning);border-color:color-mix(in oklab, var(--warning) 50%, transparent);
+    background:color-mix(in oklab, var(--warning) 5%, var(--surface));
+    box-shadow:inset 0 0 0 1px color-mix(in oklab, var(--warning) 25%, transparent), 0 0 22px -10px var(--warning);
+  }
+  .step[data-status="not_started"] .num{
+    color:var(--text-3);
+  }
+
+  .step .info{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
+  .step .info .small{font-family:var(--mono);font-size:9.5px;color:var(--text-3);letter-spacing:.14em;text-transform:uppercase}
+  .step .info .name{font-size:14px;font-weight:600;letter-spacing:-.005em;line-height:1.2;max-width:160px}
+  .step .info .meta{font-family:var(--mono);font-size:10.5px;color:var(--text-2);letter-spacing:.04em}
+  .step[data-status="in_progress"] .info .name{color:var(--primary);text-shadow:0 0 14px color-mix(in oklab, var(--primary) 35%, transparent)}
+  .step[data-status="in_progress"]{border-radius:14px}
+  .step.selected::after{
+    content:"";position:absolute;left:50%;transform:translateX(-50%);bottom:-22px;width:0;height:0;
+    border-left:9px solid transparent;border-right:9px solid transparent;border-bottom:9px solid var(--surface);
+    filter:drop-shadow(0 -1px 0 color-mix(in oklab, var(--primary) 50%, transparent));
+  }
+  .step .pill{
+    display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 9px;border-radius:999px;
+    font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+    border:1px solid var(--border);background:var(--surface);color:var(--text-2);
+  }
+  .step .pill .ledr{width:5px;height:5px;border-radius:50%;background:currentColor;box-shadow:0 0 8px currentColor}
+  .step[data-status="approved"] .pill{color:var(--success);background:color-mix(in oklab, var(--success) 8%, transparent);border-color:color-mix(in oklab, var(--success) 30%, transparent)}
+  .step[data-status="in_progress"] .pill{color:var(--primary);background:color-mix(in oklab, var(--primary) 10%, transparent);border-color:color-mix(in oklab, var(--primary) 35%, transparent)}
+  .step[data-status="waiting"] .pill{color:var(--warning);background:color-mix(in oklab, var(--warning) 8%, transparent);border-color:color-mix(in oklab, var(--warning) 30%, transparent)}
+  .step[data-status="not_started"] .pill .ledr{background:var(--text-3);box-shadow:none}
+
+  /* ===== BLOCK DETAIL PANEL ===== */
+  .detail{
+    background:var(--surface);border:1px solid color-mix(in oklab, var(--primary) 25%, var(--border));
+    border-radius:18px;padding:30px;position:relative;overflow:hidden;
+    box-shadow:0 0 0 1px color-mix(in oklab, var(--primary) 12%, transparent), 0 30px 80px -40px color-mix(in oklab, var(--primary) 30%, transparent);
+  }
+  .detail::before{
+    content:"";position:absolute;left:0;right:0;top:0;height:160px;pointer-events:none;
+    background:radial-gradient(closest-side at 0% 0%, color-mix(in oklab, var(--primary) 12%, transparent), transparent 65%),
+               radial-gradient(closest-side at 100% 0%, color-mix(in oklab, var(--secondary) 7%, transparent), transparent 65%);
+  }
+  .det-head{display:grid;grid-template-columns:auto 1fr auto;gap:22px;align-items:center;position:relative}
+  .det-num{
+    width:84px;height:84px;border-radius:20px;flex:0 0 84px;
+    background:linear-gradient(140deg, color-mix(in oklab, var(--primary) 20%, var(--bg)) 0%, var(--bg) 70%);
+    border:1px solid color-mix(in oklab, var(--primary) 40%, transparent);
+    display:grid;place-items:center;font-family:var(--mono);font-weight:700;color:var(--primary);font-size:38px;letter-spacing:-.03em;
+    box-shadow:inset 0 0 0 1px color-mix(in oklab, var(--primary) 18%, transparent), 0 0 28px -8px var(--primary);
+    position:relative;
+  }
+  .det-num::after{
+    content:"03 / 05";position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);
+    font-family:var(--mono);font-size:9px;color:var(--text-3);letter-spacing:.14em;
+    background:var(--surface);padding:2px 8px;border-radius:999px;border:1px solid var(--border);
+  }
+  .det-title h2{margin:0;font-size:32px;font-weight:700;letter-spacing:-.02em;line-height:1}
+  .det-title .super{font-family:var(--mono);font-size:11px;color:var(--primary);letter-spacing:.18em;text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+  .det-title .super .dot{width:5px;height:5px;border-radius:50%;background:var(--primary);box-shadow:0 0 8px var(--primary)}
+  .det-title p{margin:8px 0 0;color:var(--text-2);font-size:13.5px;max-width:60ch;line-height:1.55}
+
+  .det-progress{
+    display:flex;flex-direction:column;gap:8px;align-items:flex-end;min-width:280px;
+  }
+  .det-progress .frac{font-family:var(--mono);font-weight:700;font-size:32px;letter-spacing:-.02em;color:var(--primary);line-height:1;text-shadow:0 0 14px color-mix(in oklab, var(--primary) 35%, transparent)}
+  .det-progress .frac small{color:var(--text-3);font-weight:500;font-size:18px;margin-left:4px}
+  .det-progress .pbar{height:6px;border-radius:3px;background:var(--bg);border:1px solid var(--border);overflow:hidden;width:280px}
+  .det-progress .pbar i{display:block;height:100%;background:linear-gradient(90deg, var(--primary), var(--secondary));box-shadow:0 0 10px var(--primary-dim);width:62%}
+  .det-progress .lbl{font-family:var(--mono);font-size:10px;color:var(--text-3);letter-spacing:.14em;text-transform:uppercase}
+
+  /* auto-confirm info banner */
+  .auto-banner{
+    margin-top:26px;display:flex;align-items:flex-start;gap:14px;padding:14px 16px;border-radius:12px;
+    background:color-mix(in oklab, var(--primary) 6%, var(--bg));
+    border:1px solid color-mix(in oklab, var(--primary) 28%, transparent);position:relative;z-index:1;
+  }
+  .auto-banner .ic{
+    width:28px;height:28px;border-radius:7px;background:color-mix(in oklab, var(--primary) 14%, transparent);
+    border:1px solid color-mix(in oklab, var(--primary) 35%, transparent);color:var(--primary);
+    display:grid;place-items:center;font-family:var(--mono);font-weight:700;font-size:13px;flex:0 0 28px;
+  }
+  .auto-banner b{color:var(--text);font-weight:600;letter-spacing:-.005em}
+  .auto-banner .txt{font-size:12.5px;color:var(--text-2);line-height:1.55}
+  .auto-banner .txt code{font-family:var(--mono);background:var(--bg);border:1px solid var(--border);padding:1px 6px;border-radius:5px;color:var(--primary);font-size:11px}
+  .auto-banner .req-meter{
+    margin-left:auto;display:flex;flex-direction:column;gap:6px;align-items:flex-end;flex:0 0 auto;
+  }
+  .auto-banner .req-meter .frac{font-family:var(--mono);font-weight:700;font-size:14px;color:var(--text)}
+  .auto-banner .req-meter .frac span{color:var(--primary)}
+  .auto-banner .req-meter .lbl{font-family:var(--mono);font-size:9.5px;color:var(--text-3);letter-spacing:.14em;text-transform:uppercase}
+  .auto-banner .req-meter .dots{display:flex;gap:5px}
+  .auto-banner .req-meter .dots i{width:11px;height:11px;border-radius:3px;background:var(--bg);border:1px solid var(--border)}
+  .auto-banner .req-meter .dots i.done{background:var(--primary);border-color:var(--primary);box-shadow:0 0 8px color-mix(in oklab, var(--primary) 60%, transparent)}
+
+  /* SECTIONS NAV (anchor pills) */
+  .secnav{
+    display:flex;align-items:center;gap:8px;margin-top:22px;padding:6px;border-radius:12px;background:var(--bg);
+    border:1px solid var(--border);position:relative;z-index:1;width:fit-content;
+  }
+  .secnav button{
+    height:34px;padding:0 14px;border:0;background:transparent;color:var(--text-2);font-family:var(--sans);font-size:13px;cursor:pointer;
+    border-radius:8px;display:inline-flex;align-items:center;gap:8px;letter-spacing:-.005em;
+  }
+  .secnav button .ct{
+    font-family:var(--mono);font-size:10.5px;color:var(--text-3);font-weight:600;background:var(--surface);
+    border:1px solid var(--border);padding:1px 7px;border-radius:999px;
+  }
+  .secnav button.active{background:var(--elevated);color:var(--text);box-shadow:inset 0 0 0 1px color-mix(in oklab, var(--primary) 40%, transparent), 0 0 16px -6px var(--primary)}
+  .secnav button.active .ct{color:var(--primary);border-color:color-mix(in oklab, var(--primary) 40%, transparent);background:color-mix(in oklab, var(--primary) 10%, transparent)}
+  .secnav .filter{margin-left:auto;display:flex;align-items:center;gap:10px;color:var(--text-3);font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;padding-right:6px}
+  .secnav .filter .tog{display:inline-flex;align-items:center;gap:6px;color:var(--text-2)}
+  .secnav .filter .tog .sw{width:22px;height:13px;border-radius:999px;background:var(--surface);border:1px solid var(--border);position:relative}
+  .secnav .filter .tog .sw::after{content:"";position:absolute;left:2px;top:1px;width:9px;height:9px;border-radius:50%;background:var(--text-3)}
+  .secnav .filter .tog.on .sw{background:color-mix(in oklab, var(--primary) 30%, transparent);border-color:color-mix(in oklab, var(--primary) 50%, transparent)}
+  .secnav .filter .tog.on .sw::after{left:auto;right:2px;background:var(--primary);box-shadow:0 0 6px var(--primary)}
+
+  /* SECTION GROUPS */
+  .sections{margin-top:22px;display:flex;flex-direction:column;gap:24px;position:relative;z-index:1}
+  .sec{display:flex;flex-direction:column;gap:12px}
+  .sec-head-row{display:flex;align-items:baseline;gap:14px;padding:0 4px}
+  .sec-head-row .sn{
+    font-family:var(--mono);font-size:11px;color:var(--text-3);letter-spacing:.18em;text-transform:uppercase;display:flex;align-items:center;gap:8px;
+  }
+  .sec-head-row .sn .ledr{width:7px;height:7px;border-radius:2px;background:var(--primary);box-shadow:0 0 8px var(--primary)}
+  .sec-head-row h3{margin:0;font-size:17px;font-weight:700;letter-spacing:-.01em}
+  .sec-head-row .cnt{font-family:var(--mono);font-size:11px;color:var(--text-3);letter-spacing:.04em}
+  .sec-head-row .right{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--text-2);letter-spacing:.04em}
+  .sec-head-row .right b{color:var(--primary);font-weight:600}
+
+  /* MATERIAL CARD */
+  .mat{
+    display:grid;grid-template-columns:28px 200px 1fr auto;gap:18px;align-items:center;
+    background:var(--elevated);border:1px solid var(--border);border-radius:12px;padding:14px;
+    position:relative;cursor:pointer;transition:border-color .15s, transform .15s;
+  }
+  .mat:hover{border-color:var(--border-bright);transform:translateY(-1px)}
+  .mat[data-done="true"]{background:color-mix(in oklab, var(--primary) 4%, var(--elevated));border-color:color-mix(in oklab, var(--primary) 28%, transparent)}
+  .mat[data-done="true"]::before{
+    content:"";position:absolute;left:0;top:14px;bottom:14px;width:3px;border-radius:0 3px 3px 0;background:var(--primary);box-shadow:0 0 12px var(--primary-dim);
+  }
+
+  /* checkbox */
+  .check{
+    width:24px;height:24px;border-radius:6px;background:var(--bg);border:1.5px solid var(--border-bright);
+    display:grid;place-items:center;color:transparent;flex:0 0 24px;
+  }
+  .mat[data-done="true"] .check{
+    background:var(--primary);border-color:var(--primary);color:color-mix(in oklab, var(--primary) 25%, black);
+    box-shadow:0 0 14px color-mix(in oklab, var(--primary) 50%, transparent);
+  }
+  .mat[data-done="true"] .check svg{display:block}
+  .check svg{display:none}
+
+  /* embed thumb */
+  .thumb{
+    width:200px;height:112px;border-radius:9px;overflow:hidden;position:relative;flex:0 0 200px;
+    background:var(--bg);border:1px solid var(--border);
+  }
+  .thumb .src{
+    position:absolute;top:8px;left:8px;display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 8px;border-radius:6px;
+    background:rgba(0,0,0,.55);backdrop-filter:blur(8px);
+    font-family:var(--mono);font-size:10px;color:#fff;letter-spacing:.06em;font-weight:600;text-transform:uppercase;z-index:2;
+    border:1px solid rgba(255,255,255,.08);
+  }
+  .thumb .src .ledr{width:6px;height:6px;border-radius:50%;background:currentColor}
+  .thumb .dur{
+    position:absolute;bottom:8px;right:8px;height:22px;padding:0 8px;border-radius:6px;
+    background:rgba(0,0,0,.6);backdrop-filter:blur(8px);
+    font-family:var(--mono);font-size:11px;color:#fff;display:inline-flex;align-items:center;gap:6px;z-index:2;
+    border:1px solid rgba(255,255,255,.08);
+  }
+  .thumb .play{
+    position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:40px;height:40px;border-radius:50%;
+    background:rgba(0,0,0,.55);backdrop-filter:blur(8px);display:grid;place-items:center;z-index:2;
+    border:1px solid rgba(255,255,255,.15);
+  }
+  .thumb .play::before{content:"";width:0;height:0;border-left:11px solid #fff;border-top:7px solid transparent;border-bottom:7px solid transparent;margin-left:3px}
+  /* SVG placeholder backgrounds per type */
+  .thumb.yt{
+    background:
+      radial-gradient(closest-side at 70% 30%, #5b1a1a, transparent 70%),
+      linear-gradient(135deg, #1a0a0a, #0a0204);
+  }
+  .thumb.yt::after{
+    content:"YOUTUBE";position:absolute;inset:0;display:grid;place-items:end center;padding-bottom:22px;
+    font-family:var(--mono);font-weight:700;font-size:30px;color:rgba(255,80,80,.18);letter-spacing:.2em;
+  }
+  .thumb.article{
+    background:
+      repeating-linear-gradient(0deg, transparent 0 13px, color-mix(in oklab, var(--primary) 8%, transparent) 13px 14px),
+      linear-gradient(135deg, color-mix(in oklab, var(--primary) 10%, var(--bg)), var(--bg));
+  }
+  .thumb.article::after{
+    content:"ARTICLE";position:absolute;inset:0;display:grid;place-items:end center;padding-bottom:22px;
+    font-family:var(--mono);font-weight:700;font-size:24px;color:color-mix(in oklab, var(--primary) 50%, transparent);letter-spacing:.18em;
+  }
+  .thumb.github{
+    background:
+      radial-gradient(closest-side at 30% 30%, #2a2f3a, transparent 60%),
+      linear-gradient(135deg, #0f1014, #16181E);
+  }
+  .thumb.github::after{
+    content:"</>";position:absolute;inset:0;display:grid;place-items:center;
+    font-family:var(--mono);font-weight:700;font-size:42px;color:rgba(255,255,255,.12);letter-spacing:.08em;
+  }
+  .thumb.pdf{
+    background:
+      linear-gradient(135deg, #2a0e12, #1a0608);
+  }
+  .thumb.pdf::after{
+    content:"PDF";position:absolute;inset:0;display:grid;place-items:center;
+    font-family:var(--mono);font-weight:700;font-size:42px;color:rgba(255,93,93,.32);letter-spacing:.12em;
+  }
+  .thumb.task{
+    background:
+      repeating-linear-gradient(45deg, transparent 0 10px, color-mix(in oklab, var(--secondary) 8%, transparent) 10px 11px),
+      linear-gradient(135deg, color-mix(in oklab, var(--secondary) 12%, var(--bg)), var(--bg));
+  }
+  .thumb.task::after{
+    content:"PRACTICE";position:absolute;inset:0;display:grid;place-items:end center;padding-bottom:22px;
+    font-family:var(--mono);font-weight:700;font-size:22px;color:color-mix(in oklab, var(--secondary) 50%, transparent);letter-spacing:.16em;
+  }
+
+  .thumb .src.youtube{color:#FF5B5B}
+  .thumb .src.article{color:var(--primary)}
+  .thumb .src.github{color:#9CA3AF}
+  .thumb .src.pdf{color:var(--danger)}
+  .thumb .src.task{color:var(--secondary)}
+
+  .mat-body{display:flex;flex-direction:column;gap:8px;min-width:0;flex:1}
+  .mat-tags{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .tag{
+    display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 9px;border-radius:6px;
+    font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+    border:1px solid var(--border);background:var(--bg);color:var(--text-2);
+  }
+  .tag .ledr{width:5px;height:5px;border-radius:50%;background:currentColor;box-shadow:0 0 8px currentColor}
+  .tag.required{color:var(--primary);border-color:color-mix(in oklab, var(--primary) 40%, transparent);background:color-mix(in oklab, var(--primary) 8%, transparent)}
+  .tag.optional{color:var(--text-3);border-color:var(--border);background:transparent}
+  .tag.optional .ledr{background:var(--text-3);box-shadow:none}
+  .tag.author{color:var(--text-2);border-style:dashed}
+  .tag.author .ledr{display:none}
+
+  .mat-title{font-size:15px;font-weight:600;letter-spacing:-.005em;line-height:1.3}
+  .mat-desc{font-size:12.5px;color:var(--text-2);line-height:1.55;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+
+  .mat-meta{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:10.5px;color:var(--text-3);letter-spacing:.04em}
+  .mat-meta .dotty{width:3px;height:3px;border-radius:50%;background:var(--text-3)}
+
+  .mat-right{display:flex;flex-direction:column;gap:8px;align-items:flex-end;justify-content:center;font-family:var(--mono);font-size:11px;color:var(--text-3);letter-spacing:.04em;text-align:right;flex:0 0 auto;min-width:90px}
+  .mat-right .open{
+    height:30px;padding:0 12px;border-radius:8px;
+    border:1px solid var(--border);background:var(--bg);color:var(--text-2);
+    font-family:var(--sans);font-size:12px;letter-spacing:-.005em;cursor:pointer;
+    display:inline-flex;align-items:center;gap:6px;
+  }
+  .mat[data-done="true"] .mat-right .open{color:var(--primary);border-color:color-mix(in oklab, var(--primary) 40%, transparent)}
+  .mat-right .open .arr{font-family:var(--mono);font-weight:700}
+  .mat-right .stat{display:flex;align-items:center;gap:6px}
+  .mat-right .stat.done{color:var(--primary)}
+
+  /* practice mat — replace thumb with task pattern */
+  .mat.practice .thumb{background:
+    linear-gradient(135deg, color-mix(in oklab, var(--secondary) 14%, var(--bg)), var(--bg))}
+  /* homework mat */
+  .mat.homework{background:color-mix(in oklab, var(--secondary) 4%, var(--elevated));border-color:color-mix(in oklab, var(--secondary) 25%, transparent)}
+  .mat.homework[data-done="false"]::before{
+    content:"";position:absolute;left:0;top:14px;bottom:14px;width:3px;border-radius:0 3px 3px 0;background:var(--secondary);box-shadow:0 0 10px var(--secondary-dim);
+  }
+  .mat.homework .tag.required{color:var(--secondary);border-color:color-mix(in oklab, var(--secondary) 40%, transparent);background:color-mix(in oklab, var(--secondary) 10%, transparent)}
+
+  /* Section divider with rule */
+  .secrule{display:flex;align-items:center;gap:14px;padding:0 4px}
+  .secrule .ln{flex:1;height:1px;background:linear-gradient(90deg, var(--border), transparent)}
+  .secrule .ln.l{background:linear-gradient(90deg, transparent, var(--border))}
+
+  /* Section legend */
+  .legend{
+    margin-top:18px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;
+    font-family:var(--mono);font-size:11px;color:var(--text-3);letter-spacing:.06em;text-transform:uppercase;
+  }
+  .legend .item{display:inline-flex;align-items:center;gap:8px}
+  .legend .item .pill{height:18px;padding:0 8px;border-radius:5px;display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.08em;border:1px solid var(--border);background:var(--bg);color:var(--text-2);text-transform:uppercase}
+  .legend .item .pill.req{color:var(--primary);border-color:color-mix(in oklab, var(--primary) 40%, transparent);background:color-mix(in oklab, var(--primary) 8%, transparent)}
+  .legend .item .pill.opt{color:var(--text-3)}
+
+</style>
+</head>
+<body>
+
+<div class="app" data-screen-label="05 Student · Roadmap">
+
+  <!-- ========== SIDEBAR ========== -->
+  <aside class="sidebar">
+    <div class="sb-user">
+      <div class="avatar">МК</div>
+      <div class="info">
+        <div class="name">Михаил Кротов</div>
+        <div class="role"><span class="dot"></span>Student</div>
+      </div>
+      <span class="switcher">⇅</span>
+    </div>
+
+    <div class="sb-section">Обучение</div>
+    <div class="sb-item">
+      <div class="ic">R</div>
+      <span>Мой прогресс</span>
+    </div>
+    <div class="sb-item active">
+      <div class="ic">M</div>
+      <span>Roadmap</span>
+      <span class="sb-num">3 / 5</span>
+    </div>
+    <div class="sb-item">
+      <div class="ic">A</div>
+      <span>Ачивки</span>
+      <span class="pill-mini">9</span>
+    </div>
+    <div class="sb-item">
+      <div class="ic">L</div>
+      <span>Материалы</span>
+    </div>
+
+    <div class="sb-section">Экономика</div>
+    <div class="sb-item">
+      <div class="ic">$</div>
+      <span>Бонусы</span>
+      <span class="sb-num">3 420</span>
+    </div>
+    <div class="sb-item">
+      <div class="ic">%</div>
+      <span>Скидка</span>
+      <span class="sb-num">9.2%</span>
+    </div>
+
+    <div class="sb-section">Профиль</div>
+    <div class="sb-item">
+      <div class="ic">U</div>
+      <span>Профиль</span>
+    </div>
+    <div class="sb-item">
+      <div class="ic">⚙</div>
+      <span>Настройки</span>
+    </div>
+
+    <div class="sb-foot">
+      <span class="led"></span>
+      <span>v0.1 · CLOSED ALPHA</span>
+    </div>
+  </aside>
+
+  <!-- ========== MAIN ========== -->
+  <main class="main">
+
+    <div class="crumbs">
+      <span>GO_MENTOR</span>
+      <span class="sep">/</span>
+      <span>STUDENT</span>
+      <span class="sep">/</span>
+      <span class="live"><span class="dot"></span>ROADMAP</span>
+      <span class="right">
+        <span>NODE_01 · MSK</span>
+        <span>26.05.2026 · 14:42</span>
+      </span>
+    </div>
+
+    <!-- PAGE HEADER -->
+    <header class="pagehead">
+      <div class="col">
+        <span class="lead">// MAP OF KNOWLEDGE</span>
+        <h1>Маршрут <em>Go Mentor</em></h1>
+      </div>
+      <div class="summary">
+        <span class="chip"><span class="dot"></span><b>3 / 5</b> блоков</span>
+        <span class="chip"><b>47%</b> программы</span>
+        <span class="chip"><span class="dot warn"></span><b>1</b> ждёт Buddy</span>
+      </div>
+      <div class="right-actions">
+        <button class="btn"><span>Все материалы</span><span class="arr">→</span></button>
+      </div>
+    </header>
+
+    <!-- STEPPER -->
+    <section class="stepper">
+
+      <div class="step" data-status="approved">
+        <div class="num">01</div>
+        <div class="info">
+          <span class="small">Block 01</span>
+          <span class="name">Foundations</span>
+          <span class="pill"><span class="ledr"></span>Закрыт</span>
+        </div>
+      </div>
+
+      <div class="step" data-status="approved">
+        <div class="num">02</div>
+        <div class="info">
+          <span class="small">Block 02</span>
+          <span class="name">Interfaces &amp; Errors</span>
+          <span class="pill"><span class="ledr"></span>Закрыт</span>
+        </div>
+      </div>
+
+      <div class="step selected" data-status="in_progress">
+        <div class="num">03</div>
+        <div class="info">
+          <span class="small">Block 03 · сейчас</span>
+          <span class="name">Concurrency</span>
+          <span class="pill"><span class="ledr"></span>В работе · 62%</span>
+        </div>
+      </div>
+
+      <div class="step" data-status="waiting">
+        <div class="num">04</div>
+        <div class="info">
+          <span class="small">Block 04</span>
+          <span class="name">Tests &amp; Benchmarks</span>
+          <span class="pill"><span class="ledr"></span>Ждёт Buddy</span>
+        </div>
+      </div>
+
+      <div class="step" data-status="not_started">
+        <div class="num">05</div>
+        <div class="info">
+          <span class="small">Block 05 · final</span>
+          <span class="name">Production Go</span>
+          <span class="pill"><span class="ledr"></span>Не начат</span>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- DETAIL PANEL FOR OPENED BLOCK -->
+    <section class="detail">
+      <div class="det-head">
+        <div class="det-num">03</div>
+        <div class="det-title">
+          <div class="super"><span class="dot"></span><span>BLOCK · IN PROGRESS</span></div>
+          <h2>Concurrency</h2>
+          <p>Горутины, каналы, select, sync-примитивы и контекст. Учимся писать concurrent-код без race condition'ов и понимаем планировщик Go.</p>
+        </div>
+        <div class="det-progress">
+          <span class="lbl">Прогресс блока</span>
+          <span class="frac">11<small>/ 18</small></span>
+          <div class="pbar"><i></i></div>
+        </div>
+      </div>
+
+      <!-- auto-confirm explainer -->
+      <div class="auto-banner">
+        <div class="ic">i</div>
+        <div class="txt">
+          <b>Когда отметишь все обязательные материалы — статус сам перейдёт в <code>waiting_buddy_confirmation</code>.</b><br/>
+          Кнопки «отправить на ревью» нет: Buddy получит уведомление автоматически и подтвердит закрытие.
+        </div>
+        <div class="req-meter">
+          <span class="lbl">Обязательных закрыто</span>
+          <div class="dots">
+            <i class="done"></i><i class="done"></i><i class="done"></i><i class="done"></i><i class="done"></i><i class="done"></i><i class="done"></i><i></i><i></i><i></i><i></i><i></i>
+          </div>
+          <span class="frac"><span>7</span> / 12</span>
+        </div>
+      </div>
+
+      <!-- SECTION NAV -->
+      <nav class="secnav">
+        <button class="active"><span>Теория</span><span class="ct">4 / 6</span></button>
+        <button><span>Вопросы</span><span class="ct">2 / 4</span></button>
+        <button><span>Практика</span><span class="ct">1 / 3</span></button>
+        <button><span>Домашка</span><span class="ct">0 / 1</span></button>
+        <span class="filter">
+          <span class="tog on"><span class="sw"></span><span>скрывать просмотренное</span></span>
+        </span>
+      </nav>
+
+      <!-- SECTIONS -->
+      <div class="sections">
+
+        <!-- =================== ТЕОРИЯ =================== -->
+        <div class="sec">
+          <div class="sec-head-row">
+            <span class="sn"><span class="ledr"></span>01 · Section</span>
+            <h3>Теория</h3>
+            <span class="cnt">6 материалов</span>
+            <span class="right"><b>4</b> просмотрено · 2 осталось</span>
+          </div>
+
+          <!-- M1 — YT, required, done -->
+          <div class="mat" data-done="true">
+            <div class="check"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 7"/></svg></div>
+            <div class="thumb yt">
+              <span class="src youtube"><span class="ledr"></span>YouTube</span>
+              <span class="dur">23:14</span>
+              <span class="play"></span>
+            </div>
+            <div class="mat-body">
+              <div class="mat-tags">
+                <span class="tag required"><span class="ledr"></span>Обязательно</span>
+                <span class="tag author">Rob Pike</span>
+              </div>
+              <div class="mat-title">Concurrency is not Parallelism</div>
+              <div class="mat-desc">Classic talk by Rob Pike. Чёткое объяснение разницы между concurrency и parallelism через метафоры на гоферах. Базовый менталитет перед погружением в горутины.</div>
+              <div class="mat-meta">
+                <span>youtube.com</span><span class="dotty"></span><span>2012</span><span class="dotty"></span><span>EN · субтитры RU</span>
+              </div>
+            </div>
+            <div class="mat-right">
+              <button class="open"><span>Открыть</span><span class="arr">↗</span></button>
+              <span class="stat done">просмотрено · 18.05</span>
+            </div>
+          </div>
+
+          <!-- M2 — Article, required, done -->
+          <div class="mat" data-done="true">
+            <div class="check"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 7"/></svg></div>
+            <div class="thumb article">
+              <span class="src article"><span class="ledr"></span>Article</span>
+              <span class="dur">12 мин</span>
+            </div>
+            <div class="mat-body">
+              <div class="mat-tags">
+                <span class="tag required"><span class="ledr"></span>Обязательно</span>
+                <span class="tag author">go.dev/blog</span>
+              </div>
+              <div class="mat-title">Share Memory By Communicating</div>
+              <div class="mat-desc">Каноничный пост из официального блога Go: почему каналы предпочтительнее мьютексов, и когда всё-таки нужны sync-примитивы.</div>
+              <div class="mat-meta">
+                <span>go.dev</span><span class="dotty"></span><span>EN</span><span class="dotty"></span><span>с примерами кода</span>
+              </div>
+            </div>
+            <div class="mat-right">
+              <button class="open"><span>Открыть</span><span class="arr">↗</span></button>
+              <span class="stat done">просмотрено · 19.05</span>
+            </div>
+          </div>
+
+          <!-- M3 — YT, required, NOT done -->
+          <div class="mat" data-done="false">
+            <div class="check"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 7"/></svg></div>
+            <div class="thumb yt">
+              <span class="src youtube"><span class="ledr"></span>YouTube</span>
+              <span class="dur">31:02</span>
+              <span class="play"></span>
+            </div>
+            <div class="mat-body">
+              <div class="mat-tags">
+                <span class="tag required"><span class="ledr"></span>Обязательно</span>
+                <span class="tag author">GopherCon · Kavya Joshi</span>
+              </div>
+              <div class="mat-title">Understanding Channels</div>
+              <div class="mat-desc">Внутрянка каналов на уровне ассемблера: hchan struct, очередь горутин, лок и санк-парк. После этого тока разговоры про buffered/unbuffered станут осмысленными.</div>
+              <div class="mat-meta">
+                <span>youtube.com</span><span class="dotty"></span><span>2017</span><span class="dotty"></span><span>EN</span>
+              </div>
+            </div>
+            <div class="mat-right">
+              <button class="open"><span>Открыть</span><span class="arr">↗</span></button>
+              <span class="stat">не просмотрено</span>
+            </div>
+          </div>
+
+          <!-- M4 — GitHub, optional, NOT done -->
+          <div class="mat" data-done="false">
+            <div class="check"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 7"/></svg></div>
+            <div class="thumb github">
+              <span class="src github"><span class="ledr"></span>GitHub</span>
+              <span class="dur">★ 17.4k</span>
+            </div>
+            <div class="mat-body">
+              <div class="mat-tags">
+                <span class="tag optional"><span class="ledr"></span>Опционально</span>
+                <span class="tag author">golang/go</span>
+              </div>
+              <div class="mat-title">runtime/chan.go — исходник каналов</div>
+              <div class="mat-desc">Прочесть hchan, makechan, chansend1, chanrecv1. 600 строк, но это самый бэкдор-документ по теме. Можно вернуться сюда после Kavya.</div>
+              <div class="mat-meta">
+                <span>github.com</span><span class="dotty"></span><span>Go 1.22</span><span class="dotty"></span><span>~30 мин чтения</span>
+              </div>
+            </div>
+            <div class="mat-right">
+              <button class="open"><span>Открыть</span><span class="arr">↗</span></button>
+              <span class="stat">не просмотрено</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- =================== ВОПРОСЫ =================== -->
+        <div class="sec">
+          <div class="sec-head-row">
+            <span class="sn"><span class="ledr" style="background:var(--primary)"></span>02 · Section</span>
+            <h3>Вопросы для самопроверки</h3>
+            <span class="cnt">4 материала</span>
+            <span class="right"><b>2</b> просмотрено · 2 осталось</span>
+          </div>
+
+          <!-- Q1 — Article, required, done -->
+          <div class="mat" data-done="true">
+            <div class="check"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 7"/></svg></div>
+            <div class="thumb article">
+              <span class="src article"><span class="ledr"></span>Article</span>
+              <span class="dur">8 вопросов</span>
+            </div>
+            <div class="mat-body">
+              <div class="mat-tags">
+                <span class="tag required"><span class="ledr"></span>Обязательно</span>
+                <span class="tag author">Go Mentor · internal</span>
+              </div>
+              <div class="mat-title">Чек-лист «понимаю ли я горутины?»</div>
+              <div class="mat-desc">8 коротких вопросов про lifecycle горутин, стек, передачу значений и закрытие каналов. Сверь свои ответы с эталоном внизу страницы.</div>
+              <div class="mat-meta">
+                <span>docs.gomentor.ru</span><span class="dotty"></span><span>RU</span><span class="dotty"></span><span>~15 мин</span>
+              </div>
+            </div>
+            <div class="mat-right">
+              <button class="open"><span>Открыть</span><span class="arr">↗</span></button>
+              <span class="stat done">просмотрено · 20.05</span>
+            </div>
+          </div>
+
+          <!-- Q2 — PDF, required, not done -->
+          <div class="mat" data-done="false">
+            <div class="check"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 7"/></svg></div>
+            <div class="thumb pdf">
+              <span class="src pdf"><span class="ledr"></span>PDF</span>
+              <span class="dur">14 стр</span>
+            </div>
+            <div class="mat-body">
+              <div class="mat-tags">
+                <span class="tag required"><span class="ledr"></span>Обязательно</span>
+                <span class="tag author">Go interview pack v2</span>
+              </div>
+              <div class="mat-title">Топ-20 вопросов с собесов по concurrency</div>
+              <div class="mat-desc">Реальные вопросы из найма в Авито, Озон, Тинькофф: deadlock'и, fan-in/fan-out, select с default, context.WithCancel. С разбором ответов.</div>
+              <div class="mat-meta">
+                <span>cdn.gomentor.ru</span><span class="dotty"></span><span>RU</span><span class="dotty"></span><span>обновлено 12.05.2026</span>
+              </div>
+            </div>
+            <div class="mat-right">
+              <button class="open"><span>Открыть</span><span class="arr">↗</span></button>
+              <span class="stat">не просмотрено</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- =================== ПРАКТИКА =================== -->
+        <div class="sec">
+          <div class="sec-head-row">
+            <span class="sn"><span class="ledr" style="background:var(--secondary);box-shadow:0 0 8px var(--secondary)"></span>03 · Section</span>
+            <h3>Практика</h3>
+            <span class="cnt">3 материала</span>
+            <span class="right"><b>1</b> просмотрено · 2 осталось</span>
+          </div>
+
+          <!-- P1 — task, required, done -->
+          <div class="mat practice" data-done="true">
+            <div class="check"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 7"/></svg></div>
+            <div class="thumb task">
+              <span class="src task"><span class="ledr"></span>Task</span>
+              <span class="dur">~40 мин</span>
+            </div>
+            <div class="mat-body">
+              <div class="mat-tags">
+                <span class="tag required"><span class="ledr"></span>Обязательно</span>
+                <span class="tag author">Go Playground</span>
+              </div>
+              <div class="mat-title">Worker pool на 100 задач</div>
+              <div class="mat-desc">Напиши пул из N воркеров, который параллельно обрабатывает 100 задач из канала. Используй sync.WaitGroup и graceful shutdown через context.</div>
+              <div class="mat-meta">
+                <span>play.golang.org</span><span class="dotty"></span><span>стартовый код приложен</span>
+              </div>
+            </div>
+            <div class="mat-right">
+              <button class="open"><span>Открыть</span><span class="arr">↗</span></button>
+              <span class="stat done">сделано · 22.05</span>
+            </div>
+          </div>
+
+          <!-- P2 — task, required, not done -->
+          <div class="mat practice" data-done="false">
+            <div class="check"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 7"/></svg></div>
+            <div class="thumb task">
+              <span class="src task"><span class="ledr"></span>Task</span>
+              <span class="dur">~1.5 часа</span>
+            </div>
+            <div class="mat-body">
+              <div class="mat-tags">
+                <span class="tag required"><span class="ledr"></span>Обязательно</span>
+                <span class="tag author">Go Playground</span>
+              </div>
+              <div class="mat-title">Rate limiter (token bucket) на channels</div>
+              <div class="mat-desc">Реализуй HTTP-middleware, который пропускает не более 10 RPS на IP. Без сторонних либ, только net/http и stdlib concurrency.</div>
+              <div class="mat-meta">
+                <span>play.golang.org</span><span class="dotty"></span><span>тесты в наборе</span><span class="dotty"></span><span>проверка автоматическая</span>
+              </div>
+            </div>
+            <div class="mat-right">
+              <button class="open"><span>Открыть</span><span class="arr">↗</span></button>
+              <span class="stat">в процессе</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- =================== ДОМАШКА =================== -->
+        <div class="sec">
+          <div class="sec-head-row">
+            <span class="sn"><span class="ledr" style="background:var(--secondary);box-shadow:0 0 8px var(--secondary)"></span>04 · Section</span>
+            <h3>Домашка</h3>
+            <span class="cnt">1 материал · защищается на 1×1</span>
+            <span class="right">не отмечено</span>
+          </div>
+
+          <!-- HW — homework, required, not done -->
+          <div class="mat homework" data-done="false">
+            <div class="check"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 7"/></svg></div>
+            <div class="thumb github">
+              <span class="src github"><span class="ledr"></span>GitHub</span>
+              <span class="dur">repo template</span>
+            </div>
+            <div class="mat-body">
+              <div class="mat-tags">
+                <span class="tag required"><span class="ledr"></span>Обязательно</span>
+                <span class="tag author">go-mentor/hw-03</span>
+              </div>
+              <div class="mat-title">Pipeline parser для CSV → JSON</div>
+              <div class="mat-desc">Многоступенчатый pipeline на каналах: чтение CSV → парсинг → валидация → запись в JSON. Минимум 4 стадии, graceful shutdown по SIGINT, бенчмарки в комплекте.</div>
+              <div class="mat-meta">
+                <span>github.com/go-mentor</span><span class="dotty"></span><span>дедлайн: до закрытия блока</span><span class="dotty"></span><span>защищаем на 1×1</span>
+              </div>
+            </div>
+            <div class="mat-right">
+              <button class="open"><span>Открыть</span><span class="arr">↗</span></button>
+              <span class="stat">приступить</span>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- LEGEND -->
+      <div class="legend">
+        <span class="item"><span class="pill req"><span style="width:5px;height:5px;border-radius:50%;background:var(--primary);box-shadow:0 0 8px var(--primary)"></span>Обязательно</span><span>— тянет статус блока</span></span>
+        <span class="item"><span class="pill opt"><span style="width:5px;height:5px;border-radius:50%;background:var(--text-3)"></span>Опционально</span><span>— для углубления, не блокирует</span></span>
+        <span class="item">Чекбокс — ручная отметка студента (§6.10)</span>
+      </div>
+
+    </section>
+
+  </main>
+</div>
+
+</body>
+</html>

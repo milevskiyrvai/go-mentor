@@ -1,0 +1,1432 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1440" />
+<title>Go Mentor — Design System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#07080A;
+    --surface:#0F1014;
+    --elevated:#16181E;
+    --border:#262830;
+    --border-bright:#363842;
+    --primary:#D4FF3D;
+    --primary-dim: color-mix(in oklab, #D4FF3D 28%, transparent);
+    --secondary:#FF3D9A;
+    --secondary-dim: color-mix(in oklab, #FF3D9A 30%, transparent);
+    --success:#7BE38C;
+    --warning:#FFDB3D;
+    --danger:#FF5B5B;
+    --text:#F0F0F2;
+    --text-2:#8A8A92;
+    --text-3:#50525C;
+
+    --r-sm: 6px;
+    --r-md: 10px;
+    --r-lg: 14px;
+
+    --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+    --sans: "Inter", system-ui, -apple-system, sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+  body{
+    background:
+      radial-gradient(900px 600px at 12% -10%, color-mix(in oklab, var(--primary) 6%, transparent), transparent 70%),
+      radial-gradient(900px 600px at 88% -10%, color-mix(in oklab, var(--secondary) 6%, transparent), transparent 70%),
+      var(--bg);
+    min-height:100vh;
+  }
+  a{color:inherit;text-decoration:none}
+  ::selection{background:var(--primary);color:#001613}
+
+  /* ====== Page chrome ====== */
+  .page{max-width:1280px;margin:0 auto;padding:48px 56px 120px}
+  .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:56px}
+  .brand{display:flex;align-items:center;gap:14px}
+  .brand-mark{
+    width:40px;height:40px;border-radius:9px;
+    background:linear-gradient(140deg, color-mix(in oklab, var(--primary) 14%, var(--bg)), var(--bg));
+    border:1px solid var(--border);
+    display:grid;place-items:center;position:relative;
+    box-shadow:0 0 0 1px color-mix(in oklab, var(--primary) 22%, transparent) inset, 0 0 24px -8px var(--primary);
+  }
+  .brand-mark::before{
+    content:"";position:absolute;inset:0;border-radius:9px;
+    background:radial-gradient(circle at 30% 30%, color-mix(in oklab, var(--primary) 22%, transparent), transparent 60%);
+  }
+  .brand-mark span{
+    font-family:var(--mono);font-weight:700;color:var(--primary);font-size:18px;letter-spacing:-.02em;position:relative;
+  }
+  .brand-title{display:flex;flex-direction:column;line-height:1}
+  .brand-title b{font-weight:700;letter-spacing:-.01em}
+  .brand-title small{color:var(--text-2);font-size:11px;margin-top:6px;text-transform:uppercase;letter-spacing:.18em}
+  .top-meta{display:flex;gap:10px;align-items:center;font-family:var(--mono);font-size:11px;color:var(--text-2)}
+  .top-meta .dot{width:6px;height:6px;border-radius:50%;background:var(--primary);box-shadow:0 0 10px var(--primary)}
+  .top-meta .tag{border:1px solid var(--border);padding:5px 9px;border-radius:999px;color:var(--text-2)}
+
+  .hero{
+    border:1px solid var(--border);background:var(--surface);
+    border-radius:var(--r-lg);padding:36px 40px;margin-bottom:64px;
+    position:relative;overflow:hidden;
+  }
+  .hero::after{
+    content:"";position:absolute;right:-80px;top:-80px;width:340px;height:340px;border-radius:50%;
+    background:radial-gradient(closest-side, color-mix(in oklab, var(--secondary) 22%, transparent), transparent 70%);
+    pointer-events:none;
+  }
+  .hero::before{
+    content:"";position:absolute;left:-80px;bottom:-100px;width:300px;height:300px;border-radius:50%;
+    background:radial-gradient(closest-side, color-mix(in oklab, var(--primary) 18%, transparent), transparent 70%);
+    pointer-events:none;
+  }
+  .hero h1{font-size:48px;letter-spacing:-.025em;font-weight:700;margin:0 0 14px;line-height:1.05}
+  .hero h1 em{font-style:normal;background:linear-gradient(90deg,var(--primary),var(--secondary));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .hero p{color:var(--text-2);font-size:15px;max-width:680px;line-height:1.55;margin:0}
+  .hero-meta{position:relative;margin-top:28px;display:flex;gap:32px;font-family:var(--mono);font-size:11px;color:var(--text-2);text-transform:uppercase;letter-spacing:.16em}
+  .hero-meta span b{color:var(--text);font-weight:500;display:block;font-size:13px;letter-spacing:.04em;margin-top:6px;text-transform:none;font-family:var(--sans)}
+
+  /* ====== Section ====== */
+  section{margin-bottom:88px}
+  .sec-head{display:flex;align-items:baseline;gap:24px;margin-bottom:28px;border-bottom:1px solid var(--border);padding-bottom:18px}
+  .sec-num{font-family:var(--mono);color:var(--text-3);font-size:12px;letter-spacing:.06em}
+  .sec-title{font-size:24px;font-weight:700;letter-spacing:-.015em;margin:0}
+  .sec-sub{margin-left:auto;color:var(--text-2);font-size:13px}
+
+  .subhead{font-size:11px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.18em;color:var(--text-3);margin:0 0 14px}
+
+  /* ====== Color palette ====== */
+  .palette{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+  .swatch{
+    background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);
+    overflow:hidden;display:flex;flex-direction:column;
+  }
+  .swatch .chip{height:96px;position:relative}
+  .swatch .chip::after{
+    content:"";position:absolute;inset:0;
+    background:linear-gradient(180deg, transparent 60%, rgba(0,0,0,.18));
+  }
+  .swatch .meta{padding:12px 14px 14px}
+  .swatch .name{font-size:13px;font-weight:600}
+  .swatch .hex{font-family:var(--mono);color:var(--text-2);font-size:11px;margin-top:4px;width:auto;height:auto;clip-path:none;display:block;background:none}
+  .swatch .role{font-family:var(--mono);color:var(--text-3);font-size:10px;text-transform:uppercase;letter-spacing:.12em;margin-top:8px}
+
+  /* ====== Type ====== */
+  .type-grid{display:grid;grid-template-columns:240px 1fr;gap:18px}
+  .type-row{
+    display:contents;
+  }
+  .type-row .label{
+    border:1px solid var(--border);background:var(--surface);border-radius:var(--r-md);padding:14px 16px;
+    display:flex;flex-direction:column;gap:6px;
+  }
+  .type-row .label b{font-size:13px}
+  .type-row .label span{font-family:var(--mono);font-size:11px;color:var(--text-2)}
+  .type-row .demo{
+    border:1px solid var(--border);background:var(--surface);border-radius:var(--r-md);padding:18px 22px;
+    display:flex;align-items:center;
+  }
+  .display-1{font-size:56px;font-weight:800;letter-spacing:-.03em;line-height:1}
+  .display-2{font-size:36px;font-weight:700;letter-spacing:-.02em}
+  .heading{font-size:22px;font-weight:600;letter-spacing:-.01em}
+  .body{font-size:15px;line-height:1.55;color:var(--text)}
+  .body-2{font-size:13px;color:var(--text-2)}
+  .caption{font-size:11px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.16em;color:var(--text-3)}
+  .num{font-family:var(--mono);font-weight:700;font-size:48px;letter-spacing:-.02em;color:var(--primary);text-shadow:0 0 24px color-mix(in oklab, var(--primary) 50%, transparent)}
+
+  /* ====== Spacing & radii ====== */
+  .tokens{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .token-card{border:1px solid var(--border);background:var(--surface);border-radius:var(--r-md);padding:20px}
+  .token-card h4{margin:0 0 14px;font-size:13px}
+  .scale-row{display:flex;align-items:center;gap:14px;padding:8px 0;border-top:1px dashed var(--border)}
+  .scale-row:first-of-type{border-top:0}
+  .scale-row .nm{font-family:var(--mono);color:var(--text-2);font-size:11px;width:42px}
+  .scale-row .px{font-family:var(--mono);color:var(--text-3);font-size:11px;width:48px}
+  .scale-bar{height:8px;background:var(--primary);border-radius:2px;box-shadow:0 0 12px var(--primary-dim)}
+  .radius-box{width:48px;height:48px;border:1px solid var(--border-bright);background:var(--elevated)}
+
+  /* ====== Components grid ====== */
+  .comp-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:20px}
+  .comp{
+    grid-column:span 6;border:1px solid var(--border);background:var(--surface);
+    border-radius:var(--r-md);padding:22px;
+  }
+  .comp.col-12{grid-column:span 12}
+  .comp.col-4{grid-column:span 4}
+  .comp.col-8{grid-column:span 8}
+  .comp-head{display:flex;align-items:baseline;gap:10px;margin-bottom:18px}
+  .comp-head h3{margin:0;font-size:14px;font-weight:600}
+  .comp-head .id{font-family:var(--mono);font-size:10px;color:var(--text-3);letter-spacing:.08em}
+  .comp-head .desc{color:var(--text-2);font-size:12px;margin-left:auto}
+
+  /* ====== Achievement card ====== */
+  .ach-row{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .ach{
+    width:100%;background:var(--elevated);border:1px solid var(--border);
+    border-radius:14px;padding:24px 22px 22px;position:relative;overflow:hidden;
+    display:flex;flex-direction:column;align-items:center;gap:14px;min-height:340px;
+  }
+  .ach::before{
+    content:"";position:absolute;left:0;right:0;top:0;height:140px;pointer-events:none;
+    background:radial-gradient(closest-side at 50% 0%, color-mix(in oklab, var(--accent,var(--primary)) 20%, transparent), transparent 70%);
+  }
+  .ach[data-state="unlocked"]{--accent:var(--primary)}
+  .ach[data-state="unlocked-2"]{--accent:var(--secondary)}
+  .ach[data-state="locked"]{--accent:var(--border-bright)}
+
+  .hex{
+    --size:108px;
+    width:var(--size);height:calc(var(--size) * 1.155);
+    position:relative;display:grid;place-items:center;
+    clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+    background:linear-gradient(160deg, color-mix(in oklab, var(--accent) 22%, var(--elevated)) 0%, var(--elevated) 70%);
+  }
+  .hex::before{
+    content:"";position:absolute;inset:2px;
+    clip-path:inherit;background:var(--elevated);
+  }
+  .hex::after{
+    content:"";position:absolute;inset:0;clip-path:inherit;
+    background:linear-gradient(160deg, color-mix(in oklab, var(--accent) 65%, transparent), transparent 50%);
+    mix-blend-mode:plus-lighter;opacity:.5;
+  }
+  .hex .glyph{position:relative;z-index:2;font-family:var(--mono);font-weight:700;font-size:38px;color:var(--accent);text-shadow:0 0 18px color-mix(in oklab, var(--accent) 60%, transparent)}
+  .ach[data-state="locked"] .hex{filter:saturate(.1) brightness(.7)}
+  .ach[data-state="locked"] .hex .glyph{color:var(--text-3);text-shadow:none}
+
+  .hex-halo{
+    position:absolute;width:200px;height:200px;border-radius:50%;
+    background:radial-gradient(closest-side, color-mix(in oklab, var(--accent) 30%, transparent), transparent 65%);
+    top:-30px;left:50%;transform:translateX(-50%);pointer-events:none;
+    filter:blur(2px);
+  }
+  .ach[data-state="locked"] .hex-halo{display:none}
+
+  .ach .title{font-size:15px;font-weight:600;text-align:center;letter-spacing:-.005em;margin-top:4px}
+  .ach .desc{font-size:12px;color:var(--text-2);text-align:center;line-height:1.5;max-width:220px}
+  .ach .reward{
+    display:flex;align-items:center;gap:8px;margin-top:auto;
+    background:rgba(124,92,255,.08);border:1px solid color-mix(in oklab, var(--secondary) 30%, transparent);
+    padding:8px 12px;border-radius:999px;
+  }
+  .ach[data-state="locked"] .reward{
+    background:transparent;border-color:var(--border);
+  }
+  .ach .reward .coin{width:16px;height:16px;border-radius:50%;background:radial-gradient(circle at 30% 30%, color-mix(in oklab, var(--secondary) 55%, white), var(--secondary) 70%, color-mix(in oklab, var(--secondary) 55%, black));box-shadow:0 0 12px color-mix(in oklab, var(--secondary) 45%, transparent);display:grid;place-items:center;color:#fff;font-family:var(--mono);font-size:9px;font-weight:700}
+  .ach[data-state="locked"] .reward .coin{background:#2a2e3d;box-shadow:none;color:var(--text-3)}
+  .ach .reward .amt{font-family:var(--mono);font-weight:700;font-size:13px;color:var(--text)}
+  .ach[data-state="locked"] .reward .amt{color:var(--text-2)}
+  .ach .reward .lbl{font-size:11px;color:var(--text-2)}
+
+  .ach .footer{font-size:11px;color:var(--text-3);font-family:var(--mono);letter-spacing:.05em}
+  .ach .lock-pip{
+    position:absolute;top:18px;right:18px;width:26px;height:26px;border-radius:50%;
+    background:var(--bg);border:1px solid var(--border);display:grid;place-items:center;color:var(--text-2);
+  }
+  .ach[data-state="unlocked"] .lock-pip,
+  .ach[data-state="unlocked-2"] .lock-pip{display:none}
+  .ach .check-pip{
+    position:absolute;top:18px;right:18px;width:26px;height:26px;border-radius:50%;
+    background:var(--primary);color: color-mix(in oklab, var(--primary) 25%, black);display:grid;place-items:center;font-weight:700;
+    box-shadow:0 0 18px color-mix(in oklab, var(--primary) 60%, transparent);
+  }
+  .ach[data-state="locked"] .check-pip{display:none}
+  .ach[data-state="unlocked-2"] .check-pip{background:var(--secondary);color:#fff;box-shadow:0 0 18px var(--secondary-dim)}
+
+  /* mini progress bar inside locked achievement */
+  .mini-progress{
+    width:100%;height:6px;background:var(--bg);border-radius:3px;overflow:hidden;border:1px solid var(--border);
+  }
+  .mini-progress > div{height:100%;background:linear-gradient(90deg,var(--primary),var(--secondary));}
+  .mini-progress-row{display:flex;align-items:center;gap:10px;width:100%;font-family:var(--mono);font-size:11px;color:var(--text-2)}
+
+  /* ====== Roadmap block card ====== */
+  .roadmap-cards{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .roadmap{
+    border:1px solid var(--border);background:var(--elevated);border-radius:12px;
+    padding:20px;display:flex;flex-direction:column;gap:16px;position:relative;overflow:hidden;
+  }
+  .roadmap-head{display:flex;gap:14px;align-items:flex-start}
+  .roadmap-num{
+    width:48px;height:48px;border-radius:10px;background:var(--bg);border:1px solid var(--border);
+    display:grid;place-items:center;font-family:var(--mono);font-weight:700;color:var(--text-2);font-size:18px;flex:0 0 48px;
+  }
+  .roadmap[data-status="in_progress"] .roadmap-num{color:var(--primary);box-shadow:inset 0 0 0 1px color-mix(in oklab, var(--primary) 40%, transparent);}
+  .roadmap[data-status="waiting"] .roadmap-num{color:var(--warning);}
+  .roadmap[data-status="approved"] .roadmap-num{color:var(--success);}
+  .roadmap-title{display:flex;flex-direction:column;flex:1;gap:6px}
+  .roadmap-title h4{margin:0;font-size:16px;font-weight:600;letter-spacing:-.01em}
+  .roadmap-title small{font-size:12px;color:var(--text-2)}
+  .roadmap-progress{display:flex;align-items:center;gap:14px}
+  .pbar{flex:1;height:8px;border-radius:4px;background:var(--bg);overflow:hidden;border:1px solid var(--border);position:relative}
+  .pbar > i{display:block;height:100%;background:linear-gradient(90deg,var(--primary),var(--secondary));box-shadow:0 0 14px color-mix(in oklab, var(--primary) 30%, transparent)}
+  .pbar.warn > i{background:linear-gradient(90deg,#f59e0b,#fbbf24)}
+  .pbar.success > i{background:linear-gradient(90deg,#10b981,#34d399)}
+  .pbar.mute > i{background:#3a3f52}
+  .ppct{font-family:var(--mono);font-weight:700;font-size:14px;color:var(--text);min-width:48px;text-align:right}
+
+  .roadmap-sections{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+  .rs{
+    border:1px solid var(--border);background:var(--bg);border-radius:8px;
+    padding:12px;display:flex;flex-direction:column;gap:6px;
+  }
+  .rs .rs-lbl{font-size:10px;color:var(--text-3);text-transform:uppercase;letter-spacing:.12em;font-family:var(--mono)}
+  .rs .rs-val{font-family:var(--mono);font-size:13px;font-weight:600}
+  .rs .rs-val em{color:var(--text-3);font-style:normal;font-weight:400}
+  .rs.done .rs-val{color:var(--success)}
+  .rs.active .rs-val{color:var(--primary)}
+
+  /* ====== Material Card ====== */
+  .mat-stack{display:flex;flex-direction:column;gap:12px}
+  .mat{
+    display:grid;grid-template-columns:120px 1fr auto;gap:16px;
+    background:var(--elevated);border:1px solid var(--border);border-radius:10px;padding:14px;align-items:center;
+  }
+  .mat-thumb{
+    width:120px;height:72px;border-radius:7px;background:var(--bg);border:1px solid var(--border);
+    position:relative;overflow:hidden;
+  }
+  .mat-thumb.yt{background:repeating-linear-gradient(135deg,#1a0f12 0 8px,#221015 8px 16px);}
+  .mat-thumb.gh{background:repeating-linear-gradient(135deg,#0e1620 0 8px,#101926 8px 16px);}
+  .mat-thumb.art{background:repeating-linear-gradient(135deg,#0f1a1a 0 8px,#0f1f1d 8px 16px);}
+  .mat-thumb.file{background:repeating-linear-gradient(135deg,#171221 0 8px,#1a1326 8px 16px);}
+  .mat-thumb::after{
+    content:attr(data-icon);position:absolute;inset:0;display:grid;place-items:center;
+    font-family:var(--mono);font-weight:700;font-size:11px;color:var(--text-2);letter-spacing:.1em;
+  }
+  .mat-body{display:flex;flex-direction:column;gap:6px;min-width:0}
+  .mat-meta{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:10px;color:var(--text-3);letter-spacing:.06em}
+  .mat-meta .src{color:var(--text-2)}
+  .pill-mini{
+    display:inline-flex;align-items:center;height:18px;padding:0 7px;border-radius:999px;
+    font-size:10px;font-weight:600;letter-spacing:.04em;
+  }
+  .pill-mini.req{background:color-mix(in oklab, var(--danger) 18%, transparent);color:#FCA5A5;border:1px solid color-mix(in oklab, var(--danger) 40%, transparent)}
+  .pill-mini.opt{background:transparent;color:var(--text-2);border:1px solid var(--border)}
+  .mat-title{font-size:14px;font-weight:600;letter-spacing:-.005em;text-overflow:ellipsis;overflow:hidden;white-space:nowrap}
+  .mat-desc{font-size:12px;color:var(--text-2);line-height:1.5;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+  .checker{
+    width:24px;height:24px;border-radius:7px;border:1px solid var(--border-bright);background:var(--bg);
+    display:grid;place-items:center;color:transparent;cursor:pointer;flex:0 0 24px;
+  }
+  .checker.checked{background:var(--primary);border-color:var(--primary);color: color-mix(in oklab, var(--primary) 25%, black);box-shadow:0 0 14px color-mix(in oklab, var(--primary) 50%, transparent)}
+
+  /* ====== Progress bar standalone ====== */
+  .pbar-block{display:flex;flex-direction:column;gap:18px}
+  .pbar-row{display:flex;align-items:center;gap:14px}
+  .pbar-row .lbl{font-size:12px;color:var(--text-2);min-width:160px}
+  .pbar-row .val{font-family:var(--mono);font-size:12px;color:var(--text);min-width:90px;text-align:right}
+
+  /* ====== Bonus counter ====== */
+  .bonus-card{
+    background:var(--elevated);border:1px solid var(--border);border-radius:12px;
+    padding:26px;display:grid;grid-template-columns:1fr 1px 1fr;gap:24px;align-items:stretch;
+    position:relative;overflow:hidden;
+  }
+  .bonus-card::after{
+    content:"";position:absolute;left:-40px;top:-40px;width:240px;height:240px;border-radius:50%;
+    background:radial-gradient(closest-side, color-mix(in oklab, var(--secondary) 25%, transparent), transparent 70%);
+    pointer-events:none;
+  }
+  .bonus-card .divider{background:var(--border)}
+  .bonus-balance{display:flex;flex-direction:column;gap:14px;position:relative;z-index:1}
+  .bonus-amount{display:flex;align-items:center;gap:18px}
+  .coin-lg{
+    width:56px;height:56px;border-radius:50%;
+    background:radial-gradient(circle at 30% 30%, color-mix(in oklab, var(--primary) 50%, white) 0%, var(--primary) 50%, color-mix(in oklab, var(--primary) 50%, black) 100%);
+    box-shadow:0 0 36px color-mix(in oklab, var(--primary) 50%, transparent), inset 0 0 0 2px rgba(255,255,255,.06);
+    display:grid;place-items:center;font-family:var(--mono);font-weight:700;color: color-mix(in oklab, var(--primary) 30%, black);font-size:22px;letter-spacing:-.04em;
+    position:relative;
+  }
+  .coin-lg::before{
+    content:"";position:absolute;inset:6px;border-radius:50%;border:1px dashed rgba(0,0,0,.25);
+  }
+  .bonus-num{font-family:var(--mono);font-weight:700;font-size:48px;letter-spacing:-.02em;line-height:1}
+  .bonus-num small{font-size:14px;color:var(--text-2);font-weight:500;letter-spacing:0;margin-left:8px}
+  .bonus-label{font-size:11px;color:var(--text-3);text-transform:uppercase;letter-spacing:.16em;font-family:var(--mono)}
+  .bonus-actions{display:flex;gap:10px;flex-wrap:wrap}
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 14px;
+    border-radius:8px;border:1px solid var(--border);background:var(--bg);
+    color:var(--text);font-size:13px;font-weight:500;cursor:pointer;letter-spacing:-.005em;
+  }
+  .btn.primary{background:var(--primary);color: color-mix(in oklab, var(--primary) 25%, black);border-color:var(--primary);box-shadow:0 0 22px color-mix(in oklab, var(--primary) 35%, transparent)}
+  .btn.ghost{background:transparent}
+  .btn .arrow{font-family:var(--mono);font-weight:700}
+
+  .discount{display:flex;flex-direction:column;gap:14px;position:relative;z-index:1}
+  .discount-head{display:flex;align-items:baseline;justify-content:space-between}
+  .discount-head .pct{font-family:var(--mono);font-weight:700;font-size:32px;color:var(--text)}
+  .discount-head .pct em{font-style:normal;color:var(--text-3);font-size:14px;margin-left:6px}
+  .discount-bar{height:10px;border-radius:5px;background:var(--bg);border:1px solid var(--border);overflow:hidden;position:relative}
+  .discount-bar > i{display:block;height:100%;background:linear-gradient(90deg,var(--primary),var(--secondary));}
+  .discount-bar .ticks{position:absolute;inset:0;background-image:linear-gradient(90deg, transparent 0 calc(100%/15 - 1px), rgba(255,255,255,.07) calc(100%/15 - 1px) calc(100%/15));}
+  .discount-foot{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;color:var(--text-3)}
+
+  /* ====== Status badges ====== */
+  .badges{display:flex;flex-wrap:wrap;gap:10px}
+  .badge{
+    display:inline-flex;align-items:center;gap:8px;
+    height:30px;padding:0 12px;border-radius:999px;border:1px solid var(--border);
+    background:var(--bg);font-size:12px;font-weight:500;color:var(--text-2);letter-spacing:-.005em;
+  }
+  .badge .ledr{width:7px;height:7px;border-radius:50%;background:currentColor;box-shadow:0 0 8px currentColor}
+  .badge.not-started{color:var(--text-2)}
+  .badge.in-progress{color:var(--primary);background:rgba(0,209,178,.06);border-color:color-mix(in oklab, var(--primary) 30%, transparent)}
+  .badge.waiting{color:var(--warning);background:rgba(245,158,11,.06);border-color:color-mix(in oklab, var(--warning) 30%, transparent)}
+  .badge.waiting .ledr{animation:pulse 1.6s ease-in-out infinite}
+  .badge.approved{color:var(--success);background:rgba(16,185,129,.06);border-color:color-mix(in oklab, var(--success) 30%, transparent)}
+  .badge.completed{color:var(--secondary);background:rgba(124,92,255,.06);border-color:color-mix(in oklab, var(--secondary) 30%, transparent)}
+  .badge.failed{color:var(--danger);background:rgba(239,68,68,.06);border-color:color-mix(in oklab, var(--danger) 30%, transparent)}
+
+  @keyframes pulse{
+    0%, 100%{box-shadow:0 0 0 0 color-mix(in oklab, var(--warning) 50%, transparent); opacity:1}
+    50%{box-shadow:0 0 0 6px color-mix(in oklab, var(--warning) 0%, transparent); opacity:.7}
+  }
+
+  /* ====== Toast ====== */
+  .toast{
+    width:360px;background:var(--elevated);border:1px solid var(--border);border-radius:12px;
+    padding:14px;display:flex;gap:14px;align-items:center;position:relative;overflow:hidden;
+    box-shadow:0 30px 60px -30px rgba(0,0,0,.6), 0 0 0 1px rgba(0,209,178,.1) inset;
+  }
+  .toast::before{
+    content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--primary),var(--secondary));box-shadow:0 0 14px var(--primary-dim);
+  }
+  .toast .hex-sm{
+    --size:48px;flex:0 0 48px;
+  }
+  .toast .hex-sm .glyph{font-size:18px}
+  .toast .body{flex:1;display:flex;flex-direction:column;gap:4px;font-size:14px}
+  .toast .body small{font-family:var(--mono);font-size:10px;text-transform:uppercase;color:var(--primary);letter-spacing:.14em}
+  .toast .body b{font-weight:600;letter-spacing:-.005em}
+  .toast .body span{font-size:11px;color:var(--text-2)}
+  .toast .reward-sm{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-weight:700;color:var(--secondary);font-size:14px;padding:6px 10px;background:rgba(124,92,255,.08);border:1px solid color-mix(in oklab, var(--secondary) 30%, transparent);border-radius:8px}
+  .toast .reward-sm .coin{width:14px;height:14px;border-radius:50%;background:radial-gradient(circle at 30% 30%, color-mix(in oklab, var(--secondary) 55%, white), var(--secondary) 70%, color-mix(in oklab, var(--secondary) 55%, black));box-shadow:0 0 10px var(--secondary-dim)}
+
+  .toast-stack{display:flex;flex-direction:column;gap:14px}
+
+  /* ====== Sidebar ====== */
+  .sidebar{
+    width:260px;background:var(--surface);border:1px solid var(--border);border-radius:12px;
+    padding:14px;display:flex;flex-direction:column;gap:8px;min-height:520px;
+  }
+  .sb-user{
+    display:flex;align-items:center;gap:12px;padding:10px;border-radius:9px;border:1px solid var(--border);background:var(--bg);
+    margin-bottom:8px;
+  }
+  .avatar{
+    width:36px;height:36px;border-radius:9px;
+    background:linear-gradient(140deg, var(--secondary), var(--primary));
+    display:grid;place-items:center;color: color-mix(in oklab, var(--primary) 20%, black);font-family:var(--mono);font-weight:700;
+  }
+  .sb-user .name{font-size:13px;font-weight:600;line-height:1.1}
+  .sb-user .role{display:flex;align-items:center;gap:6px;font-size:10px;color:var(--text-2);font-family:var(--mono);text-transform:uppercase;letter-spacing:.1em;margin-top:4px}
+  .sb-user .role .dot{width:4px;height:4px;border-radius:50%;background:var(--primary)}
+  .sb-user .switcher{margin-left:auto;font-family:var(--mono);color:var(--text-3);font-size:10px}
+  .sb-section{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.16em;color:var(--text-3);padding:14px 12px 4px}
+  .sb-item{
+    display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;color:var(--text-2);
+    font-size:13px;cursor:pointer;position:relative;
+  }
+  .sb-item:hover{background:var(--elevated);color:var(--text)}
+  .sb-item.active{color:var(--text);background:var(--elevated)}
+  .sb-item.active::before{content:"";position:absolute;left:-14px;top:8px;bottom:8px;width:3px;border-radius:2px;background:var(--primary);box-shadow:0 0 14px var(--primary)}
+  .sb-item .ic{
+    width:18px;height:18px;border:1px solid var(--border-bright);border-radius:5px;display:grid;place-items:center;
+    color:var(--text-3);font-family:var(--mono);font-size:9px;font-weight:700;
+  }
+  .sb-item.active .ic{color:var(--primary);border-color:color-mix(in oklab, var(--primary) 60%, transparent);background:color-mix(in oklab, var(--primary) 10%, transparent)}
+  .sb-item .pill-mini{margin-left:auto}
+  .sb-foot{
+    margin-top:auto;border-top:1px solid var(--border);padding-top:12px;font-family:var(--mono);font-size:10px;color:var(--text-3);letter-spacing:.08em;
+    display:flex;align-items:center;gap:8px;
+  }
+  .sb-foot .led{width:6px;height:6px;border-radius:50%;background:var(--success);box-shadow:0 0 10px var(--success)}
+
+  /* ====== Layout example ====== */
+  .ex-frame{
+    border:1px solid var(--border);background:var(--surface);border-radius:14px;overflow:hidden;
+  }
+  .ex-head{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--border);background:rgba(255,255,255,.01)}
+  .ex-head .dots{display:flex;gap:6px}
+  .ex-head .dots span{width:8px;height:8px;border-radius:50%;background:var(--border-bright)}
+  .ex-head .title{font-family:var(--mono);font-size:11px;color:var(--text-2);letter-spacing:.06em;margin-left:6px}
+  .ex-head .right{margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--text-3);letter-spacing:.08em}
+  .ex-body{padding:24px;display:grid;gap:20px}
+
+  /* Roadmap example layout */
+  .ex1{
+    grid-template-columns:1.1fr 1fr;
+  }
+  .roadmap-expanded{
+    border:1px solid var(--border);background:var(--elevated);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:18px;
+  }
+  .re-head{display:flex;gap:16px;align-items:center}
+  .re-title{display:flex;flex-direction:column;gap:6px;flex:1}
+  .re-title h3{margin:0;font-size:20px;font-weight:700;letter-spacing:-.01em}
+  .re-title small{color:var(--text-2);font-size:13px}
+  .re-stat{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+  .re-stat .cell{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px}
+  .re-stat .cell small{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--text-3)}
+  .re-stat .cell b{display:block;font-family:var(--mono);font-size:18px;font-weight:700;color:var(--primary);margin-top:4px}
+  .re-stat .cell.s b{color:var(--success)}
+  .ex-sidebar{display:flex;flex-direction:column;gap:14px}
+
+  /* Achievement wall */
+  .wall-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:18px}
+  .wall-head h3{font-size:18px;font-weight:700;margin:0;letter-spacing:-.01em}
+  .wall-head .filters{display:flex;gap:8px}
+  .wall-head .filters .badge{height:26px}
+  .wall-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  .wall-grid .ach{padding:18px 14px;min-height:280px}
+  .wall-grid .ach .hex{--size:80px}
+  .wall-grid .ach .hex .glyph{font-size:26px}
+  .wall-grid .ach .title{font-size:13px}
+  .wall-grid .ach .desc{font-size:11px}
+  .wall-grid .ach .reward .amt{font-size:12px}
+
+  /* Bonus / discount overview layout */
+  .ex3 .ex-body{grid-template-columns:1fr}
+
+  /* footer */
+  .doc-foot{
+    margin-top:80px;border-top:1px solid var(--border);padding-top:24px;
+    display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;color:var(--text-3);letter-spacing:.08em;
+  }
+
+  /* Misc */
+  .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .stack{display:flex;flex-direction:column;gap:10px}
+  .anti-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:18px}
+  .anti{
+    border:1px solid var(--border);background:var(--surface);border-radius:10px;padding:16px 18px;
+    display:flex;gap:12px;align-items:flex-start;
+  }
+  .anti .tag{
+    width:24px;height:24px;border-radius:6px;display:grid;place-items:center;font-family:var(--mono);font-weight:700;font-size:11px;flex:0 0 24px;
+  }
+  .anti.yes .tag{background:color-mix(in oklab, var(--success) 20%, transparent);color:var(--success)}
+  .anti.no .tag{background:color-mix(in oklab, var(--danger) 20%, transparent);color:var(--danger)}
+  .anti b{display:block;font-size:13px;margin-bottom:4px}
+  .anti span{color:var(--text-2);font-size:12px;line-height:1.5}
+
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ============================================================
+       TOP / HERO
+  ============================================================ -->
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-mark"><span>Go</span></div>
+      <div class="brand-title">
+        <b>Go Mentor</b>
+        <small>Design System · v0.1</small>
+      </div>
+    </div>
+    <div class="top-meta">
+      <span class="dot"></span>
+      <span class="tag">RU · DARK ONLY</span>
+      <span class="tag">8 COMPONENTS</span>
+      <span class="tag">UPDATED 25.05.26</span>
+    </div>
+  </div>
+
+  <div class="hero">
+    <h1>Каталог системы <em>Go Mentor</em></h1>
+    <p>Тёмная геймифицированная платформа менторства по Go: roadmap из пяти блоков, ачивки как трофеи, бонусы как валюта, скидка до 15% или встреча 1×1 с ментором. Эта страница — единый источник правды о цветах, типографике, компонентах и их сочетаниях.</p>
+    <div class="hero-meta">
+      <span>ATMOSPHERE<b>Cyber-RPG, не детское</b></span>
+      <span>SURFACES<b>4 уровня глубины</b></span>
+      <span>ACCENTS<b>Два хроматических, точечно</b></span>
+      <span>ROLES<b>Student · Buddy · Admin</b></span>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       01 — FOUNDATIONS / COLOR
+  ============================================================ -->
+  <section>
+    <header class="sec-head">
+      <span class="sec-num">01 / FOUNDATIONS</span>
+      <h2 class="sec-title">Палитра</h2>
+      <span class="sec-sub">Тёмная база + точечные неоновые акценты</span>
+    </header>
+
+    <h5 class="subhead">Surfaces — четыре уровня глубины</h5>
+    <div class="palette">
+      <div class="swatch">
+        <div class="chip" style="background:var(--bg)"></div>
+        <div class="meta"><div class="name">Background</div><div class="hex">#07080A</div><div class="role">canvas · 00</div></div>
+      </div>
+      <div class="swatch">
+        <div class="chip" style="background:var(--surface)"></div>
+        <div class="meta"><div class="name">Surface</div><div class="hex">#0F1014</div><div class="role">cards · 01</div></div>
+      </div>
+      <div class="swatch">
+        <div class="chip" style="background:var(--elevated)"></div>
+        <div class="meta"><div class="name">Elevated</div><div class="hex">#16181E</div><div class="role">modals · hover</div></div>
+      </div>
+      <div class="swatch">
+        <div class="chip" style="background:var(--border)"></div>
+        <div class="meta"><div class="name">Border</div><div class="hex">#262830</div><div class="role">divider · line</div></div>
+      </div>
+      <div class="swatch">
+        <div class="chip" style="background:var(--border-bright)"></div>
+        <div class="meta"><div class="name">Border bright</div><div class="hex">#363842</div><div class="role">focus · hover</div></div>
+      </div>
+    </div>
+
+    <h5 class="subhead" style="margin-top:32px">Accents — используются точечно, не на фоне</h5>
+    <div class="palette">
+      <div class="swatch">
+        <div class="chip" style="background:var(--primary);box-shadow:inset 0 0 60px color-mix(in oklab, var(--primary) 30%, transparent)"></div>
+        <div class="meta"><div class="name">Primary · Chartreuse</div><div class="hex">#D4FF3D</div><div class="role">progress · cta</div></div>
+      </div>
+      <div class="swatch">
+        <div class="chip" style="background:var(--secondary);box-shadow:inset 0 0 60px color-mix(in oklab, var(--secondary) 30%, transparent)"></div>
+        <div class="meta"><div class="name">Secondary · Hot Pink</div><div class="hex">#FF3D9A</div><div class="role">бонусы · ачивки</div></div>
+      </div>
+      <div class="swatch">
+        <div class="chip" style="background:var(--success)"></div>
+        <div class="meta"><div class="name">Success</div><div class="hex">#7BE38C</div><div class="role">approved</div></div>
+      </div>
+      <div class="swatch">
+        <div class="chip" style="background:var(--warning)"></div>
+        <div class="meta"><div class="name">Warning</div><div class="hex">#FFDB3D</div><div class="role">waiting_buddy</div></div>
+      </div>
+      <div class="swatch">
+        <div class="chip" style="background:var(--danger)"></div>
+        <div class="meta"><div class="name">Danger</div><div class="hex">#FF5B5B</div><div class="role">failed</div></div>
+      </div>
+    </div>
+
+    <h5 class="subhead" style="margin-top:32px">Text — три уровня контраста</h5>
+    <div class="palette" style="grid-template-columns:repeat(3,1fr)">
+      <div class="swatch">
+        <div class="chip" style="background:var(--bg);display:grid;place-items:center"><span style="color:var(--text);font-size:24px;font-weight:600">Aa Текст · 100%</span></div>
+        <div class="meta"><div class="name">Text · primary</div><div class="hex">#F0F0F2</div><div class="role">заголовки · важные значения</div></div>
+      </div>
+      <div class="swatch">
+        <div class="chip" style="background:var(--bg);display:grid;place-items:center"><span style="color:var(--text-2);font-size:24px;font-weight:500">Aa Текст · 60%</span></div>
+        <div class="meta"><div class="name">Text · secondary</div><div class="hex">#8A8A92</div><div class="role">подписи · описания</div></div>
+      </div>
+      <div class="swatch">
+        <div class="chip" style="background:var(--bg);display:grid;place-items:center"><span style="color:var(--text-3);font-size:24px;font-weight:500">Aa Текст · 35%</span></div>
+        <div class="meta"><div class="name">Text · muted</div><div class="hex">#50525C</div><div class="role">label · placeholder</div></div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       02 — FOUNDATIONS / TYPE
+  ============================================================ -->
+  <section>
+    <header class="sec-head">
+      <span class="sec-num">02 / FOUNDATIONS</span>
+      <h2 class="sec-title">Типографика</h2>
+      <span class="sec-sub">Inter для UI · JetBrains Mono для чисел</span>
+    </header>
+
+    <div class="type-grid">
+      <div class="type-row">
+        <div class="label"><b>Display 01</b><span>Inter · 800 · 56px · ‑3% tracking</span></div>
+        <div class="demo"><span class="display-1">Roadmap по Go</span></div>
+      </div>
+      <div class="type-row">
+        <div class="label"><b>Display 02</b><span>Inter · 700 · 36px · ‑2%</span></div>
+        <div class="demo"><span class="display-2">Блок 03 · Concurrency</span></div>
+      </div>
+      <div class="type-row">
+        <div class="label"><b>Heading</b><span>Inter · 600 · 22px · ‑1%</span></div>
+        <div class="demo"><span class="heading">Достижение получено</span></div>
+      </div>
+      <div class="type-row">
+        <div class="label"><b>Body</b><span>Inter · 400 · 15px · 1.55</span></div>
+        <div class="demo"><span class="body">Подтверди закрытие блока у своего Buddy, чтобы получить +250 бонусов и перейти к следующему этапу пути.</span></div>
+      </div>
+      <div class="type-row">
+        <div class="label"><b>Body 02</b><span>Inter · 400 · 13px · text-2</span></div>
+        <div class="demo"><span class="body-2">Прогресс по теории — 8 из 10 материалов</span></div>
+      </div>
+      <div class="type-row">
+        <div class="label"><b>Caption</b><span>JetBrains Mono · 11px · 0.16em · UPPER</span></div>
+        <div class="demo"><span class="caption">WAITING · BUDDY CONFIRMATION</span></div>
+      </div>
+      <div class="type-row">
+        <div class="label"><b>Numeric · counter</b><span>JetBrains Mono · 700 · 48px · ‑2%</span></div>
+        <div class="demo"><span class="num">3,420</span> <span style="margin-left:14px;color:var(--text-2);font-size:13px">бонусов на балансе</span></div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       03 — COMPONENTS
+  ============================================================ -->
+  <section>
+    <header class="sec-head">
+      <span class="sec-num">03 / COMPONENTS</span>
+      <h2 class="sec-title">Компоненты</h2>
+      <span class="sec-sub">Восемь блоков · все состояния</span>
+    </header>
+
+    <div class="comp-grid">
+
+      <!-- Achievement card -->
+      <div class="comp col-12">
+        <div class="comp-head">
+          <span class="id">C.01</span>
+          <h3>Achievement Card</h3>
+          <span class="desc">280×340 · герой системы · hex-бейдж · glow-эффект для unlocked</span>
+        </div>
+        <div class="ach-row">
+          <!-- Locked -->
+          <div class="ach" data-state="locked">
+            <div class="lock-pip">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+            </div>
+            <div class="hex"><span class="glyph">??</span></div>
+            <div class="title">Channel Master</div>
+            <div class="desc">Реши 10 задач на каналы и select без блокировок</div>
+            <div class="mini-progress-row">
+              <span>7 / 10</span>
+              <div class="mini-progress" style="flex:1"><div style="width:70%"></div></div>
+              <span>70%</span>
+            </div>
+            <div class="reward">
+              <div class="coin">G</div>
+              <span class="amt">+500</span>
+              <span class="lbl">бонусов</span>
+            </div>
+            <div class="footer">LOCKED · IN PROGRESS</div>
+          </div>
+
+          <!-- Unlocked (primary) -->
+          <div class="ach" data-state="unlocked">
+            <div class="hex-halo"></div>
+            <div class="check-pip">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 7"/></svg>
+            </div>
+            <div class="hex"><span class="glyph">G1</span></div>
+            <div class="title">First Goroutine</div>
+            <div class="desc">Запустил первую горутину и дождался её завершения через WaitGroup</div>
+            <div class="reward">
+              <div class="coin">G</div>
+              <span class="amt">+250</span>
+              <span class="lbl">бонусов</span>
+            </div>
+            <div class="footer">UNLOCKED · 14.05.2026</div>
+          </div>
+
+          <!-- Unlocked (secondary / rare) -->
+          <div class="ach" data-state="unlocked-2">
+            <div class="hex-halo"></div>
+            <div class="check-pip">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 7"/></svg>
+            </div>
+            <div class="hex"><span class="glyph">★</span></div>
+            <div class="title">Mentor's Favourite</div>
+            <div class="desc">Buddy одобрил все 4 секции блока с первой попытки</div>
+            <div class="reward">
+              <div class="coin">G</div>
+              <span class="amt">+1000</span>
+              <span class="lbl">бонусов</span>
+            </div>
+            <div class="footer">UNLOCKED · 22.05.2026 · RARE</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Roadmap block card -->
+      <div class="comp col-12">
+        <div class="comp-head">
+          <span class="id">C.02</span>
+          <h3>Roadmap Block Card</h3>
+          <span class="desc">Шапка · прогресс · 4 секции внутри · 4 статуса</span>
+        </div>
+        <div class="roadmap-cards">
+
+          <div class="roadmap" data-status="not_started">
+            <div class="roadmap-head">
+              <div class="roadmap-num">04</div>
+              <div class="roadmap-title">
+                <h4>Tests &amp; Benchmarks</h4>
+                <small>Покрытие, table-driven тесты, профайлинг</small>
+              </div>
+              <span class="badge not-started"><span class="ledr"></span>Не начат</span>
+            </div>
+            <div class="roadmap-progress">
+              <div class="pbar mute"><i style="width:0%"></i></div>
+              <div class="ppct">0%</div>
+            </div>
+            <div class="roadmap-sections">
+              <div class="rs"><span class="rs-lbl">Теория</span><span class="rs-val"><em>0 / 8</em></span></div>
+              <div class="rs"><span class="rs-lbl">Вопросы</span><span class="rs-val"><em>0 / 6</em></span></div>
+              <div class="rs"><span class="rs-lbl">Практика</span><span class="rs-val"><em>0 / 4</em></span></div>
+              <div class="rs"><span class="rs-lbl">Домашка</span><span class="rs-val"><em>0 / 1</em></span></div>
+            </div>
+          </div>
+
+          <div class="roadmap" data-status="in_progress">
+            <div class="roadmap-head">
+              <div class="roadmap-num">03</div>
+              <div class="roadmap-title">
+                <h4>Concurrency</h4>
+                <small>Горутины, каналы, select, контексты</small>
+              </div>
+              <span class="badge in-progress"><span class="ledr"></span>В работе</span>
+            </div>
+            <div class="roadmap-progress">
+              <div class="pbar"><i style="width:62%"></i></div>
+              <div class="ppct">62%</div>
+            </div>
+            <div class="roadmap-sections">
+              <div class="rs done"><span class="rs-lbl">Теория</span><span class="rs-val">10 / 10</span></div>
+              <div class="rs done"><span class="rs-lbl">Вопросы</span><span class="rs-val">8 / 8</span></div>
+              <div class="rs active"><span class="rs-lbl">Практика</span><span class="rs-val">3 / 5</span></div>
+              <div class="rs"><span class="rs-lbl">Домашка</span><span class="rs-val"><em>0 / 1</em></span></div>
+            </div>
+          </div>
+
+          <div class="roadmap" data-status="waiting">
+            <div class="roadmap-head">
+              <div class="roadmap-num">02</div>
+              <div class="roadmap-title">
+                <h4>Interfaces &amp; Errors</h4>
+                <small>Дизайн интерфейсов, error wrapping, sentinel</small>
+              </div>
+              <span class="badge waiting"><span class="ledr"></span>Ждёт Buddy</span>
+            </div>
+            <div class="roadmap-progress">
+              <div class="pbar warn"><i style="width:100%"></i></div>
+              <div class="ppct">100%</div>
+            </div>
+            <div class="roadmap-sections">
+              <div class="rs done"><span class="rs-lbl">Теория</span><span class="rs-val">8 / 8</span></div>
+              <div class="rs done"><span class="rs-lbl">Вопросы</span><span class="rs-val">6 / 6</span></div>
+              <div class="rs done"><span class="rs-lbl">Практика</span><span class="rs-val">4 / 4</span></div>
+              <div class="rs done"><span class="rs-lbl">Домашка</span><span class="rs-val">1 / 1</span></div>
+            </div>
+          </div>
+
+          <div class="roadmap" data-status="approved">
+            <div class="roadmap-head">
+              <div class="roadmap-num">01</div>
+              <div class="roadmap-title">
+                <h4>Foundations</h4>
+                <small>Синтаксис, типы, структуры, slices &amp; maps</small>
+              </div>
+              <span class="badge approved"><span class="ledr"></span>Закрыт</span>
+            </div>
+            <div class="roadmap-progress">
+              <div class="pbar success"><i style="width:100%"></i></div>
+              <div class="ppct">100%</div>
+            </div>
+            <div class="roadmap-sections">
+              <div class="rs done"><span class="rs-lbl">Теория</span><span class="rs-val">12 / 12</span></div>
+              <div class="rs done"><span class="rs-lbl">Вопросы</span><span class="rs-val">10 / 10</span></div>
+              <div class="rs done"><span class="rs-lbl">Практика</span><span class="rs-val">6 / 6</span></div>
+              <div class="rs done"><span class="rs-lbl">Домашка</span><span class="rs-val">2 / 2</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Material card -->
+      <div class="comp col-8">
+        <div class="comp-head">
+          <span class="id">C.03</span>
+          <h3>Material Card</h3>
+          <span class="desc">Embed-карточка · 4 типа источника · обязательный / опционально</span>
+        </div>
+        <div class="mat-stack">
+          <div class="mat">
+            <div class="mat-thumb yt" data-icon="▶ YOUTUBE"></div>
+            <div class="mat-body">
+              <div class="mat-meta">
+                <span class="pill-mini req">Обязательно</span>
+                <span class="src">youtube.com</span>
+                <span>· 28 мин</span>
+              </div>
+              <div class="mat-title">Concurrency patterns in Go: pipelines &amp; fan-out</div>
+              <div class="mat-desc">Классический разбор: построение пайплайнов через каналы, корректная отмена через context.</div>
+            </div>
+            <div class="checker checked" title="Просмотрено">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 7"/></svg>
+            </div>
+          </div>
+
+          <div class="mat">
+            <div class="mat-thumb gh" data-icon="◍ GITHUB"></div>
+            <div class="mat-body">
+              <div class="mat-meta">
+                <span class="pill-mini req">Обязательно</span>
+                <span class="src">github.com/golang/go</span>
+                <span>· proposal</span>
+              </div>
+              <div class="mat-title">sync: design notes for WaitGroup &amp; Mutex internals</div>
+              <div class="mat-desc">Внутреннее устройство примитивов: счётчики, runtime hooks, гарантии порядка.</div>
+            </div>
+            <div class="checker" title="Не просмотрено"></div>
+          </div>
+
+          <div class="mat">
+            <div class="mat-thumb art" data-icon="¶ ARTICLE"></div>
+            <div class="mat-body">
+              <div class="mat-meta">
+                <span class="pill-mini opt">Опционально</span>
+                <span class="src">go.dev/blog</span>
+                <span>· 12 мин чтения</span>
+              </div>
+              <div class="mat-title">Effective error wrapping: errors.Is, As и собственные типы</div>
+              <div class="mat-desc">Когда использовать sentinel-ошибки, а когда — типизированные с дополнительным контекстом.</div>
+            </div>
+            <div class="checker" title="Не просмотрено"></div>
+          </div>
+
+          <div class="mat">
+            <div class="mat-thumb file" data-icon="▤ PDF"></div>
+            <div class="mat-body">
+              <div class="mat-meta">
+                <span class="pill-mini opt">Опционально</span>
+                <span class="src">go-mentor.io · file</span>
+                <span>· 1.4 MB</span>
+              </div>
+              <div class="mat-title">Memory model cheatsheet (внутренний раздаточный)</div>
+              <div class="mat-desc">Happens-before, гарантии каналов, atomic пакет. Распечатай и держи рядом на собесе.</div>
+            </div>
+            <div class="checker checked" title="Просмотрено">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 7"/></svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Progress bar standalone -->
+      <div class="comp col-4">
+        <div class="comp-head">
+          <span class="id">C.04</span>
+          <h3>Progress Bar</h3>
+        </div>
+        <div class="pbar-block">
+          <div>
+            <div class="pbar-row">
+              <span class="lbl">Теория</span>
+              <div class="pbar" style="flex:1"><i style="width:100%"></i></div>
+              <span class="val">10 / 10</span>
+            </div>
+          </div>
+          <div>
+            <div class="pbar-row">
+              <span class="lbl">Практика</span>
+              <div class="pbar" style="flex:1"><i style="width:60%"></i></div>
+              <span class="val">3 / 5</span>
+            </div>
+          </div>
+          <div>
+            <div class="pbar-row">
+              <span class="lbl">Домашка</span>
+              <div class="pbar mute" style="flex:1"><i style="width:0%"></i></div>
+              <span class="val">0 / 1</span>
+            </div>
+          </div>
+          <div>
+            <div class="pbar-row">
+              <span class="lbl">Всего по блоку</span>
+              <div class="pbar" style="flex:1"><i style="width:62%"></i></div>
+              <span class="val">62%</span>
+            </div>
+          </div>
+          <div style="margin-top:6px;border-top:1px dashed var(--border);padding-top:14px">
+            <div class="caption" style="margin-bottom:10px;font-size:10px">Общая формула</div>
+            <div class="pbar-row">
+              <span class="lbl">X / Y материалов</span>
+              <div class="pbar" style="flex:1"><i style="width:48%"></i></div>
+              <span class="val">48%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bonus counter -->
+      <div class="comp col-12">
+        <div class="comp-head">
+          <span class="id">C.05</span>
+          <h3>Bonus Counter</h3>
+          <span class="desc">Баланс · конвертация в скидку до 15% · 1×1 за 1000 бонусов</span>
+        </div>
+        <div class="bonus-card">
+          <div class="bonus-balance">
+            <span class="bonus-label">Текущий баланс</span>
+            <div class="bonus-amount">
+              <div class="coin-lg">G</div>
+              <div class="bonus-num">3,420<small>бонусов</small></div>
+            </div>
+            <div class="bonus-actions">
+              <button class="btn primary">Конвертировать в скидку <span class="arrow">→</span></button>
+              <button class="btn">1×1 с ментором · 1 000 <span class="arrow">→</span></button>
+              <button class="btn ghost">История операций</button>
+            </div>
+          </div>
+          <div class="divider"></div>
+          <div class="discount">
+            <span class="bonus-label">Накопленная скидка постоплаты</span>
+            <div class="discount-head">
+              <div class="pct">9.2%<em>из 15%</em></div>
+              <span class="badge in-progress" style="height:26px"><span class="ledr"></span>+0.7% к следующей ачивке</span>
+            </div>
+            <div class="discount-bar">
+              <i style="width:61%"></i>
+              <div class="ticks"></div>
+            </div>
+            <div class="discount-foot">
+              <span>0%</span>
+              <span style="color:var(--text-2)">5%</span>
+              <span style="color:var(--text-2)">10%</span>
+              <span style="color:var(--primary)">15% · cap</span>
+            </div>
+            <div class="body-2">Курс конвертации: <b style="color:var(--text);font-family:var(--mono)">100 ₿ = 0.27%</b> скидки. Максимальная скидка ограничена 15% от стоимости постоплаты.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Status Badge -->
+      <div class="comp col-6">
+        <div class="comp-head">
+          <span class="id">C.06</span>
+          <h3>Status Badge</h3>
+          <span class="desc">Шесть состояний · waiting пульсирует</span>
+        </div>
+        <div class="badges">
+          <span class="badge not-started"><span class="ledr"></span>Не начат</span>
+          <span class="badge in-progress"><span class="ledr"></span>В работе</span>
+          <span class="badge waiting"><span class="ledr"></span>Ждёт Buddy</span>
+          <span class="badge approved"><span class="ledr"></span>Закрыт</span>
+          <span class="badge completed"><span class="ledr"></span>Завершено</span>
+          <span class="badge failed"><span class="ledr"></span>Отклонено</span>
+        </div>
+        <div class="caption" style="margin-top:18px;margin-bottom:10px;font-size:10px">Inline · в составе таблицы</div>
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 14px;display:grid;grid-template-columns:1fr auto auto;gap:14px;align-items:center;font-size:13px">
+          <span>Блок 03 — Concurrency</span>
+          <span style="font-family:var(--mono);color:var(--text-2);font-size:12px">62%</span>
+          <span class="badge in-progress"><span class="ledr"></span>В работе</span>
+        </div>
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 14px;display:grid;grid-template-columns:1fr auto auto;gap:14px;align-items:center;font-size:13px;margin-top:8px">
+          <span>Блок 02 — Interfaces &amp; Errors</span>
+          <span style="font-family:var(--mono);color:var(--text-2);font-size:12px">100%</span>
+          <span class="badge waiting"><span class="ledr"></span>Ждёт Buddy</span>
+        </div>
+      </div>
+
+      <!-- Toast -->
+      <div class="comp col-6">
+        <div class="comp-head">
+          <span class="id">C.07</span>
+          <h3>Toast</h3>
+          <span class="desc">Уведомление о достижении · слайд + bounce</span>
+        </div>
+        <div class="toast-stack">
+          <div class="toast">
+            <div class="hex hex-sm" style="--size:48px"><span class="glyph">G1</span></div>
+            <div class="body">
+              <small>Достижение получено</small>
+              <b>First Goroutine</b>
+              <span>Закрой ещё 3 — откроется Channel Master</span>
+            </div>
+            <div class="reward-sm"><span class="coin"></span>+250</div>
+          </div>
+
+          <div class="toast" style="--accent:var(--secondary)">
+            <div class="hex hex-sm" style="--size:48px;--accent:var(--secondary)"><span class="glyph" style="color:var(--secondary);text-shadow:0 0 18px var(--secondary-dim)">★</span></div>
+            <div class="body">
+              <small style="color:var(--secondary)">Редкая ачивка</small>
+              <b>Mentor's Favourite</b>
+              <span>Buddy одобрил блок с первой попытки</span>
+            </div>
+            <div class="reward-sm"><span class="coin"></span>+1 000</div>
+          </div>
+
+          <div class="toast" style="border-color:color-mix(in oklab, var(--warning) 30%, var(--border))">
+            <div class="hex hex-sm" style="--size:48px;--accent:var(--warning)"><span class="glyph" style="color:var(--warning);text-shadow:0 0 14px color-mix(in oklab,var(--warning) 50%, transparent)">!</span></div>
+            <div class="body">
+              <small style="color:var(--warning)">Ждём Buddy</small>
+              <b>Блок 02 отправлен на ревью</b>
+              <span>Среднее время подтверждения — 14 ч</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="comp col-6">
+        <div class="comp-head">
+          <span class="id">C.08</span>
+          <h3>Sidebar</h3>
+        </div>
+        <div class="sidebar">
+          <div class="sb-user">
+            <div class="avatar">МК</div>
+            <div>
+              <div class="name">Михаил К.</div>
+              <div class="role"><span class="dot"></span>Student</div>
+            </div>
+            <span class="switcher">⇅</span>
+          </div>
+          <div class="sb-section">Обучение</div>
+          <div class="sb-item active">
+            <div class="ic">R</div>
+            <span>Roadmap</span>
+          </div>
+          <div class="sb-item">
+            <div class="ic">A</div>
+            <span>Ачивки</span>
+            <span class="pill-mini req" style="background:rgba(124,92,255,.15);border-color:color-mix(in oklab,var(--secondary) 40%,transparent);color:#C5B6FF">3</span>
+          </div>
+          <div class="sb-item">
+            <div class="ic">M</div>
+            <span>Материалы</span>
+          </div>
+          <div class="sb-item">
+            <div class="ic">B</div>
+            <span>Buddy chat</span>
+            <span class="pill-mini opt">●</span>
+          </div>
+          <div class="sb-section">Экономика</div>
+          <div class="sb-item">
+            <div class="ic">$</div>
+            <span>Бонусы</span>
+            <span style="margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--text-2)">3 420</span>
+          </div>
+          <div class="sb-item">
+            <div class="ic">%</div>
+            <span>Скидка</span>
+          </div>
+          <div class="sb-section">Профиль</div>
+          <div class="sb-item">
+            <div class="ic">⚙</div>
+            <span>Настройки</span>
+          </div>
+          <div class="sb-foot">
+            <span class="led"></span>
+            <span>BUDDY ONLINE · 2 МИН</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Role switcher -->
+      <div class="comp col-6">
+        <div class="comp-head">
+          <span class="id">C.08 · role switcher</span>
+          <h3>Role switcher</h3>
+          <span class="desc">Один пользователь — три роли</span>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr;gap:10px">
+          <div class="sb-user" style="margin:0">
+            <div class="avatar">МК</div>
+            <div>
+              <div class="name">Михаил К.</div>
+              <div class="role"><span class="dot"></span>Student</div>
+            </div>
+            <span class="switcher">●</span>
+          </div>
+          <div class="sb-user" style="margin:0">
+            <div class="avatar" style="background:linear-gradient(140deg,var(--secondary),color-mix(in oklab, var(--secondary) 50%, black))">МК</div>
+            <div>
+              <div class="name">Михаил К.</div>
+              <div class="role"><span class="dot" style="background:var(--secondary);box-shadow:0 0 10px var(--secondary)"></span>Buddy</div>
+            </div>
+            <span class="switcher">●</span>
+          </div>
+          <div class="sb-user" style="margin:0">
+            <div class="avatar" style="background:linear-gradient(140deg,var(--warning),color-mix(in oklab, var(--warning) 50%, black));color:#1a1300">МК</div>
+            <div>
+              <div class="name">Михаил К.</div>
+              <div class="role"><span class="dot" style="background:var(--warning);box-shadow:0 0 10px var(--warning)"></span>Admin</div>
+            </div>
+            <span class="switcher">●</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       04 — LAYOUT EXAMPLES
+  ============================================================ -->
+  <section>
+    <header class="sec-head">
+      <span class="sec-num">04 / LAYOUTS</span>
+      <h2 class="sec-title">Сборки</h2>
+      <span class="sec-sub">Как компоненты сочетаются на экранах</span>
+    </header>
+
+    <!-- Example 1: roadmap block with materials -->
+    <div class="ex-frame" style="margin-bottom:32px">
+      <div class="ex-head">
+        <div class="dots"><span></span><span></span><span></span></div>
+        <span class="title">/student/roadmap/03-concurrency</span>
+        <span class="right">EX.01 · ROADMAP BLOCK DETAIL</span>
+      </div>
+      <div class="ex-body ex1">
+        <div class="roadmap-expanded">
+          <div class="re-head">
+            <div class="roadmap-num" style="width:64px;height:64px;border-radius:14px;font-size:24px;color:var(--primary);box-shadow:inset 0 0 0 1px color-mix(in oklab,var(--primary) 40%,transparent), 0 0 28px color-mix(in oklab,var(--primary) 30%,transparent)">03</div>
+            <div class="re-title">
+              <h3>Блок 03 · Concurrency</h3>
+              <small>Горутины, каналы, select, контексты. ~14 часов теории и практики.</small>
+            </div>
+            <span class="badge in-progress"><span class="ledr"></span>В работе · 62%</span>
+          </div>
+          <div class="roadmap-progress">
+            <div class="pbar" style="flex:1;height:10px"><i style="width:62%"></i></div>
+            <div class="ppct">62%</div>
+          </div>
+          <div class="re-stat">
+            <div class="cell"><small>Часов потрачено</small><b>9.4ч</b></div>
+            <div class="cell"><small>В среднем по потоку</small><b style="color:var(--text)">11.8ч</b></div>
+            <div class="cell s"><small>Закрыто секций</small><b>2 / 4</b></div>
+            <div class="cell"><small>Ожидаемые бонусы</small><b style="color:var(--secondary)">+750</b></div>
+          </div>
+
+          <div class="caption" style="margin-top:6px;font-size:10px">Текущая секция · практика</div>
+          <div class="mat-stack">
+            <div class="mat">
+              <div class="mat-thumb yt" data-icon="▶ YOUTUBE"></div>
+              <div class="mat-body">
+                <div class="mat-meta"><span class="pill-mini req">Обязательно</span><span class="src">youtube.com</span><span>· 28 мин</span></div>
+                <div class="mat-title">Concurrency patterns: pipelines &amp; fan-out</div>
+                <div class="mat-desc">Классический разбор: построение пайплайнов и корректная отмена.</div>
+              </div>
+              <div class="checker checked"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 7"/></svg></div>
+            </div>
+            <div class="mat">
+              <div class="mat-thumb gh" data-icon="◍ GITHUB"></div>
+              <div class="mat-body">
+                <div class="mat-meta"><span class="pill-mini req">Обязательно</span><span class="src">github.com/golang/go</span></div>
+                <div class="mat-title">sync: design notes for WaitGroup &amp; Mutex internals</div>
+                <div class="mat-desc">Внутреннее устройство примитивов: счётчики, runtime hooks.</div>
+              </div>
+              <div class="checker"></div>
+            </div>
+            <div class="mat">
+              <div class="mat-thumb art" data-icon="¶ ARTICLE"></div>
+              <div class="mat-body">
+                <div class="mat-meta"><span class="pill-mini opt">Опционально</span><span class="src">go.dev/blog</span><span>· 12 мин</span></div>
+                <div class="mat-title">Effective error wrapping: errors.Is, As и собственные типы</div>
+                <div class="mat-desc">Когда использовать sentinel-ошибки, а когда — типизированные.</div>
+              </div>
+              <div class="checker"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ex-sidebar">
+          <div class="roadmap" data-status="in_progress" style="background:var(--surface)">
+            <div class="caption" style="font-size:10px">СЛЕДУЮЩИЙ ШАГ</div>
+            <div style="font-size:15px;font-weight:600;letter-spacing:-.005em;line-height:1.35">Отправь домашку Buddy на ревью, чтобы закрыть блок</div>
+            <div class="body-2">Buddy подтверждает в течение 24 часов. После подтверждения автоматически откроется блок 04.</div>
+            <div class="row" style="margin-top:4px">
+              <button class="btn primary">Отправить на ревью →</button>
+            </div>
+          </div>
+
+          <div class="bonus-card" style="grid-template-columns:1fr;padding:18px">
+            <div class="bonus-balance">
+              <span class="bonus-label">Получишь за блок</span>
+              <div class="bonus-amount">
+                <div class="coin-lg" style="width:42px;height:42px;font-size:16px">G</div>
+                <div class="bonus-num" style="font-size:32px">+750<small>бонусов</small></div>
+              </div>
+              <div class="body-2">+5% к шкале достижения <b style="color:var(--text)">Pipeline Architect</b></div>
+            </div>
+          </div>
+
+          <div class="toast" style="width:auto">
+            <div class="hex hex-sm" style="--size:48px;--accent:var(--secondary)"><span class="glyph" style="color:var(--secondary);text-shadow:0 0 18px var(--secondary-dim)">★</span></div>
+            <div class="body">
+              <small style="color:var(--secondary)">Активный квест</small>
+              <b>Закрой блок без правок</b>
+              <span>Награда: +500 бонусов</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Example 2: Achievement wall -->
+    <div class="ex-frame" style="margin-bottom:32px">
+      <div class="ex-head">
+        <div class="dots"><span></span><span></span><span></span></div>
+        <span class="title">/student/achievements</span>
+        <span class="right">EX.02 · ACHIEVEMENT WALL</span>
+      </div>
+      <div class="ex-body">
+        <div class="wall-head">
+          <div>
+            <h3>Коллекция · 12 / 36</h3>
+            <div class="body-2" style="margin-top:6px">Открыто 33% — продолжай идти по roadmap, чтобы разблокировать остальное.</div>
+          </div>
+          <div class="filters">
+            <span class="badge in-progress" style="height:26px"><span class="ledr"></span>Все</span>
+            <span class="badge">Открытые</span>
+            <span class="badge">Locked</span>
+            <span class="badge completed">Rare</span>
+          </div>
+        </div>
+
+        <div class="wall-grid">
+          <div class="ach" data-state="unlocked"><div class="hex-halo"></div><div class="check-pip"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 7"/></svg></div><div class="hex"><span class="glyph">G1</span></div><div class="title">First Goroutine</div><div class="desc">Первая горутина с WaitGroup</div><div class="reward"><div class="coin">G</div><span class="amt">+250</span></div></div>
+
+          <div class="ach" data-state="unlocked"><div class="hex-halo"></div><div class="check-pip"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 7"/></svg></div><div class="hex"><span class="glyph">Ch</span></div><div class="title">Channel Initiate</div><div class="desc">3 задачи на каналы</div><div class="reward"><div class="coin">G</div><span class="amt">+150</span></div></div>
+
+          <div class="ach" data-state="unlocked-2"><div class="hex-halo"></div><div class="check-pip"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 7"/></svg></div><div class="hex"><span class="glyph">★</span></div><div class="title">Mentor's Favourite</div><div class="desc">Блок с первой попытки</div><div class="reward"><div class="coin">G</div><span class="amt">+1 000</span></div></div>
+
+          <div class="ach" data-state="locked"><div class="lock-pip"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div><div class="hex"><span class="glyph">??</span></div><div class="title">Channel Master</div><div class="desc">10 задач без блокировок</div><div class="mini-progress-row"><div class="mini-progress" style="flex:1"><div style="width:70%"></div></div><span>7/10</span></div></div>
+
+          <div class="ach" data-state="locked"><div class="lock-pip"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div><div class="hex"><span class="glyph">??</span></div><div class="title">Test Driven</div><div class="desc">Покрытие &gt; 80% в проекте</div><div class="mini-progress-row"><div class="mini-progress" style="flex:1"><div style="width:34%"></div></div><span>34%</span></div></div>
+
+          <div class="ach" data-state="locked"><div class="lock-pip"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div><div class="hex"><span class="glyph">??</span></div><div class="title">Speed Runner</div><div class="desc">Блок за 7 дней</div><div class="mini-progress-row"><div class="mini-progress" style="flex:1"><div style="width:12%"></div></div><span>12%</span></div></div>
+
+          <div class="ach" data-state="locked"><div class="lock-pip"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div><div class="hex"><span class="glyph">??</span></div><div class="title">Mutex Tamer</div><div class="desc">Решить race-condition</div><div class="mini-progress-row"><div class="mini-progress" style="flex:1"><div style="width:0%"></div></div><span>0%</span></div></div>
+
+          <div class="ach" data-state="locked"><div class="lock-pip"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div><div class="hex"><span class="glyph">??</span></div><div class="title">Roadmap End</div><div class="desc">Закрыть все 5 блоков</div><div class="mini-progress-row"><div class="mini-progress" style="flex:1"><div style="width:20%"></div></div><span>1/5</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Example 3: Bonus / discount overview with sidebar -->
+    <div class="ex-frame">
+      <div class="ex-head">
+        <div class="dots"><span></span><span></span><span></span></div>
+        <span class="title">/student/bonuses</span>
+        <span class="right">EX.03 · BONUS &amp; DISCOUNT OVERVIEW</span>
+      </div>
+      <div class="ex-body" style="grid-template-columns:260px 1fr;gap:24px">
+        <div class="sidebar" style="margin:0">
+          <div class="sb-user">
+            <div class="avatar">МК</div>
+            <div>
+              <div class="name">Михаил К.</div>
+              <div class="role"><span class="dot"></span>Student</div>
+            </div>
+            <span class="switcher">⇅</span>
+          </div>
+          <div class="sb-section">Обучение</div>
+          <div class="sb-item"><div class="ic">R</div><span>Roadmap</span></div>
+          <div class="sb-item"><div class="ic">A</div><span>Ачивки</span><span class="pill-mini req" style="background:rgba(124,92,255,.15);border-color:color-mix(in oklab,var(--secondary) 40%,transparent);color:#C5B6FF">3</span></div>
+          <div class="sb-item"><div class="ic">M</div><span>Материалы</span></div>
+          <div class="sb-section">Экономика</div>
+          <div class="sb-item active"><div class="ic">$</div><span>Бонусы</span><span style="margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--text-2)">3 420</span></div>
+          <div class="sb-item"><div class="ic">%</div><span>Скидка</span></div>
+          <div class="sb-foot"><span class="led"></span><span>BUDDY ONLINE · 2 МИН</span></div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:20px">
+          <div>
+            <h3 style="margin:0 0 6px;font-size:22px;letter-spacing:-.01em">Бонусы</h3>
+            <div class="body-2">Закрывай блоки и собирай ачивки. Бонусы конвертируются в скидку до 15% или в 1×1 с ментором.</div>
+          </div>
+
+          <div class="bonus-card">
+            <div class="bonus-balance">
+              <span class="bonus-label">Текущий баланс</span>
+              <div class="bonus-amount">
+                <div class="coin-lg">G</div>
+                <div class="bonus-num">3,420<small>бонусов</small></div>
+              </div>
+              <div class="bonus-actions">
+                <button class="btn primary">Конвертировать в скидку <span class="arrow">→</span></button>
+                <button class="btn">1×1 с ментором · 1 000 <span class="arrow">→</span></button>
+              </div>
+            </div>
+            <div class="divider"></div>
+            <div class="discount">
+              <span class="bonus-label">Скидка постоплаты</span>
+              <div class="discount-head">
+                <div class="pct">9.2%<em>из 15%</em></div>
+                <span class="badge in-progress" style="height:26px"><span class="ledr"></span>+0.7% к ачивке</span>
+              </div>
+              <div class="discount-bar"><i style="width:61%"></i><div class="ticks"></div></div>
+              <div class="discount-foot">
+                <span>0%</span><span style="color:var(--text-2)">5%</span><span style="color:var(--text-2)">10%</span><span style="color:var(--primary)">15% · cap</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1.1fr 1fr;gap:20px">
+            <div style="border:1px solid var(--border);background:var(--surface);border-radius:12px;padding:18px">
+              <div class="caption" style="margin-bottom:14px;font-size:10px">ПОСЛЕДНИЕ ОПЕРАЦИИ</div>
+              <div style="display:flex;flex-direction:column">
+                <div style="display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:14px;padding:12px 0;border-bottom:1px dashed var(--border)">
+                  <div><div style="font-size:13px">Ачивка · First Goroutine</div><div class="body-2">14.05.2026 · 16:42</div></div>
+                  <span class="badge approved" style="height:22px"><span class="ledr"></span>+ачивка</span>
+                  <span style="font-family:var(--mono);font-weight:700;color:var(--primary);font-size:14px">+250</span>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:14px;padding:12px 0;border-bottom:1px dashed var(--border)">
+                  <div><div style="font-size:13px">Закрытие блока · Foundations</div><div class="body-2">12.05.2026 · 19:08</div></div>
+                  <span class="badge approved" style="height:22px"><span class="ledr"></span>+блок</span>
+                  <span style="font-family:var(--mono);font-weight:700;color:var(--primary);font-size:14px">+1 200</span>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:14px;padding:12px 0">
+                  <div><div style="font-size:13px">Запрос · 1×1 с ментором</div><div class="body-2">28.04.2026 · 11:15</div></div>
+                  <span class="badge completed" style="height:22px"><span class="ledr"></span>1×1</span>
+                  <span style="font-family:var(--mono);font-weight:700;color:var(--danger);font-size:14px">−1 000</span>
+                </div>
+              </div>
+            </div>
+
+            <div style="border:1px solid var(--border);background:var(--surface);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:14px">
+              <div class="caption" style="font-size:10px">БЛИЖАЙШИЕ НАГРАДЫ</div>
+              <div style="display:flex;gap:12px;align-items:center">
+                <div class="hex" style="--size:52px;--accent:var(--primary);flex:0 0 52px"><span class="glyph" style="font-size:16px">G1</span></div>
+                <div style="flex:1">
+                  <div style="font-size:13px;font-weight:600">Channel Master</div>
+                  <div class="mini-progress-row" style="margin-top:6px"><div class="mini-progress" style="flex:1"><div style="width:70%"></div></div><span>7/10</span></div>
+                </div>
+                <span style="font-family:var(--mono);font-weight:700;color:var(--secondary);font-size:13px">+500</span>
+              </div>
+              <div style="display:flex;gap:12px;align-items:center">
+                <div class="hex" style="--size:52px;--accent:var(--primary);flex:0 0 52px"><span class="glyph" style="font-size:16px">T</span></div>
+                <div style="flex:1">
+                  <div style="font-size:13px;font-weight:600">Test Driven</div>
+                  <div class="mini-progress-row" style="margin-top:6px"><div class="mini-progress" style="flex:1"><div style="width:34%"></div></div><span>34%</span></div>
+                </div>
+                <span style="font-family:var(--mono);font-weight:700;color:var(--secondary);font-size:13px">+750</span>
+              </div>
+              <div style="display:flex;gap:12px;align-items:center">
+                <div class="hex" style="--size:52px;--accent:var(--secondary);flex:0 0 52px"><span class="glyph" style="font-size:16px;color:var(--secondary);text-shadow:0 0 14px var(--secondary-dim)">★</span></div>
+                <div style="flex:1">
+                  <div style="font-size:13px;font-weight:600">Roadmap End <span class="pill-mini req" style="background:rgba(124,92,255,.15);border-color:color-mix(in oklab,var(--secondary) 40%,transparent);color:#C5B6FF;margin-left:4px">RARE</span></div>
+                  <div class="mini-progress-row" style="margin-top:6px"><div class="mini-progress" style="flex:1"><div style="width:20%"></div></div><span>1/5</span></div>
+                </div>
+                <span style="font-family:var(--mono);font-weight:700;color:var(--secondary);font-size:13px">+5 000</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <div class="doc-foot">
+    <span>GO MENTOR · DESIGN SYSTEM · v0.1</span>
+    <span>WCAG-DARK · CONTRAST AA · 25.05.2026</span>
+  </div>
+
+</div>
+</body>
+</html>
