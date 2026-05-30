@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1280" />
+<title>Go Mentor · Вход</title>
+<script>{const _v=new URLSearchParams(location.search).get('v');document.documentElement.className = _v==='bd' ? 'v-b v-b-dark' : _v==='b' ? 'v-b' : 'v-a';}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="../styles/base.css" rel="stylesheet">
+</head>
+<body>
+<div class="auth-stage">
+
+  <!-- ===== STEP: LOGIN ===== -->
+  <div class="auth" data-step="login">
+    <div class="auth-brand">
+      <div class="mark">G</div>
+      <div class="bn">Go Mentor</div>
+      <div class="bt">Маршрут обучения Go, наставник рядом и видимый прогресс — от первого дня до оффера.</div>
+      <div class="bf">Платформа менторства</div>
+    </div>
+    <div class="auth-form">
+      <h2>Вход</h2>
+      <div class="h-sub">Войдите по логину и паролю</div>
+
+      <div class="form-err" id="login-err" hidden>
+        <svg class="i" style="width:16px;height:16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01" stroke-linecap="round"/></svg>
+        Неверный логин или пароль
+      </div>
+
+      <div class="field">
+        <label>Логин</label>
+        <input class="input" id="f-login" type="text" value="mkrotov" autocomplete="off" />
+      </div>
+      <div class="field">
+        <label>Пароль</label>
+        <input class="input" id="f-pass" type="password" placeholder="Введите пароль" />
+      </div>
+      <button class="btn secondary" id="btn-login" style="width:100%;justify-content:center;height:42px;margin-top:6px">Войти</button>
+    </div>
+  </div>
+
+  <!-- ===== STEP: ROLE PICKER ===== -->
+  <div class="auth" data-step="role" hidden>
+    <div class="auth-brand">
+      <div class="mark">G</div>
+      <div class="bn">С возвращением,<br/>Михаил</div>
+      <div class="bt">У вашего аккаунта несколько ролей. Выберите, в каком интерфейсе продолжить.</div>
+      <div class="bf">Роль сохранится до выхода</div>
+    </div>
+    <div class="auth-form">
+      <h2>Выбор роли</h2>
+      <div class="h-sub">Доступно три роли</div>
+
+      <div class="role-list" id="roles">
+        <div class="role-card sel" data-role="student">
+          <div class="ric"><svg class="i" style="width:20px;height:20px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 8l9-4 9 4-9 4-9-4Z" stroke-linejoin="round"/><path d="M7 10v5c0 1.1 2.2 2 5 2s5-.9 5-2v-5" stroke-linecap="round"/></svg></div>
+          <div class="rmeta"><div class="rt">Студент</div><div class="rd">Учусь по маршруту, собираю достижения</div></div>
+          <span class="rradio"></span>
+        </div>
+        <div class="role-card" data-role="buddy">
+          <div class="ric"><svg class="i" style="width:20px;height:20px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c0-3 2.5-5 5.5-5s5.5 2 5.5 5" stroke-linecap="round"/><path d="M16 5.5a3 3 0 0 1 0 5.8M18.5 19c0-2.3-1.2-4-3-4.6" stroke-linecap="round"/></svg></div>
+          <div class="rmeta"><div class="rt">Buddy</div><div class="rd">Веду учеников, подтверждаю блоки</div></div>
+          <span class="rradio"></span>
+        </div>
+        <div class="role-card" data-role="admin">
+          <div class="ric"><svg class="i" style="width:20px;height:20px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l7 3v5c0 4.2-2.9 7.6-7 9-4.1-1.4-7-4.8-7-9V6l7-3Z" stroke-linejoin="round"/></svg></div>
+          <div class="rmeta"><div class="rt">Администратор</div><div class="rd">Управляю платформой · отдельная панель</div></div>
+          <span class="rradio"></span>
+        </div>
+      </div>
+      <button class="btn secondary" id="btn-role" style="width:100%;justify-content:center;height:42px">Продолжить как Студент</button>
+    </div>
+  </div>
+
+  <!-- demo state strip -->
+  <div class="demo-strip">
+    Состояния:
+    <span class="dchip on" data-go="login">Вход</span>
+    <span class="dchip" data-go="error">Ошибка входа</span>
+    <span class="dchip" data-go="role">Выбор роли</span>
+  </div>
+</div>
+
+<script>
+(function(){
+  const steps = document.querySelectorAll('.auth[data-step]');
+  const err = document.getElementById('login-err');
+  const pass = document.getElementById('f-pass');
+  const chips = document.querySelectorAll('.demo-strip .dchip');
+
+  function show(step){
+    steps.forEach(s => s.hidden = s.getAttribute('data-step') !== step);
+  }
+  function setError(on){
+    err.hidden = !on;
+    pass.classList.toggle('err', on);
+    document.getElementById('f-login').classList.toggle('err', on);
+  }
+  function chipState(name){
+    chips.forEach(c => c.classList.toggle('on', c.getAttribute('data-go') === name));
+  }
+
+  // login submit
+  document.getElementById('btn-login').addEventListener('click', () => {
+    if (!pass.value.trim()){ setError(true); chipState('error'); return; }
+    setError(false); show('role'); chipState('role');
+  });
+  pass.addEventListener('input', () => { if (pass.value) setError(false); });
+
+  // role select
+  const roles = document.querySelectorAll('.role-card');
+  const labels = { student:'Студент', buddy:'Buddy', admin:'Администратор' };
+  roles.forEach(r => r.addEventListener('click', () => {
+    roles.forEach(x => x.classList.toggle('sel', x === r));
+    document.getElementById('btn-role').textContent = 'Продолжить как ' + labels[r.getAttribute('data-role')];
+  }));
+
+  // demo chips
+  chips.forEach(c => c.addEventListener('click', () => {
+    const go = c.getAttribute('data-go');
+    chipState(go);
+    if (go === 'login'){ setError(false); show('login'); }
+    else if (go === 'error'){ show('login'); setError(true); }
+    else if (go === 'role'){ setError(false); show('role'); }
+  }));
+})();
+</script>
+</body>
+</html>
