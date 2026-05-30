@@ -698,3 +698,24 @@ a{color:inherit;text-decoration:none}
 .stu-act.cold .adot{background:var(--danger)}
 .stu-filter{display:flex;align-items:center;gap:8px}
 .stu-filter .c{font-size:11px;font-weight:700;opacity:.7}
+
+/* ============================================================
+   Buddy — student card (header, locked final stages)
+   ============================================================ */
+.scard{display:flex;align-items:center;gap:18px;padding:20px 22px}
+.scard .avatar{width:60px;height:60px;flex:0 0 60px;font-size:21px;border-radius:13px}
+.v-b .scard .avatar{border-radius:9px}
+.scard .sinfo{flex:1;min-width:0}
+.scard .sinfo h2{margin:0;font-size:21px;font-weight:700;letter-spacing:-.01em}
+.scard .smeta{font-size:12.5px;color:var(--ink-2);font-weight:600;margin-top:5px;display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+.scard .smeta .tg{color:var(--primary-ink);font-weight:700}
+.scard .sact{display:flex;gap:9px;flex:0 0 auto}
+
+.final{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.final .fc{border:1px solid var(--line);background:var(--surface-2);border-radius:var(--r);padding:20px;display:flex;flex-direction:column;gap:13px;position:relative}
+.final .fc.locked{opacity:.72}
+.final .fc .fct{display:flex;align-items:center;gap:11px}
+.final .fc .ficon{width:40px;height:40px;flex:0 0 40px;border-radius:var(--r-sm);background:var(--bg);border:1px solid var(--line);display:grid;place-items:center;color:var(--ink-3)}
+.final .fc h4{margin:0;font-size:15px;font-weight:700}
+.final .fc .fd{font-size:12.5px;color:var(--ink-2);line-height:1.5}
+.bl-note{display:flex;align-items:center;gap:8px;font-size:11.5px;font-weight:600;color:var(--ink-3);background:var(--bg);border:1px solid var(--line);border-radius:var(--r-sm);padding:9px 12px}
