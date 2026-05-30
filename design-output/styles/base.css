@@ -630,3 +630,8 @@ a{color:inherit;text-decoration:none}
 .pp-closed .ico{width:46px;height:46px;border-radius:50%;background:var(--bg);border:1px solid var(--line);display:grid;place-items:center;margin:0 auto 13px;color:var(--ink-3)}
 .pp-closed .t{font-size:14px;font-weight:700;color:var(--ink)}
 .pp-closed .d{font-size:12.5px;margin-top:4px}
+.pp-bio{font-size:13px;color:var(--ink-2);line-height:1.55}
+.pp-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:start}
+.pp-statelabel{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-bottom:11px}
+.backlink{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:600;color:var(--ink-2);cursor:pointer}
+.backlink:hover{color:var(--ink)}
