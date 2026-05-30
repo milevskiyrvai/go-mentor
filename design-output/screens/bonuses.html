@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1280" />
+<title>Go Mentor · Бонусы</title>
+<script>{const _v=new URLSearchParams(location.search).get('v');document.documentElement.className = _v==='bd' ? 'v-b v-b-dark' : _v==='b' ? 'v-b' : 'v-a';}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="../styles/base.css" rel="stylesheet">
+</head>
+<body>
+<div class="app">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">G</div>
+      <div class="brand-name">Go Mentor<small>Платформа</small></div>
+    </div>
+    <div class="sb-user">
+      <div class="avatar">МК</div>
+      <div style="min-width:0">
+        <div class="nm">Михаил Кротов</div>
+        <div class="rl"><span class="role-dot"></span>Студент<span class="swap">⇄ роль</span></div>
+      </div>
+    </div>
+
+    <div class="sb-label">Обучение</div>
+    <div class="nav-item"><span class="ic"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></span>Дашборд</div>
+    <div class="nav-item"><span class="ic"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h10M4 12h16M4 18h7" stroke-linecap="round"/><circle cx="19" cy="6" r="1.6"/><circle cx="14" cy="18" r="1.6"/></svg></span>Roadmap</div>
+    <div class="nav-item"><span class="ic"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="9" r="6"/><path d="M9 14l-2 7 5-3 5 3-2-7" stroke-linejoin="round"/></svg></span>Достижения</div>
+    <div class="nav-item active"><span class="ic"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M12 8v8M9.5 10.5h3.2a1.8 1.8 0 0 1 0 3.6H9.5" stroke-linecap="round"/></svg></span>Бонусы</div>
+    <div class="nav-item"><span class="ic"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 9h18M8 3v4" stroke-linecap="round"/></svg></span>Собеседования</div>
+    <div class="nav-item"><span class="ic"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4" stroke-linecap="round"/></svg></span>Календарь</div>
+    <div class="nav-item"><span class="ic"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M5 20c0-3.5 3-6 7-6s7 2.5 7 6" stroke-linecap="round"/></svg></span>Профиль</div>
+
+    <div class="sb-foot"><span class="led"></span>Buddy на связи · Иван Менторов</div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <main class="main">
+    <div class="page-head">
+      <div>
+        <h1>Бонусы</h1>
+        <div class="sub">Баланс <b class="num">3 420</b> бонусов · скидка постоплаты <b class="num">9,2%</b> из 15%</div>
+      </div>
+      <div class="right">
+        <span class="pill approved"><span class="led"></span>Скидка активна</span>
+      </div>
+    </div>
+
+    <!-- hero: balance + conversion -->
+    <div class="bonus-hero">
+      <div class="bcard bal">
+        <div class="lbl">Баланс бонусов</div>
+        <div class="bal-num"><span class="v num" id="bal-v">3 420</span><span class="u">бонусов</span></div>
+        <div class="bal-facts">
+          <div class="f"><div class="k">Начислено за всё время</div><div class="n num">4 340</div></div>
+          <div class="f"><div class="k">Конвертировано в скидку</div><div class="n num minus">−920</div></div>
+          <div class="f"><div class="k">Достижений получено</div><div class="n num">9</div></div>
+        </div>
+      </div>
+
+      <div class="bcard">
+        <div class="lbl">Скидка постоплаты</div>
+        <div class="disc-num"><span class="v num">9,2<span style="font-size:26px">%</span></span><span class="u">из 15% максимум</span></div>
+        <div class="scale">
+          <div class="track">
+            <div class="fill" style="width:61.3%"></div>
+            <div class="ghost" id="cv-ghost" style="left:61.3%;width:20%"></div>
+          </div>
+          <div class="ticks"><span>0%</span><span>5%</span><span>10%</span><span>15%</span></div>
+        </div>
+        <div class="convert">
+          <div class="stepper">
+            <button id="cv-minus" type="button" aria-label="меньше">−</button>
+            <span class="amt"><span class="num" id="cv-amt">300</span></span>
+            <button id="cv-plus" type="button" aria-label="больше">+</button>
+          </div>
+          <div class="readout" id="cv-read">+3,0% → <b>12,2% скидки</b></div>
+          <button class="btn secondary" type="button">Конвертировать</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- two columns: ledger + 1×1 -->
+    <div class="cols c-2-1" style="flex:1;align-items:start">
+      <!-- ledger -->
+      <div class="card card-pad" style="display:flex;flex-direction:column">
+        <div class="card-head"><h3>История операций</h3><span class="meta">7 операций</span></div>
+        <div class="ledger">
+          <div class="txn debit">
+            <div class="ic"><svg class="i" style="width:17px;height:17px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 18l6-6-6-6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div><div class="tt">Конвертация в скидку</div><div class="ds">Скидка постоплаты +9,2%</div></div>
+            <div class="right"><div class="a num">−920</div><div class="when">20 мая</div></div>
+          </div>
+          <div class="txn credit">
+            <div class="ic"><svg class="i" style="width:16px;height:16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="9" r="6"/><path d="M9 14l-2 7 5-3 5 3-2-7" stroke-linejoin="round"/></svg></div>
+            <div><div class="tt">Достижение «Серия real ×3»</div><div class="ds">Начисление за достижение</div></div>
+            <div class="right"><div class="a num">+50</div><div class="when">18 мая</div></div>
+          </div>
+          <div class="txn credit">
+            <div class="ic"><svg class="i" style="width:16px;height:16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="9" r="6"/><path d="M9 14l-2 7 5-3 5 3-2-7" stroke-linejoin="round"/></svg></div>
+            <div><div class="tt">Достижение «Первый real»</div><div class="ds">Начисление за достижение</div></div>
+            <div class="right"><div class="a num">+75</div><div class="when">16 мая</div></div>
+          </div>
+          <div class="txn credit">
+            <div class="ic"><svg class="i" style="width:16px;height:16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="9" r="6"/><path d="M9 14l-2 7 5-3 5 3-2-7" stroke-linejoin="round"/></svg></div>
+            <div><div class="tt">Достижение «Первый mock»</div><div class="ds">Начисление за достижение</div></div>
+            <div class="right"><div class="a num">+50</div><div class="when">12 мая</div></div>
+          </div>
+          <div class="txn credit">
+            <div class="ic"><svg class="i" style="width:17px;height:17px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg></div>
+            <div><div class="tt">Ручная корректировка</div><div class="ds">Стартовый грант программы · администратор</div></div>
+            <div class="right"><div class="a num">+3 945</div><div class="when">4 мая</div></div>
+          </div>
+          <div class="txn credit">
+            <div class="ic"><svg class="i" style="width:16px;height:16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="9" r="6"/><path d="M9 14l-2 7 5-3 5 3-2-7" stroke-linejoin="round"/></svg></div>
+            <div><div class="tt">Достижение «Профиль оформлен»</div><div class="ds">Начисление за достижение</div></div>
+            <div class="right"><div class="a num">+40</div><div class="when">3 мая</div></div>
+          </div>
+          <div class="txn credit">
+            <div class="ic"><svg class="i" style="width:16px;height:16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="9" r="6"/><path d="M9 14l-2 7 5-3 5 3-2-7" stroke-linejoin="round"/></svg></div>
+            <div><div class="tt">Достижение «Первый шаг»</div><div class="ds">Начисление за достижение</div></div>
+            <div class="right"><div class="a num">+25</div><div class="when">2 мая</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1×1 requests -->
+      <div style="display:flex;flex-direction:column;gap:20px">
+        <div class="card card-pad">
+          <div class="card-head"><h3>Заявка 1×1 с ментором</h3><span class="meta">1 000 = 1 заявка</span></div>
+          <div class="req-cost">
+            <div class="coin">1×1</div>
+            <div>
+              <div class="ct">Доступно <span class="num">3</span> заявки</div>
+              <div class="cs">Бонусы спишутся при одобрении администратором</div>
+            </div>
+            <button class="btn primary">Создать заявку</button>
+          </div>
+          <div style="font-size:11.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin:4px 0 6px">Мои заявки</div>
+          <div class="req">
+            <div class="rn num">04</div>
+            <div><div class="rt">Разбор системного дизайна</div><div class="rd">Создана 24 мая · −1 000 при одобрении</div></div>
+            <span class="pill pending"><span class="led"></span>Ожидает</span>
+          </div>
+          <div class="req">
+            <div class="rn num">02</div>
+            <div><div class="rt">Код-ревью pet-проекта</div><div class="rd">15 мая · списано 1 000</div></div>
+            <span class="pill completed"><span class="led"></span>Завершена</span>
+          </div>
+          <div class="req">
+            <div class="rn num">01</div>
+            <div><div class="rt">Карьерная консультация</div><div class="rd">6 мая · бонусы возвращены</div></div>
+            <span class="pill reject"><span class="led"></span>Отклонена</span>
+          </div>
+        </div>
+
+        <div class="card card-pad" style="display:flex;align-items:center;gap:14px">
+          <div class="seal" data-seal="amber" style="flex:0 0 52px;width:52px;height:52px"><span class="gl" style="font-size:17px">×1</span></div>
+          <div style="flex:1">
+            <div style="font-weight:700;font-size:13.5px">Достижение «1×1 игрок»</div>
+            <div style="font-size:12px;color:var(--ink-2);margin-top:2px">Заверши первую заявку 1×1 · <b style="color:var(--primary-ink)">+100</b></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+(function(){
+  const cur = 9.2, max = 15, step = 100, bal = 3420;
+  const maxAmt = Math.min(Math.floor(bal/step)*step, Math.floor((max-cur)*100/step)*step);
+  let amt = 300;
+  const fmt = n => n.toLocaleString('ru-RU');
+  const comma = n => n.toFixed(1).replace('.', ',');
+  const $ = id => document.getElementById(id);
+  function render(){
+    amt = Math.max(step, Math.min(maxAmt, amt));
+    const res = cur + amt/100;
+    $('cv-amt').textContent = fmt(amt);
+    $('cv-read').innerHTML = '+' + comma(amt/100) + '% → <b>' + comma(res) + '% скидки</b>';
+    $('cv-ghost').style.left = (cur/max*100) + '%';
+    $('cv-ghost').style.width = ((amt/100)/max*100) + '%';
+    $('cv-minus').disabled = amt <= step;
+    $('cv-plus').disabled  = amt >= maxAmt;
+  }
+  $('cv-minus').addEventListener('click', () => { amt -= step; render(); });
+  $('cv-plus').addEventListener('click',  () => { amt += step; render(); });
+  render();
+
+  // count-up balance
+  const el = $('bal-v'), target = 3420, dur = 850, t0 = performance.now();
+  function tick(now){
+    const p = Math.min(1, (now - t0)/dur);
+    const e = 1 - Math.pow(1 - p, 3);
+    el.textContent = fmt(Math.round(target * e));
+    if (p < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+})();
+</script>
+</body>
+</html>

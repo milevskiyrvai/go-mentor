@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1280" />
+<title>Go Mentor · Roadmap</title>
+<script>{const _v=new URLSearchParams(location.search).get('v');document.documentElement.className = _v==='bd' ? 'v-b v-b-dark' : _v==='b' ? 'v-b' : 'v-a';}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="../styles/base.css" rel="stylesheet">
+</head>
+<body>
+<div class="app">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">G</div>
+      <div class="brand-name">Go Mentor<small>Платформа</small></div>
+    </div>
+    <div class="sb-user">
+      <div class="avatar">МК</div>
+      <div style="min-width:0">
+        <div class="nm">Михаил Кротов</div>
+        <div class="rl"><span class="role-dot"></span>Студент<span class="swap">⇄ роль</span></div>
+      </div>
+    </div>
+
+    <div class="sb-label">Обучение</div>
+    <div class="nav-item"><span class="ic"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></span>Дашборд</div>
+    <div class="nav-item active"><span class="ic"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h10M4 12h16M4 18h7" stroke-linecap="round"/><circle cx="19" cy="6" r="1.6"/><circle cx="14" cy="18" r="1.6"/></svg></span>Roadmap</div>
+    <div class="nav-item"><span class="ic"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="9" r="6"/><path d="M9 14l-2 7 5-3 5 3-2-7" stroke-linejoin="round"/></svg></span>Достижения</div>
+    <div class="nav-item"><span class="ic"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M12 8v8M9.5 10.5h3.2a1.8 1.8 0 0 1 0 3.6H9.5" stroke-linecap="round"/></svg></span>Бонусы</div>
+    <div class="nav-item"><span class="ic"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 9h18M8 3v4" stroke-linecap="round"/></svg></span>Собеседования</div>
+    <div class="nav-item"><span class="ic"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4" stroke-linecap="round"/></svg></span>Календарь</div>
+    <div class="nav-item"><span class="ic"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M5 20c0-3.5 3-6 7-6s7 2.5 7 6" stroke-linecap="round"/></svg></span>Профиль</div>
+
+    <div class="sb-foot"><span class="led"></span>Buddy на связи · Иван Менторов</div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <main class="main">
+    <div class="page-head">
+      <div>
+        <h1>Roadmap</h1>
+        <div class="sub">2 из 5 блоков закрыто · блок «Concurrency» в работе</div>
+      </div>
+      <div class="right">
+        <span class="pill approved"><span class="led"></span>37% программы</span>
+      </div>
+    </div>
+
+    <div class="cols c-roadmap" style="flex:1">
+
+      <!-- LEFT: block list -->
+      <div style="display:flex;flex-direction:column;gap:13px">
+        <div class="block" data-s="approved">
+          <div class="block-head">
+            <div class="block-num num">01</div>
+            <div class="block-title"><h4>Foundations</h4><small>Синтаксис, типы, slices &amp; maps</small></div>
+            <span class="pill approved"><span class="led"></span>Закрыт</span>
+          </div>
+          <div class="block-prog"><div class="bar success"><i style="width:100%"></i></div><span class="pct">100%</span></div>
+        </div>
+
+        <div class="block" data-s="approved">
+          <div class="block-head">
+            <div class="block-num num">02</div>
+            <div class="block-title"><h4>Interfaces &amp; Errors</h4><small>Интерфейсы, error wrapping, sentinel</small></div>
+            <span class="pill approved"><span class="led"></span>Закрыт</span>
+          </div>
+          <div class="block-prog"><div class="bar success"><i style="width:100%"></i></div><span class="pct">100%</span></div>
+        </div>
+
+        <div class="block sel" data-s="in_progress">
+          <div class="block-head">
+            <div class="block-num num">03</div>
+            <div class="block-title"><h4>Concurrency</h4><small>Горутины, каналы, select, контексты</small></div>
+            <span class="pill in-progress"><span class="led"></span>В работе</span>
+          </div>
+          <div class="block-prog"><div class="bar"><i style="width:62%"></i></div><span class="pct">62%</span></div>
+          <div class="block-sec">
+            <div class="bs done"><div class="k">Теория</div><div class="vv">5/5</div></div>
+            <div class="bs done"><div class="k">Вопросы</div><div class="vv">4/4</div></div>
+            <div class="bs active"><div class="k">Практика</div><div class="vv">0/2</div></div>
+            <div class="bs"><div class="k">Домашка</div><div class="vv">0/1</div></div>
+          </div>
+        </div>
+
+        <div class="block" data-s="not_started">
+          <div class="block-head">
+            <div class="block-num num">04</div>
+            <div class="block-title"><h4>Tests &amp; Benchmarks</h4><small>Покрытие, table-driven, профайлинг</small></div>
+            <span class="pill not-started"><span class="led"></span>Не начат</span>
+          </div>
+          <div class="block-prog"><div class="bar mute"><i style="width:0%"></i></div><span class="pct">0%</span></div>
+        </div>
+
+        <div class="block" data-s="not_started">
+          <div class="block-head">
+            <div class="block-num num">05</div>
+            <div class="block-title"><h4>Web &amp; Storage</h4><small>net/http, PostgreSQL, миграции</small></div>
+            <span class="pill not-started"><span class="led"></span>Не начат</span>
+          </div>
+          <div class="block-prog"><div class="bar mute"><i style="width:0%"></i></div><span class="pct">0%</span></div>
+        </div>
+      </div>
+
+      <!-- RIGHT: open block detail -->
+      <div class="card" style="display:flex;flex-direction:column;overflow:hidden">
+        <div style="padding:20px 22px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:14px">
+          <div class="block-num num" style="width:46px;height:46px;flex:0 0 46px;background:var(--primary-soft);color:var(--primary-ink);border-color:transparent">03</div>
+          <div style="flex:1">
+            <h3 style="margin:0;font-size:18px;font-weight:700;letter-spacing:-.015em">Concurrency</h3>
+            <div style="font-size:12.5px;color:var(--ink-2);margin-top:3px">12 материалов · 9 просмотрено · 3 обязательных осталось</div>
+          </div>
+          <span class="pill in-progress"><span class="led"></span>В работе · 62%</span>
+        </div>
+
+        <div style="padding:18px 22px;overflow:hidden">
+          <!-- Теория -->
+          <div class="mat-group">
+            <div class="gh"><span class="gt">Теория</span><span class="gc">5 / 5</span><span class="ln"></span></div>
+            <div class="mat">
+              <div class="mat-thumb yt"><span class="tg">▶ YOUTUBE</span></div>
+              <div class="mat-body">
+                <div class="mat-meta"><span class="tag-mini req">Обязательно</span><span>youtube.com · 28 мин</span></div>
+                <div class="mat-title">Concurrency patterns in Go: pipelines &amp; fan-out</div>
+                <div class="mat-desc">Построение пайплайнов через каналы и отмена через context.</div>
+              </div>
+              <div class="check on"><svg style="width:14px;height:14px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="5 12 10 17 19 7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            </div>
+            <div class="mat">
+              <div class="mat-thumb art"><span class="tg">¶ СТАТЬЯ</span></div>
+              <div class="mat-body">
+                <div class="mat-meta"><span class="tag-mini req">Обязательно</span><span>go.dev/blog · 12 мин</span></div>
+                <div class="mat-title">The Go Memory Model — гарантии порядка</div>
+                <div class="mat-desc">happens-before, синхронизация через каналы и mutex.</div>
+              </div>
+              <div class="check on"><svg style="width:14px;height:14px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="5 12 10 17 19 7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            </div>
+          </div>
+
+          <!-- Вопросы -->
+          <div class="mat-group">
+            <div class="gh"><span class="gt">Вопросы</span><span class="gc">4 / 4</span><span class="ln"></span></div>
+            <div class="mat">
+              <div class="mat-thumb gh"><span class="tg">◍ GITHUB</span></div>
+              <div class="mat-body">
+                <div class="mat-meta"><span class="tag-mini req">Обязательно</span><span>github.com · вопросник</span></div>
+                <div class="mat-title">50 вопросов по горутинам и каналам на собесе</div>
+                <div class="mat-desc">Подборка с разбором: deadlock, select, буферизация.</div>
+              </div>
+              <div class="check on"><svg style="width:14px;height:14px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="5 12 10 17 19 7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            </div>
+          </div>
+
+          <!-- Практика -->
+          <div class="mat-group">
+            <div class="gh"><span class="gt">Практика</span><span class="gc" style="color:var(--primary)">0 / 2</span><span class="ln"></span></div>
+            <div class="mat">
+              <div class="mat-thumb gh"><span class="tg">◍ GITHUB</span></div>
+              <div class="mat-body">
+                <div class="mat-meta"><span class="tag-mini req">Обязательно</span><span>github.com · задача</span></div>
+                <div class="mat-title">Worker pool с ограничением и graceful shutdown</div>
+                <div class="mat-desc">Реализовать пул воркеров с context-отменой и метриками.</div>
+              </div>
+              <div class="check"></div>
+            </div>
+            <div class="mat">
+              <div class="mat-thumb file"><span class="tg">▤ PDF</span></div>
+              <div class="mat-body">
+                <div class="mat-meta"><span class="tag-mini opt">Опционально</span><span>файл · 1,4 MB</span></div>
+                <div class="mat-title">Шпаргалка по примитивам sync</div>
+                <div class="mat-desc">Mutex, RWMutex, Once, WaitGroup — когда что.</div>
+              </div>
+              <div class="check"></div>
+            </div>
+          </div>
+
+          <!-- Домашка -->
+          <div class="mat-group" style="margin-bottom:0">
+            <div class="gh"><span class="gt">Домашка</span><span class="gc">0 / 1</span><span class="ln"></span></div>
+            <div class="mat">
+              <div class="mat-thumb gh"><span class="tg">◍ GITHUB</span></div>
+              <div class="mat-body">
+                <div class="mat-meta"><span class="tag-mini req">Обязательно</span><span>github.com · PR-ревью</span></div>
+                <div class="mat-title">Конкурентный кэш с TTL — прислать на ревью</div>
+                <div class="mat-desc">Buddy проверит код и оставит фидбэк перед закрытием блока.</div>
+              </div>
+              <div class="check"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+</body>
+</html>

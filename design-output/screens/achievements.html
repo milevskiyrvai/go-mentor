@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1280" />
+<title>Go Mentor · Достижения</title>
+<script>{const _v=new URLSearchParams(location.search).get('v');document.documentElement.className = _v==='bd' ? 'v-b v-b-dark' : _v==='b' ? 'v-b' : 'v-a';}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="../styles/base.css" rel="stylesheet">
+</head>
+<body>
+<div class="app">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">G</div>
+      <div class="brand-name">Go Mentor<small>Платформа</small></div>
+    </div>
+    <div class="sb-user">
+      <div class="avatar">МК</div>
+      <div style="min-width:0">
+        <div class="nm">Михаил Кротов</div>
+        <div class="rl"><span class="role-dot"></span>Студент<span class="swap">⇄ роль</span></div>
+      </div>
+    </div>
+
+    <div class="sb-label">Обучение</div>
+    <div class="nav-item"><span class="ic"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></span>Дашборд</div>
+    <div class="nav-item"><span class="ic"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h10M4 12h16M4 18h7" stroke-linecap="round"/><circle cx="19" cy="6" r="1.6"/><circle cx="14" cy="18" r="1.6"/></svg></span>Roadmap</div>
+    <div class="nav-item active"><span class="ic"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="9" r="6"/><path d="M9 14l-2 7 5-3 5 3-2-7" stroke-linejoin="round"/></svg></span>Достижения</div>
+    <div class="nav-item"><span class="ic"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M12 8v8M9.5 10.5h3.2a1.8 1.8 0 0 1 0 3.6H9.5" stroke-linecap="round"/></svg></span>Бонусы</div>
+    <div class="nav-item"><span class="ic"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 9h18M8 3v4" stroke-linecap="round"/></svg></span>Собеседования</div>
+    <div class="nav-item"><span class="ic"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4" stroke-linecap="round"/></svg></span>Календарь</div>
+    <div class="nav-item"><span class="ic"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M5 20c0-3.5 3-6 7-6s7 2.5 7 6" stroke-linecap="round"/></svg></span>Профиль</div>
+
+    <div class="sb-foot"><span class="led"></span>Buddy на связи · Иван Менторов</div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <main class="main">
+    <div class="page-head">
+      <div>
+        <h1>Достижения</h1>
+        <div class="sub">Собрано 9 из 14 · заработано 3 420 бонусов</div>
+      </div>
+      <div class="right" style="gap:8px">
+        <span class="pill approved"><span class="led"></span>9 получено</span>
+        <span class="pill not-started"><span class="led"></span>5 в процессе</span>
+      </div>
+    </div>
+
+    <!-- collection meter -->
+    <div class="card card-pad" style="display:flex;align-items:center;gap:20px">
+      <div style="flex:1">
+        <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:9px">
+          <span style="font-weight:700;font-size:14px">Коллекция достижений</span>
+          <span class="num" style="font-size:14px;color:var(--ink-2)">9 / 14</span>
+        </div>
+        <div class="bar" style="height:10px"><i class="num" style="width:64%;background:var(--secondary)"></i></div>
+      </div>
+      <!-- inline toast preview -->
+      <div class="toast">
+        <div class="seal" data-seal><span class="gl">M1</span></div>
+        <div class="tb">
+          <span class="e">Достижение получено</span>
+          <b>Первый mock</b>
+          <span>Прошёл первое mock-собеседование с Buddy</span>
+        </div>
+        <span class="rw">+150</span>
+      </div>
+    </div>
+
+    <!-- grid -->
+    <div class="ach-grid">
+      <!-- unlocked -->
+      <div class="ach" data-seal>
+        <div class="got"><svg style="width:13px;height:13px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="5 12 10 17 19 7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="seal" data-seal><span class="gl">01</span></div>
+        <div class="at">Первый шаг</div>
+        <div class="ad">Зашёл на платформу и открыл свой roadmap</div>
+        <div class="reward"><span class="coin"></span>+50</div>
+        <div class="when">15.05.2026</div>
+      </div>
+
+      <div class="ach" data-seal="sage">
+        <div class="got"><svg style="width:13px;height:13px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="5 12 10 17 19 7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="seal" data-seal="sage"><span class="gl">B1</span></div>
+        <div class="at">Блок 1 закрыт</div>
+        <div class="ad">Buddy подтвердил блок «Foundations»</div>
+        <div class="reward"><span class="coin"></span>+250</div>
+        <div class="when">18.05.2026</div>
+      </div>
+
+      <div class="ach" data-seal="sage">
+        <div class="got"><svg style="width:13px;height:13px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="5 12 10 17 19 7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="seal" data-seal="sage"><span class="gl">B2</span></div>
+        <div class="at">Блок 2 закрыт</div>
+        <div class="ad">Buddy подтвердил «Interfaces &amp; Errors»</div>
+        <div class="reward"><span class="coin"></span>+250</div>
+        <div class="when">21.05.2026</div>
+      </div>
+
+      <div class="ach" data-seal="amber">
+        <div class="got"><svg style="width:13px;height:13px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="5 12 10 17 19 7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="seal" data-seal="amber"><span class="gl">M1</span></div>
+        <div class="at">Первый mock</div>
+        <div class="ad">Прошёл первое mock-собеседование</div>
+        <div class="reward"><span class="coin"></span>+150</div>
+        <div class="when">24.05.2026</div>
+      </div>
+
+      <!-- locked with progress -->
+      <div class="ach locked">
+        <div class="seal"><span class="gl">B3</span></div>
+        <div class="at">Блок 3 закрыт</div>
+        <div class="ad">Закрой блок «Concurrency» у Buddy</div>
+        <div class="lockprog"><span>9/12</span><div class="bar"><i style="width:75%"></i></div></div>
+        <div class="reward"><span class="coin"></span>+250</div>
+      </div>
+
+      <div class="ach locked">
+        <div class="seal"><span class="gl">R3</span></div>
+        <div class="at">Серия real ×3</div>
+        <div class="ad">Добавь 3 реальных собеседования</div>
+        <div class="lockprog"><span>2/3</span><div class="bar"><i style="width:66%"></i></div></div>
+        <div class="reward"><span class="coin"></span>+500</div>
+      </div>
+
+      <div class="ach locked">
+        <div class="seal"><span class="gl">⚑</span></div>
+        <div class="at">Финалист</div>
+        <div class="ad">Пройди финальную техничку и прожарку</div>
+        <div class="lockprog"><span>0/2</span><div class="bar"><i style="width:0%"></i></div></div>
+        <div class="reward"><span class="coin"></span>+1000</div>
+      </div>
+
+      <div class="ach locked">
+        <div class="seal"><span class="gl">★</span></div>
+        <div class="at">1×1 игрок</div>
+        <div class="ad">Проведи встречу 1×1 с ментором</div>
+        <div class="lockprog"><span>0/1</span><div class="bar"><i style="width:0%"></i></div></div>
+        <div class="reward"><span class="coin"></span>+300</div>
+      </div>
+    </div>
+  </main>
+</div>
+</body>
+</html>
