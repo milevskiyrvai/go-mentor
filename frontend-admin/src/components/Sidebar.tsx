@@ -71,14 +71,14 @@ export function Sidebar() {
       <div
         className="flex items-center gap-3 p-3 rounded-md bg-bg mb-1.5"
         style={{
-          border: "1px solid rgba(255,219,61,0.22)",
-          boxShadow: "inset 0 0 0 1px rgba(255,219,61,0.06)",
+          border: "1px solid rgba(169,132,47,0.22)",
+          boxShadow: "inset 0 0 0 1px rgba(169,132,47,0.06)",
         }}
       >
         <div
           className="w-[38px] h-[38px] rounded-[9px] grid place-items-center font-mono font-bold text-[13px] flex-shrink-0"
           style={{
-            background: "linear-gradient(140deg, #FFDB3D 0%, #FF5B5B 100%)",
+            background: "linear-gradient(140deg, #C9A24A 0%, #C2705A 100%)",
             color: "#1e1700",
           }}
         >
@@ -136,9 +136,9 @@ export function Sidebar() {
                   isActive
                     ? {
                         color: "var(--warning)",
-                        border: "1px solid rgba(255,219,61,0.6)",
-                        background: "rgba(255,219,61,0.1)",
-                        boxShadow: "0 0 14px rgba(255,219,61,0.25)",
+                        border: "1px solid rgba(169,132,47,0.6)",
+                        background: "rgba(169,132,47,0.1)",
+                        boxShadow: "0 0 14px rgba(169,132,47,0.25)",
                       }
                     : { border: "1px solid var(--border-bright)" }
                 }

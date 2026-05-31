@@ -92,7 +92,7 @@ export function StudentBonuses() {
           <div
             className="absolute -top-12 -right-12 w-44 h-44 rounded-full pointer-events-none"
             style={{
-              background: "radial-gradient(closest-side, rgba(255,61,154,0.22), transparent 70%)",
+              background: "radial-gradient(closest-side, rgba(178,107,69,0.22), transparent 70%)",
             }}
           />
           <div className="caption mb-3">Текущий баланс</div>
@@ -100,7 +100,7 @@ export function StudentBonuses() {
             <BonusCoin size={42} variant="secondary" />
             <div
               className="font-mono font-bold text-secondary text-[44px] -tracking-[0.02em] leading-none"
-              style={{ textShadow: "0 0 24px rgba(255,61,154,0.5)" }}
+              style={{ textShadow: "0 0 24px rgba(178,107,69,0.5)" }}
             >
               {ov.balance}
             </div>

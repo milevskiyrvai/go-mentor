@@ -15,18 +15,18 @@ export type BadgeKind =
   | "deleted";
 
 const KIND_STYLES: Record<BadgeKind, { color: string; bgAlpha: string; borderAlpha: string }> = {
-  "in-progress": { color: "#D4FF3D", bgAlpha: "rgba(212,255,61,0.08)", borderAlpha: "rgba(212,255,61,0.3)" },
-  "in-progress-pink": { color: "#FF3D9A", bgAlpha: "rgba(255,61,154,0.08)", borderAlpha: "rgba(255,61,154,0.3)" },
-  waiting: { color: "#FFDB3D", bgAlpha: "rgba(255,219,61,0.08)", borderAlpha: "rgba(255,219,61,0.3)" },
-  approved: { color: "#7BE38C", bgAlpha: "rgba(123,227,140,0.08)", borderAlpha: "rgba(123,227,140,0.3)" },
-  completed: { color: "#FF3D9A", bgAlpha: "rgba(255,61,154,0.08)", borderAlpha: "rgba(255,61,154,0.3)" },
-  failed: { color: "#FF5B5B", bgAlpha: "rgba(255,91,91,0.08)", borderAlpha: "rgba(255,91,91,0.3)" },
-  "not-started": { color: "#8A8A92", bgAlpha: "transparent", borderAlpha: "#262830" },
-  pending: { color: "#FFDB3D", bgAlpha: "rgba(255,219,61,0.08)", borderAlpha: "rgba(255,219,61,0.3)" },
-  rejected: { color: "#FF5B5B", bgAlpha: "rgba(255,91,91,0.08)", borderAlpha: "rgba(255,91,91,0.3)" },
-  cancelled: { color: "#8A8A92", bgAlpha: "transparent", borderAlpha: "#262830" },
-  active: { color: "#7BE38C", bgAlpha: "rgba(123,227,140,0.08)", borderAlpha: "rgba(123,227,140,0.3)" },
-  deleted: { color: "#8A8A92", bgAlpha: "transparent", borderAlpha: "#262830" },
+  "in-progress": { color: "#5F8268", bgAlpha: "rgba(95,130,104,0.10)", borderAlpha: "rgba(95,130,104,0.32)" },
+  "in-progress-pink": { color: "#B26B45", bgAlpha: "rgba(178,107,69,0.10)", borderAlpha: "rgba(178,107,69,0.32)" },
+  waiting: { color: "#A9842F", bgAlpha: "rgba(169,132,47,0.10)", borderAlpha: "rgba(169,132,47,0.32)" },
+  approved: { color: "#5F8268", bgAlpha: "rgba(95,130,104,0.10)", borderAlpha: "rgba(95,130,104,0.32)" },
+  completed: { color: "#B26B45", bgAlpha: "rgba(178,107,69,0.10)", borderAlpha: "rgba(178,107,69,0.32)" },
+  failed: { color: "#AF5840", bgAlpha: "rgba(175,88,64,0.10)", borderAlpha: "rgba(175,88,64,0.32)" },
+  "not-started": { color: "#948B7B", bgAlpha: "transparent", borderAlpha: "#E5DCCD" },
+  pending: { color: "#A9842F", bgAlpha: "rgba(169,132,47,0.10)", borderAlpha: "rgba(169,132,47,0.32)" },
+  rejected: { color: "#AF5840", bgAlpha: "rgba(175,88,64,0.10)", borderAlpha: "rgba(175,88,64,0.32)" },
+  cancelled: { color: "#948B7B", bgAlpha: "transparent", borderAlpha: "#E5DCCD" },
+  active: { color: "#5F8268", bgAlpha: "rgba(95,130,104,0.10)", borderAlpha: "rgba(95,130,104,0.32)" },
+  deleted: { color: "#948B7B", bgAlpha: "transparent", borderAlpha: "#E5DCCD" },
 };
 
 interface BadgeProps {

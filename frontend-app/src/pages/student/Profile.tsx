@@ -166,7 +166,7 @@ function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean
     >
       <span
         className={`absolute top-[2px] left-[2px] w-[22px] h-[22px] rounded-full transition-all ${
-          checked ? "translate-x-5 bg-primary shadow-[0_0_10px_rgba(212,255,61,0.5)]" : "bg-text-3"
+          checked ? "translate-x-5 bg-primary shadow-[0_0_10px_rgba(95,130,104,0.5)]" : "bg-text-3"
         }`}
       />
     </button>

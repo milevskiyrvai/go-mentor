@@ -3,25 +3,33 @@
 @tailwind utilities;
 
 :root {
-  --bg: #07080a;
-  --surface: #0f1014;
-  --elevated: #16181e;
-  --border: #262830;
-  --border-bright: #363842;
-  --primary: #d4ff3d;
-  --primary-dim: rgba(212, 255, 61, 0.28);
-  --secondary: #ff3d9a;
-  --secondary-dim: rgba(255, 61, 154, 0.3);
-  --success: #7be38c;
-  --warning: #ffdb3d;
-  --danger: #ff5b5b;
-  --text: #f0f0f2;
-  --text-2: #8a8a92;
-  --text-3: #50525c;
+  /* Go Mentor — Warm Paper «sage» (вариант B, светлая тема) */
+  --bg: #f5f1e8;
+  --surface: #fffdf8;
+  --elevated: #ffffff;
+  --border: #e5dccd;
+  --border-bright: #d4c9b5;
+  --primary: #5f8268; /* шалфей */
+  --primary-ink: #456450;
+  --primary-dim: rgba(95, 130, 104, 0.16);
+  --primary-soft: #e1eadc;
+  --secondary: #b26b45; /* терракота — акцент действия */
+  --secondary-dim: rgba(178, 107, 69, 0.16);
+  --secondary-soft: #eeddd0;
+  --success: #5f8268;
+  --success-soft: #e1eadc;
+  --warning: #a9842f;
+  --warning-soft: #ece0c4;
+  --danger: #af5840;
+  --danger-soft: #edd9d0;
+  --text: #221d17;
+  --text-2: #5e564a;
+  --text-3: #948b7b;
 
   --r-sm: 6px;
-  --r-md: 10px;
+  --r-md: 9px;
   --r-lg: 14px;
+  --shadow: 0 1px 2px rgba(40, 30, 20, 0.05);
 }
 
 * {
@@ -35,16 +43,13 @@ body,
   padding: 0;
   background: var(--bg);
   color: var(--text);
-  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  font-family: "Hanken Grotesk", "Inter", system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
 }
 
 body {
-  background:
-    radial-gradient(900px 600px at 12% -10%, rgba(212, 255, 61, 0.06), transparent 70%),
-    radial-gradient(900px 600px at 88% -10%, rgba(255, 61, 154, 0.06), transparent 70%),
-    var(--bg);
+  background: var(--bg);
 }
 
 a {
@@ -53,8 +58,8 @@ a {
 }
 
 ::selection {
-  background: var(--primary);
-  color: #001613;
+  background: var(--primary-soft);
+  color: var(--primary-ink);
 }
 
 ::-webkit-scrollbar {
@@ -83,7 +88,8 @@ select {
 input:focus,
 textarea:focus,
 select:focus {
-  outline: 1px solid rgba(212, 255, 61, 0.4);
+  outline: 2px solid var(--primary-dim);
+  border-color: var(--primary);
 }
 
 /* ---------- Reusable component utilities ---------- */
@@ -105,15 +111,11 @@ select:focus {
 }
 
 .gradient-text {
-  background: linear-gradient(90deg, var(--primary), var(--secondary));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: var(--primary-ink);
 }
 
 .pbar-fill {
-  background: linear-gradient(90deg, var(--primary), var(--secondary));
-  box-shadow: 0 0 14px rgba(212, 255, 61, 0.3);
+  background: var(--primary);
 }
 
 .led-pulse {
@@ -163,23 +165,21 @@ select:focus {
 }
 .btn-primary {
   background: var(--primary);
-  color: #001613;
+  color: #fff;
   border-color: transparent;
   font-weight: 600;
-  box-shadow: 0 0 18px rgba(212, 255, 61, 0.25);
 }
 .btn-primary:hover {
-  background: #c0eb2c;
+  background: var(--primary-ink);
 }
 .btn-secondary {
   background: var(--secondary);
   color: #fff;
   border-color: transparent;
   font-weight: 600;
-  box-shadow: 0 0 18px rgba(255, 61, 154, 0.25);
 }
 .btn-secondary:hover {
-  background: #e9358a;
+  background: #9a572f;
 }
 .btn-ghost {
   background: transparent;
@@ -253,14 +253,14 @@ select:focus {
 }
 .status-badge.success .dot {
   background: var(--success);
-  box-shadow: 0 0 8px var(--success);
+
 }
 .status-badge.warning {
   color: var(--warning);
 }
 .status-badge.warning .dot {
   background: var(--warning);
-  box-shadow: 0 0 8px var(--warning);
+
   animation: pulseDot 1.5s ease-in-out infinite;
 }
 .status-badge.primary {
@@ -268,21 +268,21 @@ select:focus {
 }
 .status-badge.primary .dot {
   background: var(--primary);
-  box-shadow: 0 0 8px var(--primary);
+
 }
 .status-badge.danger {
   color: var(--danger);
 }
 .status-badge.danger .dot {
   background: var(--danger);
-  box-shadow: 0 0 8px var(--danger);
+
 }
 .status-badge.secondary {
   color: var(--secondary);
 }
 .status-badge.secondary .dot {
   background: var(--secondary);
-  box-shadow: 0 0 8px var(--secondary);
+
 }
 
 /* ---------- Pill (small label) ---------- */
@@ -300,7 +300,8 @@ select:focus {
   color: var(--text-2);
 }
 .pill.required {
-  border-color: rgba(212, 255, 61, 0.4);
+  border-color: var(--primary);
+  background: var(--primary-soft);
   color: var(--primary);
 }
 .pill.optional {

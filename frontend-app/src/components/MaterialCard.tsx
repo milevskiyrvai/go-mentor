@@ -71,7 +71,7 @@ export function MaterialCard({ material, viewed, onToggle, readonly }: Props) {
           className={clsx(
             "w-9 h-9 rounded-full grid place-items-center border transition-all shrink-0",
             viewed
-              ? "bg-success/15 border-success text-success shadow-[0_0_18px_rgba(123,227,140,0.3)]"
+              ? "bg-success/15 border-success text-success shadow-[0_0_18px_rgba(95,130,104,0.3)]"
               : "bg-bg border-border-bright text-text-2 hover:border-primary hover:text-primary",
           )}
         >

@@ -364,8 +364,8 @@ function SortableBlockCard({
         style={
           selected
             ? {
-                background: "rgba(255,219,61,0.08)",
-                border: "1px solid rgba(255,219,61,0.4)",
+                background: "rgba(169,132,47,0.08)",
+                border: "1px solid rgba(169,132,47,0.4)",
                 boxShadow: "0 0 14px -8px var(--warning)",
               }
             : {
@@ -403,8 +403,8 @@ function SortableBlockCard({
             style={{
               fontSize: "9.5px",
               color: "var(--danger)",
-              border: "1px solid rgba(255,91,91,0.3)",
-              background: "rgba(255,91,91,0.08)",
+              border: "1px solid rgba(175,88,64,0.3)",
+              background: "rgba(175,88,64,0.08)",
             }}
           >
             off
@@ -502,8 +502,8 @@ function SortableMaterialCard({
             style={{
               fontSize: "9.5px",
               color: "var(--warning)",
-              border: "1px solid rgba(255,219,61,0.4)",
-              background: "rgba(255,219,61,0.08)",
+              border: "1px solid rgba(169,132,47,0.4)",
+              background: "rgba(169,132,47,0.08)",
             }}
           >
             обязательный
@@ -526,8 +526,8 @@ function SortableMaterialCard({
             style={{
               fontSize: "9.5px",
               color: "var(--danger)",
-              border: "1px solid rgba(255,91,91,0.3)",
-              background: "rgba(255,91,91,0.08)",
+              border: "1px solid rgba(175,88,64,0.3)",
+              background: "rgba(175,88,64,0.08)",
             }}
           >
             скрыт
@@ -811,8 +811,8 @@ function MaterialDrawer({
                   fontSize: "10px",
                   letterSpacing: "0.06em",
                   color: "var(--warning)",
-                  border: "1px solid rgba(255,219,61,0.4)",
-                  background: "rgba(255,219,61,0.06)",
+                  border: "1px solid rgba(169,132,47,0.4)",
+                  background: "rgba(169,132,47,0.06)",
                 }}
               >
                 {fetchingPreview ? "..." : "fetch preview"}

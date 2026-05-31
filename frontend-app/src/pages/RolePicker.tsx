@@ -11,19 +11,19 @@ const ROLE_META: Record<Role, { title: string; description: string; gradient: st
   student: {
     title: "Student",
     description: "Учиться по roadmap, копить бонусы и достижения",
-    gradient: "linear-gradient(135deg, #d4ff3d, #7be38c)",
+    gradient: "linear-gradient(135deg, #5F8268, #7FA37E)",
     emoji: "▸",
   },
   buddy: {
     title: "Buddy",
     description: "Сопровождать учеников, подтверждать блоки",
-    gradient: "linear-gradient(135deg, #ff3d9a, #c026d3)",
+    gradient: "linear-gradient(135deg, #B26B45, #8E441F)",
     emoji: "◐",
   },
   admin: {
     title: "Admin",
     description: "Управление платформой (открывается в отдельной панели)",
-    gradient: "linear-gradient(135deg, #ffdb3d, #ff9100)",
+    gradient: "linear-gradient(135deg, #C9A24A, #9A572F)",
     emoji: "✪",
   },
 };
@@ -94,7 +94,7 @@ export function RolePickerPage() {
                       background: meta.gradient,
                       color: "#000",
                       boxShadow: `0 12px 30px -10px ${
-                        r === "buddy" ? "rgba(255,61,154,0.55)" : "rgba(212,255,61,0.55)"
+                        r === "buddy" ? "rgba(178,107,69,0.55)" : "rgba(95,130,104,0.55)"
                       }`,
                     }}
                   >

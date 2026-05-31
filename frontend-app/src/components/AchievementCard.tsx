@@ -42,7 +42,7 @@ export function AchievementCard({ item, variantAccent = "primary" }: Props) {
           className="absolute top-4 right-4 w-[26px] h-[26px] rounded-full grid place-items-center font-bold text-[12px]"
           style={{
             background: accent === "primary" ? "var(--primary)" : "var(--secondary)",
-            color: accent === "primary" ? "#001613" : "#fff",
+            color: accent === "primary" ? "#FFFFFF" : "#fff",
             boxShadow: `0 0 18px color-mix(in oklab, ${accent === "primary" ? "var(--primary)" : "var(--secondary)"} 60%, transparent)`,
           }}
         >
@@ -87,7 +87,7 @@ export function AchievementCard({ item, variantAccent = "primary" }: Props) {
       <div
         className="flex items-center gap-2 px-3 py-2 rounded-full mt-auto"
         style={{
-          background: lockedState ? "transparent" : "rgba(255,61,154,0.08)",
+          background: lockedState ? "transparent" : "rgba(178,107,69,0.08)",
           border: lockedState
             ? "1px solid var(--border)"
             : "1px solid color-mix(in oklab, var(--secondary) 30%, transparent)",

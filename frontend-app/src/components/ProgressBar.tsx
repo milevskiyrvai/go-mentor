@@ -27,9 +27,9 @@ export function ProgressBar({
             "h-full transition-all duration-500",
             variant === "default" && "pbar-fill",
             variant === "warn" &&
-              "bg-gradient-to-r from-warning to-yellow-300 shadow-[0_0_14px_rgba(255,219,61,0.3)]",
+              "bg-gradient-to-r from-warning to-yellow-300 shadow-[0_0_14px_rgba(169,132,47,0.3)]",
             variant === "success" &&
-              "bg-gradient-to-r from-success to-emerald-300 shadow-[0_0_14px_rgba(123,227,140,0.3)]",
+              "bg-gradient-to-r from-success to-emerald-300 shadow-[0_0_14px_rgba(95,130,104,0.3)]",
             variant === "mute" && "bg-[#3a3f52]",
           )}
           style={{ width: `${clamped}%` }}

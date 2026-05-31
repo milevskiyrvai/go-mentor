@@ -85,7 +85,7 @@ export function Sidebar() {
               clsx(
                 "flex items-center gap-3 px-4 py-2.5 rounded-[10px] text-[14px] transition-all",
                 isActive
-                  ? "bg-elevated text-text border border-border-bright shadow-[inset_0_0_0_1px_rgba(212,255,61,0.12)]"
+                  ? "bg-elevated text-text border border-border-bright shadow-[inset_0_0_0_1px_rgba(95,130,104,0.12)]"
                   : "text-text-2 hover:text-text hover:bg-elevated/60",
               )
             }
@@ -168,10 +168,10 @@ export function Avatar({ name, url, role, size = 36, className }: AvatarProps) {
 
   const grad =
     role === "buddy"
-      ? "linear-gradient(135deg, #ff3d9a, #c026d3)"
+      ? "linear-gradient(135deg, #B26B45, #8E441F)"
       : role === "admin"
-        ? "linear-gradient(135deg, #ffdb3d, #ff9100)"
-        : "linear-gradient(135deg, #d4ff3d, #7be38c)";
+        ? "linear-gradient(135deg, #C9A24A, #9A572F)"
+        : "linear-gradient(135deg, #5F8268, #7FA37E)";
 
   if (url) {
     return (

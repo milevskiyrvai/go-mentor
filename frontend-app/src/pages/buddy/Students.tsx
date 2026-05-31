@@ -124,7 +124,7 @@ export function BuddyStudents() {
                   className="absolute -top-12 -right-12 w-40 h-40 rounded-full pointer-events-none"
                   style={{
                     background:
-                      "radial-gradient(closest-side, rgba(255,219,61,0.20), transparent 70%)",
+                      "radial-gradient(closest-side, rgba(169,132,47,0.20), transparent 70%)",
                   }}
                 />
               )}

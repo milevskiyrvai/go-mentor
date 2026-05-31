@@ -15,8 +15,8 @@ const EVENT_COLOR: Record<CalendarEvent["type"], string> = {
   mock_interview: "var(--secondary)",
   real_interview: "var(--primary)",
   block_review: "var(--warning)",
-  final_technical: "#7BE38C",
-  final_roast: "#FF5B5B",
+  final_technical: "#5F8268",
+  final_roast: "#AF5840",
   custom: "var(--text-2)",
 };
 

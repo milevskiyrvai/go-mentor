@@ -74,8 +74,8 @@ export function RoadmapBlockCard({
           style={{
             background:
               dataStatus === "waiting"
-                ? "radial-gradient(closest-side, rgba(255,219,61,0.18), transparent 70%)"
-                : "radial-gradient(closest-side, rgba(212,255,61,0.18), transparent 70%)",
+                ? "radial-gradient(closest-side, rgba(169,132,47,0.18), transparent 70%)"
+                : "radial-gradient(closest-side, rgba(95,130,104,0.18), transparent 70%)",
           }}
         />
       )}
@@ -84,7 +84,7 @@ export function RoadmapBlockCard({
           className={clsx(
             "w-12 h-12 rounded-[10px] border border-border bg-bg grid place-items-center font-mono font-bold text-[18px] shrink-0",
             dataStatus === "in_progress" &&
-              "text-primary shadow-[inset_0_0_0_1px_rgba(212,255,61,0.4)]",
+              "text-primary shadow-[inset_0_0_0_1px_rgba(95,130,104,0.4)]",
             dataStatus === "waiting" && "text-warning",
             dataStatus === "approved" && "text-success",
             dataStatus === "not_started" && "text-text-2",

@@ -63,14 +63,14 @@ export function LoginPage() {
           className="absolute -top-24 -right-24 w-72 h-72 rounded-full pointer-events-none"
           style={{
             background:
-              "radial-gradient(closest-side, rgba(212,255,61,0.18), transparent 70%)",
+              "radial-gradient(closest-side, rgba(95,130,104,0.18), transparent 70%)",
           }}
         />
         <div
           className="absolute -bottom-32 -left-24 w-80 h-80 rounded-full pointer-events-none"
           style={{
             background:
-              "radial-gradient(closest-side, rgba(255,61,154,0.16), transparent 70%)",
+              "radial-gradient(closest-side, rgba(178,107,69,0.16), transparent 70%)",
           }}
         />
 

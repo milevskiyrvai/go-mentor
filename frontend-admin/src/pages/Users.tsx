@@ -306,8 +306,8 @@ function FilterPill({
         active
           ? {
               color: "var(--warning)",
-              border: "1px solid rgba(255,219,61,0.4)",
-              background: "rgba(255,219,61,0.08)",
+              border: "1px solid rgba(169,132,47,0.4)",
+              background: "rgba(169,132,47,0.08)",
               boxShadow: "0 0 14px -8px var(--warning)",
             }
           : {
@@ -333,11 +333,11 @@ function avatarInitials(name: string) {
 
 function pickGradient(name: string) {
   const palettes = [
-    "linear-gradient(140deg, #FF3D9A, #D4FF3D)",
-    "linear-gradient(140deg, #C9A5FF, #FF3D9A)",
+    "linear-gradient(140deg, #B26B45, #5F8268)",
+    "linear-gradient(140deg, #C7B8A0, #B26B45)",
     "linear-gradient(140deg, #FF7AB3, #FFD9A8)",
-    "linear-gradient(140deg, #FFDB3D, #FF5B5B)",
-    "linear-gradient(140deg, #7BE38C, #D4FF3D)",
+    "linear-gradient(140deg, #C9A24A, #C2705A)",
+    "linear-gradient(140deg, #7FA37E, #5F8268)",
   ];
   let h = 0;
   for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) | 0;
@@ -346,9 +346,9 @@ function pickGradient(name: string) {
 
 function RoleChip({ role }: { role: Role }) {
   const colors = {
-    student: { c: "var(--primary)", bg: "rgba(212,255,61,0.1)", b: "rgba(212,255,61,0.35)" },
-    buddy: { c: "var(--secondary)", bg: "rgba(255,61,154,0.1)", b: "rgba(255,61,154,0.35)" },
-    admin: { c: "var(--warning)", bg: "rgba(255,219,61,0.1)", b: "rgba(255,219,61,0.35)" },
+    student: { c: "var(--primary)", bg: "rgba(95,130,104,0.1)", b: "rgba(95,130,104,0.35)" },
+    buddy: { c: "var(--secondary)", bg: "rgba(178,107,69,0.1)", b: "rgba(178,107,69,0.35)" },
+    admin: { c: "var(--warning)", bg: "rgba(169,132,47,0.1)", b: "rgba(169,132,47,0.35)" },
   } as const;
   const s = colors[role];
   return (
@@ -681,8 +681,8 @@ function CreateUserDrawer({
                       ? {
                           fontSize: "12.5px",
                           color: "var(--text)",
-                          border: "1px solid rgba(255,219,61,0.45)",
-                          background: "rgba(255,219,61,0.08)",
+                          border: "1px solid rgba(169,132,47,0.45)",
+                          background: "rgba(169,132,47,0.08)",
                           boxShadow: "0 0 14px -8px var(--warning)",
                         }
                       : {
@@ -734,8 +734,8 @@ function CreateUserDrawer({
             className="text-[12px] px-3 py-2 rounded-md"
             style={{
               color: "var(--danger)",
-              background: "rgba(255,91,91,0.08)",
-              border: "1px solid rgba(255,91,91,0.3)",
+              background: "rgba(175,88,64,0.08)",
+              border: "1px solid rgba(175,88,64,0.3)",
             }}
           >
             {error}
@@ -853,8 +853,8 @@ function EditUserDrawer({
                     active
                       ? {
                           color: "var(--text)",
-                          border: "1px solid rgba(255,219,61,0.45)",
-                          background: "rgba(255,219,61,0.08)",
+                          border: "1px solid rgba(169,132,47,0.45)",
+                          background: "rgba(169,132,47,0.08)",
                         }
                       : {
                           color: "var(--text-2)",
@@ -903,8 +903,8 @@ function EditUserDrawer({
             className="text-[12px] px-3 py-2 rounded-md"
             style={{
               color: "var(--danger)",
-              background: "rgba(255,91,91,0.08)",
-              border: "1px solid rgba(255,91,91,0.3)",
+              background: "rgba(175,88,64,0.08)",
+              border: "1px solid rgba(175,88,64,0.3)",
             }}
           >
             {error}
@@ -983,8 +983,8 @@ function AssignBuddyDrawer({
               style={
                 selected === b.id
                   ? {
-                      border: "1px solid rgba(255,219,61,0.4)",
-                      background: "rgba(255,219,61,0.08)",
+                      border: "1px solid rgba(169,132,47,0.4)",
+                      background: "rgba(169,132,47,0.08)",
                     }
                   : { border: "1px solid var(--border)", background: "var(--bg)" }
               }
@@ -1084,8 +1084,8 @@ function ResetPasswordDrawer({
               className="text-[12px] px-3 py-2 rounded-md"
               style={{
                 color: "var(--danger)",
-                background: "rgba(255,91,91,0.08)",
-                border: "1px solid rgba(255,91,91,0.3)",
+                background: "rgba(175,88,64,0.08)",
+                border: "1px solid rgba(175,88,64,0.3)",
               }}
             >
               {error}
@@ -1096,8 +1096,8 @@ function ResetPasswordDrawer({
         <div
           className="px-4 py-4 rounded-md flex flex-col gap-2"
           style={{
-            background: "rgba(123,227,140,0.08)",
-            border: "1px solid rgba(123,227,140,0.3)",
+            background: "rgba(95,130,104,0.08)",
+            border: "1px solid rgba(95,130,104,0.3)",
             color: "var(--success)",
           }}
         >

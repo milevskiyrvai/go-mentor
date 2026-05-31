@@ -4,37 +4,40 @@ export default {
   theme: {
     extend: {
       colors: {
-        bg: "#07080A",
-        surface: "#0F1014",
-        elevated: "#16181E",
+        bg: "#F5F1E8",
+        surface: "#FFFDF8",
+        elevated: "#FFFFFF",
         border: {
-          DEFAULT: "#262830",
-          bright: "#363842",
+          DEFAULT: "#E5DCCD",
+          bright: "#D4C9B5",
         },
         primary: {
-          DEFAULT: "#D4FF3D",
-          dim: "rgba(212,255,61,0.28)",
+          DEFAULT: "#5F8268",
+          ink: "#456450",
+          dim: "rgba(95,130,104,0.16)",
+          soft: "#E1EADC",
         },
         secondary: {
-          DEFAULT: "#FF3D9A",
-          dim: "rgba(255,61,154,0.30)",
+          DEFAULT: "#B26B45",
+          dim: "rgba(178,107,69,0.16)",
+          soft: "#EEDDD0",
         },
-        success: "#7BE38C",
-        warning: "#FFDB3D",
-        danger: "#FF5B5B",
+        success: "#5F8268",
+        warning: "#A9842F",
+        danger: "#AF5840",
         text: {
-          DEFAULT: "#F0F0F2",
-          2: "#8A8A92",
-          3: "#50525C",
+          DEFAULT: "#221D17",
+          2: "#5E564A",
+          3: "#948B7B",
         },
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
-        mono: ['JetBrains Mono', 'ui-monospace', 'Menlo', 'monospace'],
+        sans: ['Hanken Grotesk', 'Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        mono: ['Hanken Grotesk', 'ui-monospace', 'Menlo', 'monospace'],
       },
       borderRadius: {
         sm: "6px",
-        md: "10px",
+        md: "9px",
         lg: "14px",
       },
       keyframes: {

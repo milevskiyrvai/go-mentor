@@ -100,8 +100,8 @@ export function AchievementsPage() {
                     className="w-3 h-3 rounded-full inline-block"
                     style={{
                       background:
-                        "radial-gradient(circle at 30% 30%, rgba(255,219,61,0.9), var(--warning) 70%)",
-                      boxShadow: "0 0 10px rgba(255,219,61,0.4)",
+                        "radial-gradient(circle at 30% 30%, rgba(169,132,47,0.9), var(--warning) 70%)",
+                      boxShadow: "0 0 10px rgba(169,132,47,0.4)",
                     }}
                   />
                   +{a.reward_bonus}
@@ -359,8 +359,8 @@ function AchievementDrawer({
               className="text-[12px] px-3 py-2 mt-2 rounded-md"
               style={{
                 color: "var(--danger)",
-                background: "rgba(255,91,91,0.08)",
-                border: "1px solid rgba(255,91,91,0.3)",
+                background: "rgba(175,88,64,0.08)",
+                border: "1px solid rgba(175,88,64,0.3)",
               }}
             >
               {paramsError}

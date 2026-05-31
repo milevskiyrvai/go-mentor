@@ -70,8 +70,8 @@ export function LoginPage() {
         className="fixed inset-0 pointer-events-none z-0"
         style={{
           background: `
-            radial-gradient(700px 500px at 8% 6%, rgba(255,219,61,0.08), transparent 65%),
-            radial-gradient(700px 500px at 92% 96%, rgba(255,91,91,0.06), transparent 65%)
+            radial-gradient(700px 500px at 8% 6%, rgba(169,132,47,0.08), transparent 65%),
+            radial-gradient(700px 500px at 92% 96%, rgba(175,88,64,0.06), transparent 65%)
           `,
         }}
       />
@@ -86,10 +86,10 @@ export function LoginPage() {
             <div
               className="w-[42px] h-[42px] rounded-[10px] grid place-items-center relative"
               style={{
-                background: "linear-gradient(140deg, rgba(255,219,61,0.14), var(--bg))",
+                background: "linear-gradient(140deg, rgba(169,132,47,0.14), var(--bg))",
                 border: "1px solid var(--border)",
                 boxShadow:
-                  "inset 0 0 0 1px rgba(255,219,61,0.22), 0 0 22px -8px var(--warning)",
+                  "inset 0 0 0 1px rgba(169,132,47,0.22), 0 0 22px -8px var(--warning)",
               }}
             >
               <span
@@ -133,7 +133,7 @@ export function LoginPage() {
                 letterSpacing: "-0.05em",
                 color: "var(--warning)",
                 textShadow:
-                  "0 0 26px rgba(255,219,61,0.55), 0 0 4px rgba(255,219,61,0.6)",
+                  "0 0 26px rgba(169,132,47,0.55), 0 0 4px rgba(169,132,47,0.6)",
                 marginLeft: "12px",
               }}
             >
@@ -145,9 +145,9 @@ export function LoginPage() {
                 style={{
                   fontSize: "10px",
                   color: "var(--warning)",
-                  border: "1px solid rgba(255,219,61,0.4)",
+                  border: "1px solid rgba(169,132,47,0.4)",
                   background: "var(--bg)",
-                  boxShadow: "0 0 14px rgba(255,219,61,0.2)",
+                  boxShadow: "0 0 14px rgba(169,132,47,0.2)",
                 }}
               >
                 ELEVATED PRIVILEGES
@@ -229,8 +229,8 @@ export function LoginPage() {
                 className="text-[12px] px-3 py-2 rounded-md"
                 style={{
                   color: "var(--danger)",
-                  background: "rgba(255,91,91,0.08)",
-                  border: "1px solid rgba(255,91,91,0.3)",
+                  background: "rgba(175,88,64,0.08)",
+                  border: "1px solid rgba(175,88,64,0.3)",
                 }}
               >
                 {error}

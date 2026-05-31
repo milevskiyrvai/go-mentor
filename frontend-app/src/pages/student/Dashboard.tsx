@@ -254,7 +254,7 @@ function StatCard({ label, value, hint, status, accent, renderExtra }: StatCardP
         <div
           className="absolute -top-10 -right-10 w-32 h-32 rounded-full pointer-events-none"
           style={{
-            background: "radial-gradient(closest-side, rgba(255,61,154,0.2), transparent 70%)",
+            background: "radial-gradient(closest-side, rgba(178,107,69,0.2), transparent 70%)",
           }}
         />
       )}
