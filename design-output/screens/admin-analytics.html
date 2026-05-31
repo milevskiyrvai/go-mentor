@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1280" />
+<title>Go Mentor · Admin · Аналитика</title>
+<script>{const _v=new URLSearchParams(location.search).get('v');document.documentElement.className = _v==='bd' ? 'v-b v-b-dark' : _v==='b' ? 'v-b' : 'v-a';}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="../styles/base.css" rel="stylesheet">
+</head>
+<body>
+<div class="app">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">G</div>
+      <div class="brand-name">Go Mentor<small>Платформа</small></div>
+    </div>
+    <div class="sb-user">
+      <div class="avatar" style="background:var(--ink-2)">АД</div>
+      <div style="min-width:0">
+        <div class="nm">Анна Админова</div>
+        <div class="rl"><span class="role-dot"></span>Администратор<span class="swap">⇄ роль</span></div>
+      </div>
+    </div>
+
+    <div class="sb-label">Админ-панель</div>
+    <div class="nav-item"><span class="ic"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></span>Дашборд</div>
+    <div class="nav-item"><span class="ic"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c0-3 2.5-5 5.5-5s5.5 2 5.5 5" stroke-linecap="round"/><path d="M16 5.5a3 3 0 0 1 0 5.8M18.5 19c0-2.3-1.2-4-3-4.6" stroke-linecap="round"/></svg></span>Пользователи</div>
+    <div class="nav-item"><span class="ic"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h10M4 12h16M4 18h7" stroke-linecap="round"/><circle cx="19" cy="6" r="1.6"/><circle cx="14" cy="18" r="1.6"/></svg></span>Roadmap</div>
+    <div class="nav-item"><span class="ic"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="9" r="6"/><path d="M9 14l-2 7 5-3 5 3-2-7" stroke-linejoin="round"/></svg></span>Достижения</div>
+    <div class="nav-item"><span class="ic"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M12 8v8M9.5 10.5h3.2a1.8 1.8 0 0 1 0 3.6H9.5" stroke-linecap="round"/></svg></span>Заявки 1×1<span class="tag">4</span></div>
+    <div class="nav-item active"><span class="ic"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V9M10 19V5M16 19v-7M21 19H3" stroke-linecap="round"/></svg></span>Аналитика</div>
+
+    <div class="sb-foot"><span class="led"></span>142 пользователя · 4 заявки ждут</div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <main class="main">
+    <div class="page-head">
+      <div>
+        <h1>Аналитика платформы</h1>
+        <div class="sub">Поток Go Backend · обновлено <b class="num">31</b> мая 2026, 10:40</div>
+      </div>
+      <div class="right" style="display:flex;align-items:center;gap:12px">
+        <div class="seg" role="tablist" aria-label="период">
+          <button class="opt" data-period="7" type="button">7 дней</button>
+          <button class="opt active" data-period="30" type="button">30 дней</button>
+          <button class="opt" data-period="q" type="button">Квартал</button>
+        </div>
+        <button class="btn ghost">Экспорт CSV</button>
+      </div>
+    </div>
+
+    <!-- summary stats -->
+    <div class="stat-row" style="grid-template-columns:repeat(4,1fr)">
+      <div class="stat">
+        <div class="lbl">Пользователи</div>
+        <div class="big"><span class="v num">142</span><span class="u">всего</span></div>
+        <div class="foot"><span style="color:var(--primary-ink);font-weight:700">+8</span> за 30 дней</div>
+      </div>
+      <div class="stat">
+        <div class="lbl">Активны за 7 дней</div>
+        <div class="big"><span class="v num">96</span><span class="u">из 128</span></div>
+        <div class="foot">75% студентов заходили</div>
+      </div>
+      <div class="stat">
+        <div class="lbl">Достижений выдано</div>
+        <div class="big"><span class="v num">367</span><span class="u">за месяц</span></div>
+        <div class="foot"><span style="color:var(--primary-ink);font-weight:700">+62</span> к прошлому</div>
+      </div>
+      <div class="stat accent">
+        <div class="lbl">Заявки 1×1</div>
+        <div class="big"><span class="v num">51</span><span class="u">за месяц</span></div>
+        <div class="foot">38 одобрено · 4 ждут</div>
+      </div>
+    </div>
+
+    <!-- row: roles + requests -->
+    <div class="an-grid">
+      <div class="card card-pad">
+        <div class="card-head"><h3>Пользователи по ролям</h3><span class="meta">142 всего</span></div>
+        <div class="an-bars">
+          <div class="an-bar">
+            <div class="top"><span class="k">Студенты</span><span class="vv"><b>128</b> · 90%</span></div>
+            <div class="bar"><i style="width:90%"></i></div>
+          </div>
+          <div class="an-bar">
+            <div class="top"><span class="k">Buddy (наставники)</span><span class="vv"><b>12</b> · 8%</span></div>
+            <div class="bar sage"><i style="width:8.5%"></i></div>
+          </div>
+          <div class="an-bar">
+            <div class="top"><span class="k">Администраторы</span><span class="vv"><b>2</b> · 2%</span></div>
+            <div class="bar mute"><i style="width:2.5%"></i></div>
+          </div>
+        </div>
+        <div class="chart-legend">
+          <span><i class="c1"></i>Соотношение Buddy ↔ студент — <b style="color:var(--ink);margin-left:4px">1 : 11</b></span>
+        </div>
+      </div>
+
+      <div class="card card-pad">
+        <div class="card-head"><h3>Заявки 1×1 за месяц</h3><span class="meta">51 обработано</span></div>
+        <div class="donut-wrap">
+          <div class="donut" style="background:conic-gradient(var(--primary) 0 74.5%, var(--danger) 74.5% 92.2%, var(--warning) 92.2% 100%)">
+            <div class="dc"><div class="v num">51</div><div class="l">всего</div></div>
+          </div>
+          <div class="donut-legend">
+            <div class="dl"><i style="background:var(--primary)"></i>Одобрено<span class="vv num">38</span></div>
+            <div class="dl"><i style="background:var(--danger)"></i>Отклонено<span class="vv num">9</span></div>
+            <div class="dl"><i style="background:var(--warning)"></i>Ждут решения<span class="vv num">4</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- full-width: activity §22 -->
+    <div class="card card-pad" style="margin-top:18px">
+      <div class="card-head"><h3>Активность за неделю</h3><span class="meta">пн 25 — вс 31 мая</span></div>
+      <div class="col-chart">
+        <div class="col"><div class="bars"><div class="stalk" style="height:70%"></div><div class="stalk s2" style="height:48%"></div></div><div class="num">64</div><div class="lab">Пн</div></div>
+        <div class="col"><div class="bars"><div class="stalk" style="height:78%"></div><div class="stalk s2" style="height:72%"></div></div><div class="num">71</div><div class="lab">Вт</div></div>
+        <div class="col"><div class="bars"><div class="stalk" style="height:75%"></div><div class="stalk s2" style="height:54%"></div></div><div class="num">68</div><div class="lab">Ср</div></div>
+        <div class="col"><div class="bars"><div class="stalk" style="height:100%"></div><div class="stalk s2" style="height:90%"></div></div><div class="num">82</div><div class="lab">Чт</div></div>
+        <div class="col"><div class="bars"><div class="stalk" style="height:90%"></div><div class="stalk s2" style="height:66%"></div></div><div class="num">77</div><div class="lab">Пт</div></div>
+        <div class="col"><div class="bars"><div class="stalk" style="height:48%"></div><div class="stalk s2" style="height:24%"></div></div><div class="num">41</div><div class="lab">Сб</div></div>
+        <div class="col"><div class="bars"><div class="stalk" style="height:44%"></div><div class="stalk s2" style="height:18%"></div></div><div class="num">38</div><div class="lab">Вс</div></div>
+      </div>
+      <div class="chart-legend">
+        <span><i class="c1"></i>Активные пользователи</span>
+        <span><i class="c2"></i>Достижения выдано</span>
+      </div>
+    </div>
+
+    <!-- row: top achievements + roadmap funnel -->
+    <div class="an-grid" style="margin-top:18px">
+      <div class="card card-pad">
+        <div class="card-head"><h3>Топ достижений</h3><span class="meta">по числу выдач</span></div>
+        <div class="rank">
+          <div class="ri"><div class="seal"><span class="gl">★</span></div><div><div class="nm">Первый шаг</div><div class="sub">Открыл первый материал</div></div><div class="ct num">142<small>выдач</small></div></div>
+          <div class="ri"><div class="seal" data-seal="sage"><span class="gl">B1</span></div><div><div class="nm">Первый блок закрыт</div><div class="sub">Наставник подтвердил блок</div></div><div class="ct num">86<small>выдач</small></div></div>
+          <div class="ri"><div class="seal" data-seal="amber"><span class="gl">M</span></div><div><div class="nm">Первый mock</div><div class="sub">Пройден mock-собес</div></div><div class="ct num">64<small>выдач</small></div></div>
+          <div class="ri"><div class="seal" data-seal="amber"><span class="gl">R</span></div><div><div class="nm">Первый real</div><div class="sub">Добавлен real-собес</div></div><div class="ct num">52<small>выдач</small></div></div>
+          <div class="ri"><div class="seal"><span class="gl">×3</span></div><div><div class="nm">Серия real ×3</div><div class="sub">Три реальных собеседования</div></div><div class="ct num">23<small>выдач</small></div></div>
+        </div>
+      </div>
+
+      <div class="card card-pad">
+        <div class="card-head"><h3>Прохождение roadmap</h3><span class="meta">128 студентов</span></div>
+        <div class="an-bars">
+          <div class="an-bar">
+            <div class="top"><span class="k">Начали обучение</span><span class="vv"><b>128</b> · 100%</span></div>
+            <div class="bar"><i style="width:100%"></i></div>
+          </div>
+          <div class="an-bar">
+            <div class="top"><span class="k">Закрыли ≥ 1 блок</span><span class="vv"><b>86</b> · 67%</span></div>
+            <div class="bar"><i style="width:67%"></i></div>
+          </div>
+          <div class="an-bar">
+            <div class="top"><span class="k">Прошли mock-собес</span><span class="vv"><b>64</b> · 50%</span></div>
+            <div class="bar sage"><i style="width:50%"></i></div>
+          </div>
+          <div class="an-bar">
+            <div class="top"><span class="k">Добавили real-собес</span><span class="vv"><b>52</b> · 41%</span></div>
+            <div class="bar sage"><i style="width:41%"></i></div>
+          </div>
+          <div class="an-bar">
+            <div class="top"><span class="k">Финальная техничка</span><span class="vv"><b>14</b> · 11%</span></div>
+            <div class="bar warn"><i style="width:11%"></i></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+(function(){
+  /* period segmented control — demo: re-label the "за неделю" hint only */
+  document.querySelectorAll('.seg .opt').forEach(o => o.addEventListener('click', () => {
+    document.querySelectorAll('.seg .opt').forEach(x => x.classList.toggle('active', x === o));
+  }));
+})();
+</script>
+</body>
+</html>
