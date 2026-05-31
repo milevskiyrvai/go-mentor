@@ -4,276 +4,516 @@ import { myProgress } from "@/api/progress";
 import { listBlocks } from "@/api/roadmap";
 import { myBonuses } from "@/api/bonus";
 import { myAchievements } from "@/api/achievements";
-import { myFinals } from "@/api/finals";
-import { PageHeader } from "@/components/PageHeader";
-import { ProgressBar } from "@/components/ProgressBar";
-import { StatusBadge } from "@/components/StatusBadge";
-import { AchievementCard } from "@/components/AchievementCard";
+import { listStudentActivity } from "@/api/activity";
+import { useAuth } from "@/stores/auth";
+import { daysSince, formatDate, formatDateTime } from "@/lib/format";
+import { PageLoader } from "@/components/Spinner";
 import { HexBadge } from "@/components/HexBadge";
 import { BonusCoin } from "@/components/BonusCoin";
-import { useAuth } from "@/stores/auth";
-import { daysSince, formatDate } from "@/lib/format";
-import { PageLoader } from "@/components/Spinner";
 import { ACHIEVEMENT_REWARDS } from "@/lib/achievements";
+import type { ActivityEvent, BlockProgressSummary } from "@/api/types";
 
 export function StudentDashboard() {
   const { user } = useAuth();
+
   const blocksQ = useQuery({ queryKey: ["blocks"], queryFn: listBlocks });
   const progressQ = useQuery({ queryKey: ["progress"], queryFn: myProgress });
   const bonusesQ = useQuery({ queryKey: ["bonuses"], queryFn: myBonuses });
   const achQ = useQuery({ queryKey: ["achievements"], queryFn: myAchievements });
-  const finalsQ = useQuery({ queryKey: ["finals"], queryFn: myFinals });
+  const activityQ = useQuery({
+    queryKey: ["activity", user?.id],
+    queryFn: () => listStudentActivity(user!.id, 6),
+    enabled: !!user?.id,
+  });
 
+  // ---- loading ----
   if (
     blocksQ.isLoading ||
     progressQ.isLoading ||
     bonusesQ.isLoading ||
-    achQ.isLoading ||
-    finalsQ.isLoading
+    achQ.isLoading
   ) {
     return <PageLoader />;
+  }
+
+  // ---- error ----
+  const fatalError =
+    blocksQ.error || progressQ.error || bonusesQ.error || achQ.error;
+  if (fatalError) {
+    return (
+      <div className="card card-pad text-center" style={{ padding: "48px 24px" }}>
+        <div className="text-[15px] font-bold mb-1">Не удалось загрузить прогресс</div>
+        <div className="text-[13px] text-text-2 mb-4">
+          Проверьте подключение и попробуйте ещё раз.
+        </div>
+        <button
+          className="btn primary"
+          onClick={() => {
+            blocksQ.refetch();
+            progressQ.refetch();
+            bonusesQ.refetch();
+            achQ.refetch();
+          }}
+        >
+          Повторить
+        </button>
+      </div>
+    );
   }
 
   const blocks = blocksQ.data ?? [];
   const progress = progressQ.data;
   const bonuses = bonusesQ.data;
   const achievements = achQ.data ?? [];
-  const finals = finalsQ.data ?? [];
+  const activity = activityQ.data ?? [];
 
   const days = daysSince(user?.learning_started_at);
   const overall = progress?.overall_percent ?? 0;
   const approved = progress?.approved_blocks ?? 0;
   const totalBlocks = progress?.total_active_blocks ?? blocks.length;
+  const inProgressCount =
+    progress?.blocks.filter((b) => b.status === "in_progress").length ?? 0;
 
-  // current block — первый из in_progress/waiting, иначе first not_started
-  const blockProgressMap = new Map(
+  // прогресс по блоку
+  const blockProgressMap = new Map<string, BlockProgressSummary>(
     progress?.blocks.map((b) => [b.block_id, b]) ?? [],
   );
   const sortedBlocks = [...blocks].sort((a, b) => a.sort_order - b.sort_order);
-  const currentBlockIdx = sortedBlocks.findIndex((b) => {
-    const st = blockProgressMap.get(b.id)?.status;
-    return st === "in_progress" || st === "waiting_buddy_confirmation";
-  });
-  const fallbackIdx = sortedBlocks.findIndex(
-    (b) => (blockProgressMap.get(b.id)?.status ?? "not_started") !== "approved",
-  );
-  const activeIdx = currentBlockIdx !== -1 ? currentBlockIdx : fallbackIdx === -1 ? 0 : fallbackIdx;
-  const currentBlock = sortedBlocks[activeIdx];
-  const currentProgress = currentBlock ? blockProgressMap.get(currentBlock.id) : undefined;
 
-  const received = achievements.filter((a) => a.received);
-  const upcoming = achievements
+  // текущий блок — первый из in_progress/waiting, иначе первый не закрытый
+  const currentIdx = (() => {
+    const active = sortedBlocks.findIndex((b) => {
+      const st = blockProgressMap.get(b.id)?.status;
+      return st === "in_progress" || st === "waiting_buddy_confirmation";
+    });
+    if (active !== -1) return active;
+    const next = sortedBlocks.findIndex(
+      (b) => (blockProgressMap.get(b.id)?.status ?? "not_started") !== "approved",
+    );
+    return next === -1 ? 0 : next;
+  })();
+  const currentBlock = sortedBlocks[currentIdx];
+  const currentBp = currentBlock ? blockProgressMap.get(currentBlock.id) : undefined;
+  const currentPct = currentBp?.progress_percent ?? 0;
+  const curViewed = currentBp?.viewed_required ?? 0;
+  const curTotal = currentBp?.total_required ?? 0;
+  const curRemaining = Math.max(0, curTotal - curViewed);
+
+  // следующее достижение — ближайшее по проценту прогресса, ещё не полученное
+  const nextAch = achievements
     .filter((a) => !a.received)
-    .sort((a, b) => {
-      const pa = a.target > 0 ? a.current / a.target : 0;
-      const pb = b.target > 0 ? b.current / b.target : 0;
-      return pb - pa;
-    })
-    .slice(0, 3);
+    .map((a) => ({
+      item: a,
+      pct: a.target > 0 ? a.current / a.target : 0,
+    }))
+    .sort((x, y) => y.pct - x.pct)[0]?.item;
+  const nextAchPct =
+    nextAch && nextAch.target > 0
+      ? Math.min(100, Math.round((nextAch.current / nextAch.target) * 100))
+      : 0;
+  const nextAchReward = nextAch
+    ? ACHIEVEMENT_REWARDS[nextAch.achievement.title] ?? nextAch.achievement.reward_bonus
+    : 0;
+
+  const receivedCount = achievements.filter((a) => a.received).length;
 
   return (
-    <div>
-      <PageHeader
-        eyebrow={`Привет, ${user?.display_name?.split(" ")[0] ?? ""}`}
-        title="Мой прогресс"
-        description="Сводка по обучению, бонусам, достижениям и финальным проверкам."
-        right={
-          <Link to="/student/roadmap" className="btn btn-primary">
-            Перейти к Roadmap →
+    <main className="main" style={{ padding: 0, gap: 24 }}>
+      {/* ============ page head ============ */}
+      <div className="page-head">
+        <div>
+          <h1>Мой прогресс</h1>
+          <div className="sub">
+            {user?.learning_started_at
+              ? `Учусь с ${formatDate(user.learning_started_at)} · ${days}-й день в пути`
+              : "Старт обучения ещё не отмечен"}
+          </div>
+        </div>
+        <div className="right">
+          <Link to="/student/roadmap" className="pill in-progress">
+            <span className="led" />
+            Поток · Go Backend
           </Link>
-        }
-      />
-
-      {/* Top stats row */}
-      <div className="grid grid-cols-4 gap-5 mb-8">
-        <StatCard label="Дней обучения" value={String(days)} hint={formatDate(user?.learning_started_at)} />
-        <StatCard
-          label="Текущий блок"
-          value={currentBlock ? `Блок ${String(activeIdx + 1).padStart(2, "0")}` : "—"}
-          hint={currentBlock?.title}
-          status={currentProgress?.status}
-        />
-        <StatCard
-          label="Общий прогресс"
-          value={`${overall}%`}
-          hint={`${approved} / ${totalBlocks} блоков закрыто`}
-          renderExtra={<ProgressBar value={overall} className="mt-2" height={6} />}
-        />
-        <StatCard
-          label="Бонусы"
-          value={String(bonuses?.balance ?? 0)}
-          hint={`Скидка: ${(bonuses?.discount_percent ?? 0).toFixed(0)}% / ${bonuses?.discount_cap ?? 15}%`}
-          accent
-        />
+        </div>
       </div>
 
-      {/* Roadmap strip */}
-      <section className="mb-10">
-        <SectionHead title="Маршрут" right={<Link to="/student/roadmap" className="caption hover:text-primary">Все блоки →</Link>} />
-        <div className="grid grid-cols-5 gap-3">
-          {sortedBlocks.map((b, i) => {
-            const bp = blockProgressMap.get(b.id);
-            const pct = bp?.progress_percent ?? 0;
-            const status = bp?.status ?? "not_started";
-            const accent =
-              status === "approved"
-                ? "var(--success)"
-                : status === "waiting_buddy_confirmation"
-                  ? "var(--warning)"
-                  : status === "in_progress"
-                    ? "var(--primary)"
-                    : "var(--border-bright)";
-            return (
-              <Link
-                key={b.id}
-                to="/student/roadmap"
-                state={{ blockId: b.id }}
-                className="elevated p-4 flex flex-col gap-3 transition-all hover:border-border-bright"
-              >
-                <div className="flex items-start justify-between">
-                  <div
-                    className="font-mono font-bold text-[16px]"
-                    style={{ color: accent }}
-                  >
-                    {String(i + 1).padStart(2, "0")}
-                  </div>
-                  <StatusBadge status={status} />
-                </div>
-                <div className="text-[13px] font-semibold leading-snug line-clamp-2 min-h-[34px]">
-                  {b.title}
-                </div>
-                <ProgressBar
-                  value={pct}
-                  variant={
-                    status === "approved" ? "success" : status === "waiting_buddy_confirmation" ? "warn" : "default"
-                  }
-                  height={6}
-                />
-                <div className="font-mono text-[11px] text-text-2 flex justify-between">
-                  <span>{bp?.viewed_required ?? 0} / {bp?.total_required ?? 0}</span>
-                  <span>{pct}%</span>
-                </div>
-              </Link>
-            );
-          })}
+      {/* ============ hero stats ============ */}
+      <div className="stat-row">
+        {/* текущий блок */}
+        <div className="stat">
+          <div className="lbl">Текущий блок</div>
+          <div className="big">
+            <span className="v num">
+              {currentBlock ? String(currentIdx + 1).padStart(2, "0") : "—"}
+            </span>
+            <span className="u">{currentBlock?.title ?? "Все блоки закрыты"}</span>
+          </div>
+          <div className="bar">
+            <i style={{ width: `${currentPct}%` }} />
+          </div>
+          <div className="foot">
+            {currentBlock
+              ? `Просмотрено ${curViewed} из ${curTotal} материалов · ${currentPct}%`
+              : "Программа пройдена полностью"}
+          </div>
         </div>
-      </section>
 
-      <div className="grid grid-cols-3 gap-6 mb-10">
-        {/* Finals */}
-        <section className="col-span-1">
-          <SectionHead title="Финальные этапы" />
-          <div className="space-y-3">
-            {finals.length === 0 && (
-              <div className="card p-6 text-text-3 text-[13px]">Откроются после закрытия всех блоков.</div>
+        {/* общий прогресс */}
+        <div className="stat">
+          <div className="lbl">Общий прогресс</div>
+          <div className="big">
+            <span className="v num">{overall}</span>
+            <span className="u">% программы</span>
+          </div>
+          <div className="bar success">
+            <i style={{ width: `${overall}%` }} />
+          </div>
+          <div className="foot">
+            {approved} из {totalBlocks} блоков закрыто
+            {inProgressCount > 0 ? ` · ${inProgressCount} в работе` : ""}
+          </div>
+        </div>
+
+        {/* баланс бонусов */}
+        <div className="stat accent">
+          <div className="lbl">Баланс бонусов</div>
+          <div className="big">
+            <span className="v num">{(bonuses?.balance ?? 0).toLocaleString("ru-RU")}</span>
+            <span className="u">бонусов</span>
+          </div>
+          <div className="foot">
+            Текущая скидка постоплаты ·{" "}
+            <b className="num">
+              {(bonuses?.discount_percent ?? 0).toLocaleString("ru-RU", {
+                maximumFractionDigits: 1,
+              })}
+              %
+            </b>
+          </div>
+        </div>
+      </div>
+
+      {/* ============ next step ============ */}
+      {currentBlock && (
+        <Link
+          to="/student/roadmap"
+          state={{ blockId: currentBlock.id }}
+          className="nextstep"
+        >
+          <div className="ico">
+            <svg
+              className="i"
+              style={{ width: 22, height: 22 }}
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                d="M5 12h14M13 6l6 6-6 6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </div>
+          <div>
+            <div className="tt">
+              Следующий шаг — закрыть блок «{currentBlock.title}»
+            </div>
+            <div className="ds">
+              {curRemaining > 0
+                ? `Осталось ${curRemaining} обязательных материал(ов). Отметишь их — блок уйдёт на подтверждение Buddy.`
+                : "Все обязательные материалы просмотрены — отправь блок на подтверждение Buddy."}
+            </div>
+          </div>
+          <span className="btn primary">Продолжить блок</span>
+        </Link>
+      )}
+
+      {/* ============ two columns ============ */}
+      <div className="cols c-2-1" style={{ flex: 1 }}>
+        {/* left column */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+          {/* roadmap rail */}
+          <div className="card card-pad">
+            <div className="card-head">
+              <h3>Маршрут обучения</h3>
+              <span className="meta">
+                {totalBlocks} блоков · открываются в любом порядке
+              </span>
+            </div>
+
+            {sortedBlocks.length === 0 ? (
+              <div className="text-[13px] text-text-3 py-4">
+                Маршрут ещё не опубликован — загляни позже.
+              </div>
+            ) : (
+              <>
+                <div className="rail">
+                  {sortedBlocks.map((b, i) => {
+                    const bp = blockProgressMap.get(b.id);
+                    const status = bp?.status ?? "not_started";
+                    const pct = bp?.progress_percent ?? 0;
+                    const railState =
+                      status === "waiting_buddy_confirmation" ? "waiting" : status;
+                    const fill =
+                      status === "approved"
+                        ? "var(--success)"
+                        : status === "waiting_buddy_confirmation"
+                          ? "var(--warning)"
+                          : status === "in_progress"
+                            ? "var(--primary)"
+                            : "var(--line-2)";
+                    return (
+                      <Link
+                        key={b.id}
+                        to="/student/roadmap"
+                        state={{ blockId: b.id }}
+                        className="node"
+                        data-s={railState}
+                      >
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                          }}
+                        >
+                          <span className="n num">
+                            {String(i + 1).padStart(2, "0")}
+                          </span>
+                          {status === "approved" ? (
+                            <span className="check">
+                              <svg
+                                style={{ width: 13, height: 13 }}
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth={3}
+                              >
+                                <polyline
+                                  points="5 12 10 17 19 7"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                />
+                              </svg>
+                            </span>
+                          ) : status !== "not_started" ? (
+                            <span
+                              className="num"
+                              style={{
+                                fontSize: 11,
+                                color: fill,
+                                fontWeight: 700,
+                              }}
+                            >
+                              {pct}%
+                            </span>
+                          ) : null}
+                        </div>
+                        <div className="t">{b.title}</div>
+                        <div className="mini">
+                          <i style={{ width: `${pct}%`, background: fill }} />
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </div>
+
+                <div
+                  style={{
+                    display: "flex",
+                    gap: 20,
+                    marginTop: 16,
+                    fontSize: 12,
+                    color: "var(--ink-2)",
+                    flexWrap: "wrap",
+                  }}
+                >
+                  <Legend color="var(--success)" label="Закрыт" />
+                  <Legend color="var(--primary)" label="В работе" />
+                  <Legend color="var(--line-2)" label="Впереди" />
+                </div>
+              </>
             )}
-            {finals.map((f) => (
-              <div key={f.id} className="elevated p-4 flex items-center justify-between">
-                <div>
-                  <div className="caption mb-1">
-                    {f.type === "final_technical" ? "Финал" : "Финал"}
+          </div>
+
+          {/* next achievement */}
+          <div className="card card-pad">
+            <div className="card-head">
+              <h3>Следующее достижение</h3>
+              {nextAch && <span className="meta">+{nextAchReward} бонусов</span>}
+            </div>
+            {nextAch ? (
+              <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
+                <HexBadge
+                  glyph={nextAch.achievement.title[0]?.toUpperCase() ?? "?"}
+                  imageUrl={nextAch.achievement.image_url}
+                  locked
+                  size={64}
+                />
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontWeight: 700, fontSize: 14.5 }}>
+                    {nextAch.achievement.title}
                   </div>
-                  <div className="text-[15px] font-semibold">
-                    {f.type === "final_technical" ? "Техничка" : "Прожарка"}
+                  <div
+                    style={{
+                      fontSize: 12.5,
+                      color: "var(--ink-2)",
+                      margin: "3px 0 9px",
+                    }}
+                  >
+                    {nextAch.achievement.description ??
+                      "Продолжай обучение, чтобы открыть это достижение."}
                   </div>
-                  {f.scheduled_at && (
-                    <div className="text-[11px] text-text-3 mt-1 font-mono">
-                      {formatDate(f.scheduled_at)}
+                  {nextAch.target > 1 && (
+                    <div className="lockprog">
+                      <span>
+                        {nextAch.current} / {nextAch.target}
+                      </span>
+                      <div className="bar">
+                        <i style={{ width: `${nextAchPct}%` }} />
+                      </div>
+                      <span>{nextAchPct}%</span>
                     </div>
                   )}
                 </div>
-                <StatusBadge status={f.status} />
               </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Achievements */}
-        <section className="col-span-2">
-          <SectionHead
-            title="Достижения"
-            right={
-              <Link to="/student/achievements" className="caption hover:text-primary">
-                Все ({received.length}/{achievements.length}) →
-              </Link>
-            }
-          />
-          <div className="grid grid-cols-3 gap-3">
-            {received.slice(0, 3).map((a) => (
-              <Link
-                key={a.achievement.id}
-                to="/student/achievements"
-                className="elevated p-4 flex items-center gap-3 hover:border-border-bright"
-              >
-                <HexBadge glyph={a.achievement.title[0]?.toUpperCase() ?? "?"} size={52} accent="secondary" />
-                <div className="min-w-0">
-                  <div className="text-[13px] font-semibold truncate">{a.achievement.title}</div>
-                  <div className="text-[11px] text-text-2 mt-0.5 flex items-center gap-1">
-                    <BonusCoin size={11} variant="secondary" />
-                    +{ACHIEVEMENT_REWARDS[a.achievement.title] ?? a.achievement.reward_bonus}
-                  </div>
-                </div>
-              </Link>
-            ))}
-            {received.length === 0 && (
-              <div className="card p-6 text-text-3 text-[13px] col-span-3">
-                Пока нет получённых достижений — начните с первого материала roadmap.
+            ) : (
+              <div className="text-[13px] text-text-3 py-2">
+                Все доступные достижения получены. Так держать!
               </div>
             )}
           </div>
-        </section>
-      </div>
+        </div>
 
-      {/* Upcoming achievements */}
-      {upcoming.length > 0 && (
-        <section className="mb-10">
-          <SectionHead title="Следующие достижения" />
-          <div className="grid grid-cols-3 gap-4">
-            {upcoming.map((a) => (
-              <AchievementCard key={a.achievement.id} item={a} variantAccent="secondary" />
-            ))}
-          </div>
-        </section>
-      )}
-    </div>
-  );
-}
-
-interface StatCardProps {
-  label: string;
-  value: string;
-  hint?: string;
-  status?: string;
-  accent?: boolean;
-  renderExtra?: React.ReactNode;
-}
-function StatCard({ label, value, hint, status, accent, renderExtra }: StatCardProps) {
-  return (
-    <div className="elevated p-5 flex flex-col gap-1 relative overflow-hidden">
-      {accent && (
+        {/* right column — activity feed */}
         <div
-          className="absolute -top-10 -right-10 w-32 h-32 rounded-full pointer-events-none"
-          style={{
-            background: "radial-gradient(closest-side, rgba(178,107,69,0.2), transparent 70%)",
-          }}
-        />
-      )}
-      <div className="caption">{label}</div>
-      <div className={`font-mono font-bold text-[32px] -tracking-[0.02em] ${accent ? "text-secondary" : "text-text"}`}>
-        {value}
+          className="card card-pad"
+          style={{ display: "flex", flexDirection: "column" }}
+        >
+          <div className="card-head">
+            <h3>Что было недавно</h3>
+          </div>
+
+          {activityQ.isLoading ? (
+            <div className="text-[13px] text-text-3 py-2">Загрузка событий…</div>
+          ) : activity.length === 0 ? (
+            <div className="text-[13px] text-text-3 py-2">
+              Пока пусто — открой первый материал в Roadmap, и здесь появится лента.
+            </div>
+          ) : (
+            <div className="feed">
+              {activity.map((e) => (
+                <div className="ev" key={e.id}>
+                  <span className={`dot ${dotClass(e.type)}`} />
+                  <div>
+                    <div
+                      className="tx"
+                      dangerouslySetInnerHTML={{ __html: feedText(e) }}
+                    />
+                    <div className="tm">{formatDateTime(e.created_at)}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div
+            style={{
+              marginTop: "auto",
+              paddingTop: 14,
+              borderTop: "1px solid var(--line)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: 10,
+            }}
+          >
+            <span
+              style={{
+                fontSize: 12,
+                color: "var(--ink-3)",
+                fontWeight: 600,
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 6,
+              }}
+            >
+              <BonusCoin size={12} variant="secondary" />
+              {receivedCount} достижений получено
+            </span>
+            <Link to="/student/profile" className="btn sm ghost">
+              Профиль
+            </Link>
+          </div>
+        </div>
       </div>
-      {hint && <div className="text-[12px] text-text-2 leading-snug">{hint}</div>}
-      {status && <div className="mt-2"><StatusBadge status={status} /></div>}
-      {renderExtra}
-    </div>
+    </main>
   );
 }
 
-function SectionHead({ title, right }: { title: string; right?: React.ReactNode }) {
+function Legend({ color, label }: { color: string; label: string }) {
   return (
-    <div className="flex items-baseline justify-between border-b border-border pb-3 mb-5">
-      <h2 className="text-[18px] font-semibold -tracking-tight">{title}</h2>
-      {right}
-    </div>
+    <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+      <span
+        style={{
+          width: 9,
+          height: 9,
+          borderRadius: "50%",
+          background: color,
+        }}
+      />
+      {label}
+    </span>
   );
+}
+
+// ----- activity → лента -----
+function dotClass(type: string): string {
+  if (type.includes("achievement")) return "s";
+  if (type.includes("approved") || type.includes("final")) return "s";
+  if (type.includes("material") || type.includes("bonus")) return "p";
+  return "";
+}
+
+function esc(v: unknown): string {
+  return String(v ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+function feedText(e: ActivityEvent): string {
+  const m = e.metadata ?? {};
+  const title = m.title ? `<b>«${esc(m.title)}»</b>` : "";
+  switch (e.type) {
+    case "material_viewed":
+      return `Просмотрен материал ${title}`.trim();
+    case "block_approved":
+      return `Блок ${title || ""} подтверждён Buddy`.trim();
+    case "achievement_unlocked":
+      return `Получено достижение ${title}${m.amount ? ` · +${esc(m.amount)}` : ""}`.trim();
+    case "interview_added":
+    case "interview_added_real":
+      return `Добавлено real-собеседование${m.company ? ` — <b>${esc(m.company)}</b>` : ""}`;
+    case "mock_created":
+      return "Назначено mock-собеседование";
+    case "mock_completed":
+      return "Mock-собеседование завершено";
+    case "interview_updated":
+      return "Собеседование обновлено";
+    case "final_scheduled":
+      return "Финальный этап назначен";
+    case "final_completed":
+      return "Финальный этап пройден";
+    case "final_failed":
+      return "Финальный этап не пройден";
+    case "bonus_credited":
+      return `Начислено ${m.amount ? `<b>${esc(m.amount)}</b> ` : ""}бонусов`;
+    case "bonus_debited":
+      return `Конвертировано ${m.amount ? `<b>${esc(m.amount)}</b> ` : ""}бонусов в скидку`;
+    default:
+      return esc(e.type);
+  }
 }

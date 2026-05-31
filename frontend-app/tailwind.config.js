@@ -22,9 +22,9 @@ export default {
           dim: "rgba(178,107,69,0.16)",
           soft: "#EEDDD0",
         },
-        success: "#5F8268",
-        warning: "#A9842F",
-        danger: "#AF5840",
+        success: { DEFAULT: "#5F8268", soft: "#E1EADC" },
+        warning: { DEFAULT: "#A9842F", soft: "#ECE0C4" },
+        danger: { DEFAULT: "#AF5840", soft: "#EDD9D0" },
         text: {
           DEFAULT: "#221D17",
           2: "#5E564A",

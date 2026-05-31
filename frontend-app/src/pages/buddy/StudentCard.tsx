@@ -1,10 +1,6 @@
 import { useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import {
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getPublicProfile } from "@/api/users";
 import { studentProgress, approveBlock } from "@/api/progress";
 import { listBlocks } from "@/api/roadmap";
@@ -16,197 +12,311 @@ import {
   updateInterview,
 } from "@/api/interviews";
 import { listStudentActivity } from "@/api/activity";
-import { listEvents, createEvent } from "@/api/calendar";
-import { PageHeader } from "@/components/PageHeader";
-import { PageLoader } from "@/components/Spinner";
-import { ProgressBar } from "@/components/ProgressBar";
-import { StatusBadge } from "@/components/StatusBadge";
+import { PageLoader, Spinner } from "@/components/Spinner";
 import { Avatar } from "@/components/Sidebar";
 import { Modal } from "@/components/Modal";
-import { CalendarGrid } from "@/components/CalendarGrid";
 import { formatDate, formatDateTime, relativeDays } from "@/lib/format";
-import { api } from "@/api/client";
-import type { Interview } from "@/api/types";
+import type {
+  Interview,
+  BlockProgressSummary,
+  FinalCheck,
+  ActivityEvent,
+} from "@/api/types";
 import clsx from "clsx";
 
-type Tab = "roadmap" | "interviews" | "finals" | "activity" | "calendar";
+type Tab = "roadmap" | "interviews" | "final" | "activity" | "profile";
+
+const TABS: [Tab, string][] = [
+  ["roadmap", "Roadmap"],
+  ["interviews", "Собеседования"],
+  ["final", "Финальные этапы"],
+  ["activity", "Активность"],
+  ["profile", "Профиль"],
+];
 
 export function BuddyStudentCard() {
   const { id } = useParams<{ id: string }>();
   const studentId = id!;
   const queryClient = useQueryClient();
-
-  const profileQ = useQuery({ queryKey: ["public-profile", studentId], queryFn: () => getPublicProfile(studentId) });
-  const progressQ = useQuery({ queryKey: ["student-progress", studentId], queryFn: () => studentProgress(studentId) });
-  const blocksQ = useQuery({ queryKey: ["blocks"], queryFn: listBlocks });
-
   const [tab, setTab] = useState<Tab>("roadmap");
 
-  if (profileQ.isLoading || progressQ.isLoading || blocksQ.isLoading) return <PageLoader />;
-  if (!profileQ.data) return <div>Не найдено</div>;
+  const profileQ = useQuery({
+    queryKey: ["public-profile", studentId],
+    queryFn: () => getPublicProfile(studentId),
+  });
+  const progressQ = useQuery({
+    queryKey: ["student-progress", studentId],
+    queryFn: () => studentProgress(studentId),
+  });
+  const blocksQ = useQuery({ queryKey: ["blocks"], queryFn: () => listBlocks() });
+
+  if (profileQ.isLoading || progressQ.isLoading || blocksQ.isLoading)
+    return <PageLoader />;
+
+  if (profileQ.isError || !profileQ.data) {
+    return (
+      <div className="card card-pad text-center text-[13px] text-text-3">
+        Не удалось загрузить карточку ученика.{" "}
+        <Link to="/buddy/students" className="text-primary hover:underline">
+          Вернуться к списку
+        </Link>
+      </div>
+    );
+  }
 
   const p = profileQ.data;
   const progress = progressQ.data!;
-  const blocks = (blocksQ.data ?? []).slice().sort((a, b) => a.sort_order - b.sort_order);
+  const blocks = (blocksQ.data ?? [])
+    .slice()
+    .sort((a, b) => a.sort_order - b.sort_order);
+
+  const progressMap = new Map<string, BlockProgressSummary>(
+    progress.blocks.map((b) => [b.block_id, b]),
+  );
+
+  // Блок, ожидающий подтверждения buddy → герой-действие
+  const waitingBlock = blocks.find(
+    (b) => progressMap.get(b.id)?.status === "waiting_buddy_confirmation",
+  );
+  const waitingProg = waitingBlock ? progressMap.get(waitingBlock.id) : undefined;
+
+  const refetchProgress = () => {
+    queryClient.invalidateQueries({ queryKey: ["student-progress", studentId] });
+    queryClient.invalidateQueries({ queryKey: ["buddy-students"] });
+    queryClient.invalidateQueries({ queryKey: ["student-activity", studentId] });
+  };
 
   return (
-    <div>
-      <PageHeader
-        eyebrow="Ученик"
-        title={
-          <span className="flex items-center gap-4">
-            <Avatar name={p.display_name} url={p.avatar_url} role="student" size={56} />
-            <span>{p.display_name}</span>
-          </span>
-        }
-        description={
-          <span className="flex items-center gap-3 flex-wrap">
-            {p.telegram_username && (
-              <a
-                href={`https://t.me/${p.telegram_username}`}
-                target="_blank"
-                rel="noreferrer"
-                className="text-primary hover:underline"
-              >
-                t.me/{p.telegram_username}
-              </a>
-            )}
-            {p.learning_started_at && (
-              <span className="caption text-text-3 normal-case font-sans tracking-normal">
-                · С {formatDate(p.learning_started_at)} ({p.learning_days ?? 0} дн.)
-              </span>
-            )}
-            <Link
-              to={`/buddy/users/${studentId}`}
-              className="caption hover:text-primary normal-case font-sans tracking-normal"
-            >
-              · Публичный профиль →
-            </Link>
-          </span>
-        }
-        right={
-          <div className="flex flex-col items-end">
-            <div className="caption">Прогресс</div>
-            <div className="font-mono font-bold text-primary text-[32px] -tracking-[0.02em]">
-              {progress.overall_percent}%
-            </div>
-            <div className="caption">{progress.approved_blocks} / {progress.total_active_blocks}</div>
-          </div>
-        }
-      />
+    <div className="flex flex-col gap-4">
+      <Link to="/buddy/students" className="backlink">
+        <svg
+          className="i"
+          style={{ width: 15, height: 15 }}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={2}
+        >
+          <path d="M15 6l-6 6 6 6" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+        Все ученики
+      </Link>
 
-      {/* Tabs */}
-      <div className="flex items-center gap-2 mb-6 border-b border-border">
-        {(
-          [
-            ["roadmap", "Roadmap"],
-            ["interviews", "Собеседования"],
-            ["finals", "Финалки"],
-            ["activity", "Активность"],
-            ["calendar", "Календарь"],
-          ] as const
-        ).map(([k, l]) => (
+      {/* student header */}
+      <div className="card scard">
+        <Avatar name={p.display_name} url={p.avatar_url} role="student" size={60} />
+        <div className="sinfo">
+          <h2>{p.display_name}</h2>
+          <div className="smeta">
+            {p.telegram_username && (
+              <span className="tg">@{p.telegram_username}</span>
+            )}
+            <span>· Студент</span>
+            {p.learning_started_at && (
+              <span>· учится с {formatDate(p.learning_started_at)}</span>
+            )}
+            {typeof p.learning_days === "number" && p.learning_days > 0 && (
+              <span>· {p.learning_days} дн.</span>
+            )}
+          </div>
+        </div>
+        <div className="sact">
+          <Link to={`/buddy/users/${studentId}`} className="btn ghost sm">
+            Публичный профиль
+          </Link>
+          {p.telegram_username && (
+            <a
+              href={`https://t.me/${p.telegram_username}`}
+              target="_blank"
+              rel="noreferrer"
+              className="btn ghost sm"
+            >
+              Написать в Telegram
+            </a>
+          )}
+        </div>
+      </div>
+
+      {/* hero action — подтверждение блока */}
+      {waitingBlock && (
+        <ConfirmHero
+          studentId={studentId}
+          blockId={waitingBlock.id}
+          blockTitle={waitingBlock.title}
+          totalRequired={waitingProg?.total_required ?? 0}
+          onApproved={refetchProgress}
+        />
+      )}
+
+      {/* tabs */}
+      <div className="tabs">
+        {TABS.map(([k, label]) => (
           <button
             key={k}
+            type="button"
+            className={clsx("tab", tab === k && "active")}
             onClick={() => setTab(k)}
-            className={clsx(
-              "px-4 py-3 text-[13px] font-medium transition-all border-b-2 -mb-[1px]",
-              tab === k ? "border-primary text-text" : "border-transparent text-text-2 hover:text-text",
-            )}
           >
-            {l}
+            {label}
           </button>
         ))}
       </div>
 
       {tab === "roadmap" && (
-        <RoadmapTab studentId={studentId} blocks={blocks} progress={progress} onChange={() => {
-          queryClient.invalidateQueries({ queryKey: ["student-progress", studentId] });
-          queryClient.invalidateQueries({ queryKey: ["buddy-students"] });
-        }} />
+        <RoadmapTab
+          studentId={studentId}
+          blocks={blocks}
+          progressMap={progressMap}
+          onChange={refetchProgress}
+        />
       )}
       {tab === "interviews" && <InterviewsTab studentId={studentId} />}
-      {tab === "finals" && <FinalsTab studentId={studentId} />}
+      {tab === "final" && <FinalTab studentId={studentId} progress={progress} />}
       {tab === "activity" && <ActivityTab studentId={studentId} />}
-      {tab === "calendar" && <CalendarTab studentId={studentId} />}
+      {tab === "profile" && (
+        <ProfileTab studentId={studentId} about={p.about} progress={progress} />
+      )}
     </div>
   );
 }
 
-// ===== Roadmap tab =====
+// ============ Hero (подтверждение блока) ============
+
+function ConfirmHero({
+  studentId,
+  blockId,
+  blockTitle,
+  totalRequired,
+  onApproved,
+}: {
+  studentId: string;
+  blockId: string;
+  blockTitle: string;
+  totalRequired: number;
+  onApproved: () => void;
+}) {
+  const mut = useMutation({
+    mutationFn: () => approveBlock(blockId, studentId),
+    onSuccess: onApproved,
+  });
+  return (
+    <div className="nextstep">
+      <div className="ico">
+        <svg
+          className="i"
+          style={{ width: 22, height: 22 }}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={2}
+        >
+          <polyline
+            points="5 12 10 17 19 7"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </div>
+      <div>
+        <div className="tt">Блок «{blockTitle}» готов к подтверждению</div>
+        <div className="ds">
+          {totalRequired > 0
+            ? `Все ${totalRequired} обязательных материалов отмечены. `
+            : "Все обязательные материалы отмечены. "}
+          Подтвердите закрытие — ученик получит достижение за блок.
+        </div>
+      </div>
+      <button
+        className="btn secondary"
+        disabled={mut.isPending}
+        onClick={() => mut.mutate()}
+      >
+        {mut.isPending ? "Подтверждаю…" : "Подтвердить блок"}
+      </button>
+    </div>
+  );
+}
+
+// ============ Roadmap ============
 
 function RoadmapTab({
   studentId,
   blocks,
-  progress,
+  progressMap,
   onChange,
 }: {
   studentId: string;
-  blocks: { id: string; title: string; sort_order: number }[];
-  progress: { blocks: { block_id: string; status: string; progress_percent: number; total_required: number; viewed_required: number; total_all: number; viewed_all: number }[] };
+  blocks: { id: string; title: string }[];
+  progressMap: Map<string, BlockProgressSummary>;
   onChange: () => void;
 }) {
   const approveMut = useMutation({
     mutationFn: (blockId: string) => approveBlock(blockId, studentId),
-    onSuccess: () => onChange(),
+    onSuccess: onChange,
   });
-  const progressMap = useMemo(
-    () => new Map(progress.blocks.map((b) => [b.block_id, b])),
-    [progress],
-  );
+
+  if (blocks.length === 0) {
+    return (
+      <div className="card card-pad text-center text-[13px] text-text-3">
+        Программа пока не настроена — блоков нет.
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-3">
+    <div className="flex flex-col gap-3">
       {blocks.map((b, i) => {
         const bp = progressMap.get(b.id);
         const status = bp?.status ?? "not_started";
-        const canApprove = status === "waiting_buddy_confirmation" || status === "in_progress";
+        const dataS =
+          status === "approved"
+            ? "approved"
+            : status === "in_progress"
+              ? "in_progress"
+              : status === "waiting_buddy_confirmation"
+                ? "waiting"
+                : "not_started";
+        const totalReq = bp?.total_required ?? 0;
+        const viewedReq = bp?.viewed_required ?? 0;
+        const pct = bp?.progress_percent ?? 0;
+        const selected = status === "waiting_buddy_confirmation";
+
         return (
-          <div
-            key={b.id}
-            className={clsx(
-              "elevated p-5 flex items-center gap-4",
-              status === "waiting_buddy_confirmation" && "border-warning/40",
-              status === "approved" && "border-success/30",
-            )}
-          >
-            <div
-              className={clsx(
-                "w-12 h-12 rounded-[10px] border border-border bg-bg grid place-items-center font-mono font-bold text-[18px] shrink-0",
-                status === "approved" && "text-success",
-                status === "waiting_buddy_confirmation" && "text-warning",
-                status === "in_progress" && "text-primary",
-                status === "not_started" && "text-text-3",
-              )}
-            >
-              {String(i + 1).padStart(2, "0")}
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-3 mb-1">
-                <h3 className="text-[15px] font-semibold truncate">{b.title}</h3>
-                <StatusBadge status={status} />
+          <div key={b.id} className={clsx("block", selected && "sel")} data-s={dataS}>
+            <div className="block-head">
+              <div className="block-num">{String(i + 1).padStart(2, "0")}</div>
+              <div className="block-title">
+                <h4>{b.title}</h4>
+                <small>{blockSubtitle(status, viewedReq, totalReq, bp)}</small>
               </div>
-              <div className="flex items-center gap-3">
-                <div className="flex-1">
-                  <ProgressBar
-                    value={bp?.progress_percent ?? 0}
-                    height={6}
-                    variant={status === "approved" ? "success" : status === "waiting_buddy_confirmation" ? "warn" : "default"}
-                  />
+              <span className={`pill ${pillClass(status)}`}>
+                <span className="led" />
+                {pillLabel(status)}
+              </span>
+            </div>
+
+            {status === "waiting_buddy_confirmation" && (
+              <div className="block-prog">
+                <div className="bar success" style={{ flex: 1 }}>
+                  <i style={{ width: "100%" }} />
                 </div>
-                <span className="font-mono text-[12px] text-text-2 w-20 text-right">
-                  {bp?.viewed_required ?? 0}/{bp?.total_required ?? 0} обяз.
-                </span>
+                <button
+                  className="btn secondary sm"
+                  disabled={approveMut.isPending}
+                  onClick={() => approveMut.mutate(b.id)}
+                >
+                  {approveMut.isPending ? "…" : "Подтвердить"}
+                </button>
               </div>
-            </div>
-            {status !== "approved" && (
-              <button
-                className={clsx("btn btn-sm", canApprove && "btn-primary")}
-                disabled={!canApprove || approveMut.isPending}
-                onClick={() => approveMut.mutate(b.id)}
-              >
-                Подтвердить блок
-              </button>
+            )}
+
+            {status === "in_progress" && (
+              <div className="block-prog">
+                <span className="pct num">{pct}%</span>
+                <div className="bar" style={{ flex: 1 }}>
+                  <i style={{ width: `${pct}%` }} />
+                </div>
+              </div>
             )}
           </div>
         );
@@ -215,7 +325,51 @@ function RoadmapTab({
   );
 }
 
-// ===== Interviews tab =====
+function blockSubtitle(
+  status: string,
+  viewedReq: number,
+  totalReq: number,
+  bp?: BlockProgressSummary,
+): string {
+  if (status === "approved") {
+    return `${totalReq} из ${totalReq} материалов · подтверждён`;
+  }
+  if (status === "waiting_buddy_confirmation") {
+    return `${viewedReq} из ${totalReq} материалов отмечены · ждёт вашего подтверждения`;
+  }
+  if (status === "in_progress") {
+    return `${bp?.viewed_all ?? viewedReq} из ${bp?.total_all ?? totalReq} материалов просмотрено`;
+  }
+  return `0 из ${totalReq} материалов`;
+}
+
+function pillClass(status: string): string {
+  switch (status) {
+    case "approved":
+      return "approved";
+    case "waiting_buddy_confirmation":
+      return "waiting";
+    case "in_progress":
+      return "in-progress";
+    default:
+      return "not-started";
+  }
+}
+
+function pillLabel(status: string): string {
+  switch (status) {
+    case "approved":
+      return "Подтверждён";
+    case "waiting_buddy_confirmation":
+      return "Ждёт вас";
+    case "in_progress":
+      return "В работе";
+    default:
+      return "Не начат";
+  }
+}
+
+// ============ Interviews ============
 
 function InterviewsTab({ studentId }: { studentId: string }) {
   const queryClient = useQueryClient();
@@ -227,26 +381,50 @@ function InterviewsTab({ studentId }: { studentId: string }) {
   const [completeIv, setCompleteIv] = useState<Interview | null>(null);
   const [editIv, setEditIv] = useState<Interview | null>(null);
 
+  if (ivQ.isLoading) return <PageLoader />;
+
   const all = ivQ.data ?? [];
   const mocks = all.filter((i) => i.type === "mock");
   const real = all.filter((i) => i.type === "real");
 
+  const invalidate = () => {
+    queryClient.invalidateQueries({ queryKey: ["student-interviews", studentId] });
+    queryClient.invalidateQueries({ queryKey: ["student-activity", studentId] });
+    queryClient.invalidateQueries({ queryKey: ["buddy-students"] });
+  };
+
   return (
     <div>
-      <div className="flex items-center justify-between mb-5">
-        <div className="caption">Mock: {mocks.length} · Real: {real.length}</div>
-        <button className="btn btn-primary" onClick={() => setOpenMock(true)}>
-          + Назначить mock
-        </button>
-      </div>
+      {/* Mock — вы назначаете и пишете фидбэк */}
+      <div className="iv-group">
+        <div className="gh">
+          <span className="gt">Mock</span>
+          <span className="gc">вы назначаете и пишете фидбэк</span>
+          <span className="ln" />
+        </div>
+        <div style={{ marginBottom: 13 }}>
+          <button className="btn primary sm" onClick={() => setOpenMock(true)}>
+            <svg
+              className="i"
+              style={{ width: 15, height: 15 }}
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2.2}
+            >
+              <path d="M12 5v14M5 12h14" strokeLinecap="round" />
+            </svg>
+            Назначить mock
+          </button>
+        </div>
 
-      <h3 className="caption mb-3">Mock-собеседования</h3>
-      <div className="space-y-3 mb-7">
         {mocks.length === 0 && (
-          <div className="card p-6 text-text-3 text-[13px]">Mock-собеседований ещё не назначено.</div>
+          <div className="card card-pad text-[13px] text-text-3">
+            Mock-собеседований ещё не назначено.
+          </div>
         )}
         {mocks.map((iv) => (
-          <InterviewActionRow
+          <MockRow
             key={iv.id}
             iv={iv}
             onComplete={() => setCompleteIv(iv)}
@@ -255,18 +433,20 @@ function InterviewsTab({ studentId }: { studentId: string }) {
         ))}
       </div>
 
-      <h3 className="caption mb-3">Real-собеседования</h3>
-      <div className="space-y-3 mb-8">
+      {/* Real — добавляет ученик · только просмотр */}
+      <div className="iv-group">
+        <div className="gh">
+          <span className="gt">Real</span>
+          <span className="gc">добавляет ученик · только просмотр</span>
+          <span className="ln" />
+        </div>
         {real.length === 0 && (
-          <div className="card p-6 text-text-3 text-[13px]">Real-собеседований у ученика пока нет.</div>
+          <div className="card card-pad text-[13px] text-text-3">
+            Real-собеседований у ученика пока нет.
+          </div>
         )}
         {real.map((iv) => (
-          <InterviewActionRow
-            key={iv.id}
-            iv={iv}
-            onComplete={() => setCompleteIv(iv)}
-            onEdit={() => setEditIv(iv)}
-          />
+          <RealRow key={iv.id} iv={iv} />
         ))}
       </div>
 
@@ -274,32 +454,23 @@ function InterviewsTab({ studentId }: { studentId: string }) {
         open={openMock}
         onClose={() => setOpenMock(false)}
         studentId={studentId}
-        onCreated={() => {
-          queryClient.invalidateQueries({ queryKey: ["student-interviews", studentId] });
-          queryClient.invalidateQueries({ queryKey: ["buddy-students"] });
-          queryClient.invalidateQueries({ queryKey: ["student-activity", studentId] });
-        }}
+        onCreated={invalidate}
       />
       <CompleteInterviewModal
         iv={completeIv}
         onClose={() => setCompleteIv(null)}
-        onDone={() => {
-          queryClient.invalidateQueries({ queryKey: ["student-interviews", studentId] });
-          queryClient.invalidateQueries({ queryKey: ["student-activity", studentId] });
-        }}
+        onDone={invalidate}
       />
       <EditInterviewModal
         iv={editIv}
         onClose={() => setEditIv(null)}
-        onDone={() => {
-          queryClient.invalidateQueries({ queryKey: ["student-interviews", studentId] });
-        }}
+        onDone={invalidate}
       />
     </div>
   );
 }
 
-function InterviewActionRow({
+function MockRow({
   iv,
   onComplete,
   onEdit,
@@ -308,50 +479,108 @@ function InterviewActionRow({
   onComplete: () => void;
   onEdit: () => void;
 }) {
+  const done = iv.status === "completed";
   return (
-    <div className="elevated p-4 flex items-center gap-4">
-      <div
-        className="w-1 self-stretch rounded-full"
-        style={{
-          background:
-            iv.type === "mock"
-              ? "color-mix(in oklab, var(--secondary) 26%, transparent)"
-              : "color-mix(in oklab, var(--primary) 28%, transparent)",
-        }}
-      />
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 mb-1">
-          <span className={`pill ${iv.type === "mock" ? "border-secondary/40 text-secondary" : "required"}`}>
-            {iv.type === "mock" ? "Mock" : "Real"}
+    <div className="iv">
+      <div className="iv-head">
+        <div className="iv-logo mock">M</div>
+        <div className="iv-tt">
+          <h4>Mock{iv.company ? ` · ${iv.company}` : iv.stack ? ` · ${iv.stack}` : ""}</h4>
+          <div className="iv-meta">
+            {iv.status === "scheduled" && !done && (
+              <span className="iv-chip">запланирован</span>
+            )}
+            {iv.date && <span className="iv-date">· {formatDateTime(iv.date)}</span>}
+          </div>
+        </div>
+        {done ? (
+          <span className="pill completed">
+            <span className="led" />
+            Завершён
           </span>
-          <StatusBadge status={iv.status} />
-          {iv.result && <span className="pill">{iv.result}</span>}
-        </div>
-        <div className="text-[14px] font-semibold">
-          {iv.company || "Компания не указана"}
-          {iv.position && <span className="text-text-2 font-normal"> · {iv.position}</span>}
-        </div>
-        {iv.feedback && (
-          <div className="text-[12px] text-text-2 mt-1 line-clamp-2">{iv.feedback}</div>
+        ) : (
+          <button className="btn secondary sm" onClick={onComplete}>
+            Завершить и дать фидбэк
+          </button>
         )}
       </div>
-      <div className="flex gap-2">
-        {iv.url && (
-          <a href={iv.url} target="_blank" rel="noreferrer" className="btn btn-sm">
-            Открыть ↗
-          </a>
-        )}
-        <button className="btn btn-sm" onClick={onEdit}>
-          Фидбэк
-        </button>
-        {iv.type === "mock" && iv.status !== "completed" && (
-          <button className="btn btn-sm btn-primary" onClick={onComplete}>
-            Завершить
+      {iv.feedback && (
+        <div className="iv-fb">
+          <div className="who">
+            <span className="ava">Я</span>Ваш фидбэк
+            <button
+              className="btn ghost sm"
+              style={{ marginLeft: "auto" }}
+              onClick={onEdit}
+            >
+              Изменить
+            </button>
+          </div>
+          <p>{iv.feedback}</p>
+        </div>
+      )}
+      {done && !iv.feedback && (
+        <div className="iv-fb">
+          <button className="btn ghost sm" onClick={onEdit}>
+            Добавить фидбэк
           </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function RealRow({ iv }: { iv: Interview }) {
+  const logo = (iv.company || "—").slice(0, 2).toUpperCase();
+  return (
+    <div className="iv">
+      <div className="iv-head">
+        <div className="iv-logo">{logo}</div>
+        <div className="iv-tt">
+          <h4>
+            {iv.company || "Компания не указана"}
+            {iv.position && <span className="pos"> · {iv.position}</span>}
+          </h4>
+          <div className="iv-meta">
+            {iv.grade && <span className="iv-chip grade">{iv.grade}</span>}
+            {iv.date && <span className="iv-date">· {formatDate(iv.date)}</span>}
+          </div>
+        </div>
+        {iv.result && (
+          <span className={`pill ${resultPill(iv.result)}`}>
+            <span className="led" />
+            {resultLabel(iv.result)}
+          </span>
         )}
       </div>
     </div>
   );
+}
+
+function resultPill(result: string): string {
+  switch (result) {
+    case "offer":
+      return "offer";
+    case "reject":
+      return "reject";
+    case "pending":
+      return "pending";
+    default:
+      return "not-started";
+  }
+}
+
+function resultLabel(result: string): string {
+  switch (result) {
+    case "offer":
+      return "Оффер";
+    case "reject":
+      return "Отказ";
+    case "pending":
+      return "В процессе";
+    default:
+      return "Без результата";
+  }
 }
 
 function CreateMockModal({
@@ -370,6 +599,7 @@ function CreateMockModal({
   const [grade, setGrade] = useState("");
   const [stack, setStack] = useState("");
   const [date, setDate] = useState("");
+
   const mut = useMutation({
     mutationFn: () =>
       createMock({
@@ -390,11 +620,12 @@ function CreateMockModal({
       setDate("");
     },
   });
+
   return (
     <Modal open={open} onClose={onClose} title="Назначить mock-собеседование">
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="caption mb-1.5 block">Компания</label>
+          <label className="caption mb-1.5 block">Тема / компания</label>
           <input className="input" value={company} onChange={(e) => setCompany(e.target.value)} />
         </div>
         <div>
@@ -411,7 +642,12 @@ function CreateMockModal({
         </div>
         <div className="col-span-2">
           <label className="caption mb-1.5 block">Дата и время</label>
-          <input type="datetime-local" className="input" value={date} onChange={(e) => setDate(e.target.value)} />
+          <input
+            type="datetime-local"
+            className="input"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+          />
         </div>
       </div>
       <div className="flex gap-3 justify-end mt-5">
@@ -419,7 +655,7 @@ function CreateMockModal({
           Отмена
         </button>
         <button className="btn btn-primary" disabled={mut.isPending} onClick={() => mut.mutate()}>
-          Создать
+          {mut.isPending ? "Создаю…" : "Создать"}
         </button>
       </div>
     </Modal>
@@ -446,21 +682,21 @@ function CompleteInterviewModal({
   });
   if (!iv) return null;
   return (
-    <Modal open={true} onClose={onClose} title={`Завершить: ${iv.company || "mock"}`}>
+    <Modal open onClose={onClose} title={`Завершить mock${iv.company ? `: ${iv.company}` : ""}`}>
       <label className="caption mb-1.5 block">Фидбэк</label>
       <textarea
         className="textarea"
         rows={5}
         value={feedback}
         onChange={(e) => setFeedback(e.target.value)}
-        placeholder="Сильные и слабые стороны, что улучшить..."
+        placeholder="Сильные и слабые стороны, что подтянуть…"
       />
       <div className="flex gap-3 justify-end mt-5">
         <button className="btn" onClick={onClose}>
           Отмена
         </button>
         <button className="btn btn-primary" disabled={mut.isPending} onClick={() => mut.mutate()}>
-          Завершить и сохранить
+          {mut.isPending ? "Сохраняю…" : "Завершить и сохранить"}
         </button>
       </div>
     </Modal>
@@ -477,10 +713,8 @@ function EditInterviewModal({
   onDone: () => void;
 }) {
   const [feedback, setFeedback] = useState(iv?.feedback ?? "");
-  const [result, setResult] = useState(iv?.result ?? "");
   const mut = useMutation({
-    mutationFn: () =>
-      updateInterview(iv!.id, { feedback, result: result || undefined }),
+    mutationFn: () => updateInterview(iv!.id, { feedback }),
     onSuccess: () => {
       onDone();
       onClose();
@@ -488,15 +722,7 @@ function EditInterviewModal({
   });
   if (!iv) return null;
   return (
-    <Modal open={true} onClose={onClose} title="Фидбэк по собеседованию">
-      <label className="caption mb-1.5 block">Результат</label>
-      <select className="select mb-3" value={result} onChange={(e) => setResult(e.target.value)}>
-        <option value="">не указан</option>
-        <option value="offer">Оффер</option>
-        <option value="reject">Отказ</option>
-        <option value="pending">В процессе</option>
-        <option value="no_result">Без результата</option>
-      </select>
+    <Modal open onClose={onClose} title="Фидбэк по mock-собеседованию">
       <label className="caption mb-1.5 block">Фидбэк</label>
       <textarea
         className="textarea"
@@ -509,95 +735,229 @@ function EditInterviewModal({
           Отмена
         </button>
         <button className="btn btn-primary" disabled={mut.isPending} onClick={() => mut.mutate()}>
-          Сохранить
+          {mut.isPending ? "Сохраняю…" : "Сохранить"}
         </button>
       </div>
     </Modal>
   );
 }
 
-// ===== Finals tab =====
+// ============ Final stages ============
 
-function FinalsTab({ studentId }: { studentId: string }) {
+function FinalTab({
+  studentId,
+  progress,
+}: {
+  studentId: string;
+  progress: { approved_blocks: number; total_active_blocks: number };
+}) {
   const queryClient = useQueryClient();
   const finalsQ = useQuery({
     queryKey: ["student-finals", studentId],
     queryFn: () => studentFinals(studentId),
   });
-  const [schedule, setSchedule] = useState<{ type: "final_technical" | "final_roast" } | null>(null);
+  const [schedule, setSchedule] = useState<FinalCheck["type"] | null>(null);
+
+  if (finalsQ.isLoading) return <PageLoader />;
+
   const finals = finalsQ.data ?? [];
+  const tech = finals.find((f) => f.type === "final_technical");
+  const roast = finals.find((f) => f.type === "final_roast");
+  const allApproved =
+    progress.total_active_blocks > 0 &&
+    progress.approved_blocks >= progress.total_active_blocks;
+
+  const refetch = () =>
+    queryClient.invalidateQueries({ queryKey: ["student-finals", studentId] });
 
   return (
     <div>
-      <p className="text-text-2 text-[13px] mb-5 max-w-2xl">
-        Финальные проверки открываются после подтверждения всех блоков. Каждая финалка одноразовая. После
-        обоих completed автоматически выдаётся достижение «Финалист» (+300 бонусов).
-      </p>
-      <div className="grid grid-cols-2 gap-4">
-        {finals.map((f) => (
-          <div key={f.id} className="elevated p-5">
-            <div className="caption mb-2">{f.type === "final_technical" ? "Финал" : "Финал"}</div>
-            <h3 className="text-[18px] font-bold">
-              {f.type === "final_technical" ? "Техничка" : "Прожарка"}
-            </h3>
-            <div className="mt-3">
-              <StatusBadge status={f.status} />
-            </div>
-            {f.scheduled_at && (
-              <div className="font-mono text-[12px] text-text-2 mt-2">
-                Назначено: {formatDateTime(f.scheduled_at)}
-              </div>
-            )}
-            <div className="flex gap-2 mt-4">
-              {(f.status === "available" || f.status === "scheduled") && (
-                <button className="btn btn-sm" onClick={() => setSchedule({ type: f.type })}>
-                  Назначить дату
-                </button>
-              )}
-              {f.status !== "completed" && f.status !== "failed" && f.status !== "not_available" && (
-                <>
-                  <button
-                    className="btn btn-sm btn-primary"
-                    onClick={async () => {
-                      await completeFinal(studentId, f.type, true);
-                      queryClient.invalidateQueries({ queryKey: ["student-finals", studentId] });
-                    }}
-                  >
-                    Пройдено ✓
-                  </button>
-                  <button
-                    className="btn btn-sm"
-                    onClick={async () => {
-                      await completeFinal(studentId, f.type, false);
-                      queryClient.invalidateQueries({ queryKey: ["student-finals", studentId] });
-                    }}
-                  >
-                    Не пройдено
-                  </button>
-                </>
-              )}
-            </div>
-            {f.status === "not_available" && (
-              <div className="caption text-text-3 normal-case font-sans tracking-normal mt-3">
-                Откроется после закрытия всех блоков.
-              </div>
-            )}
-          </div>
-        ))}
+      <div className="bl-note" style={{ marginBottom: 16 }}>
+        <svg
+          className="i"
+          style={{ width: 15, height: 15 }}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={1.8}
+        >
+          <rect x="5" y="11" width="14" height="9" rx="2" />
+          <path d="M8 11V8a4 4 0 0 1 8 0v3" strokeLinecap="round" />
+        </svg>
+        {allApproved
+          ? "Все блоки подтверждены — финальные этапы доступны"
+          : `Откроются после подтверждения всех блоков · сейчас закрыто ${progress.approved_blocks} из ${progress.total_active_blocks}`}
+      </div>
+
+      <div className="final">
+        <FinalCard
+          title="Финальная техничка"
+          desc="Очное техническое интервью с разбором кода. Назначается один раз."
+          icon={
+            <path
+              d="M8 3v4M16 3v4M4 9h16M5 5h14a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z"
+            />
+          }
+          final={tech}
+          studentId={studentId}
+          type="final_technical"
+          onSchedule={() => setSchedule("final_technical")}
+          onChange={refetch}
+        />
+        <FinalCard
+          title="Финальная прожарка"
+          desc="Защита проекта перед комиссией. Назначается один раз после технички."
+          icon={
+            <path
+              d="M12 3c3 4 6 5 6 9a6 6 0 0 1-12 0c0-1.5.6-2.6 1.4-3.6C8.2 10 9 11 10 11c0-2.5.5-5 2-8Z"
+              strokeLinejoin="round"
+            />
+          }
+          final={roast}
+          studentId={studentId}
+          type="final_roast"
+          onSchedule={() => setSchedule("final_roast")}
+          onChange={refetch}
+        />
       </div>
 
       {schedule && (
         <ScheduleFinalModal
           studentId={studentId}
-          type={schedule.type}
+          type={schedule}
           onClose={() => setSchedule(null)}
-          onDone={() => {
-            queryClient.invalidateQueries({ queryKey: ["student-finals", studentId] });
-          }}
+          onDone={refetch}
         />
       )}
     </div>
   );
+}
+
+function FinalCard({
+  title,
+  desc,
+  icon,
+  final,
+  studentId,
+  type,
+  onSchedule,
+  onChange,
+}: {
+  title: string;
+  desc: string;
+  icon: React.ReactNode;
+  final?: FinalCheck;
+  studentId: string;
+  type: FinalCheck["type"];
+  onSchedule: () => void;
+  onChange: () => void;
+}) {
+  const status = final?.status ?? "not_available";
+  const locked = status === "not_available";
+  const finished = status === "completed" || status === "failed";
+
+  const completeMut = useMutation({
+    mutationFn: (success: boolean) => completeFinal(studentId, type, success),
+    onSuccess: onChange,
+  });
+
+  return (
+    <div className={clsx("fc", locked && "locked")}>
+      <div className="fct">
+        <div className="ficon">
+          <svg
+            className="i"
+            style={{ width: 20, height: 20 }}
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={1.8}
+          >
+            {icon}
+          </svg>
+        </div>
+        <h4>{title}</h4>
+      </div>
+      <div className="fd">{desc}</div>
+
+      <div className="flex items-center gap-2 flex-wrap">
+        <span className={`pill ${finalPill(status)}`}>
+          <span className="led" />
+          {finalLabel(status)}
+        </span>
+        {final?.scheduled_at && (
+          <span className="font-mono text-[11px] text-text-3">
+            {formatDateTime(final.scheduled_at)}
+          </span>
+        )}
+      </div>
+
+      {locked && (
+        <button className="btn" disabled style={{ width: "100%", justifyContent: "center" }}>
+          Недоступно
+        </button>
+      )}
+
+      {(status === "available" || status === "scheduled") && (
+        <div className="flex gap-2">
+          <button className="btn sm" onClick={onSchedule}>
+            {final?.scheduled_at ? "Перенести" : "Назначить дату"}
+          </button>
+          <button
+            className="btn secondary sm"
+            disabled={completeMut.isPending}
+            onClick={() => completeMut.mutate(true)}
+          >
+            Пройдено
+          </button>
+          <button
+            className="btn sm"
+            disabled={completeMut.isPending}
+            onClick={() => completeMut.mutate(false)}
+          >
+            Не пройдено
+          </button>
+        </div>
+      )}
+
+      {finished && (
+        <div className="caption text-text-3 normal-case font-sans tracking-normal">
+          {status === "completed" ? "Этап пройден." : "Этап не пройден."}
+          {final?.completed_at ? ` ${formatDate(final.completed_at)}` : ""}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function finalPill(status: string): string {
+  switch (status) {
+    case "completed":
+      return "approved";
+    case "failed":
+      return "failed";
+    case "scheduled":
+      return "pending";
+    case "available":
+      return "in-progress";
+    default:
+      return "not-started";
+  }
+}
+
+function finalLabel(status: string): string {
+  switch (status) {
+    case "completed":
+      return "Пройдено";
+    case "failed":
+      return "Не пройдено";
+    case "scheduled":
+      return "Назначено";
+    case "available":
+      return "Доступно";
+    default:
+      return "Закрыто";
+  }
 }
 
 function ScheduleFinalModal({
@@ -607,7 +967,7 @@ function ScheduleFinalModal({
   onDone,
 }: {
   studentId: string;
-  type: "final_technical" | "final_roast";
+  type: FinalCheck["type"];
   onClose: () => void;
   onDone: () => void;
 }) {
@@ -620,7 +980,11 @@ function ScheduleFinalModal({
     },
   });
   return (
-    <Modal open={true} onClose={onClose} title="Назначить финалку">
+    <Modal
+      open
+      onClose={onClose}
+      title={type === "final_technical" ? "Назначить техничку" : "Назначить прожарку"}
+    >
       <label className="caption mb-1.5 block">Дата и время</label>
       <input
         type="datetime-local"
@@ -632,257 +996,198 @@ function ScheduleFinalModal({
         <button className="btn" onClick={onClose}>
           Отмена
         </button>
-        <button className="btn btn-primary" disabled={!dt || mut.isPending} onClick={() => mut.mutate()}>
-          Назначить
+        <button
+          className="btn btn-primary"
+          disabled={!dt || mut.isPending}
+          onClick={() => mut.mutate()}
+        >
+          {mut.isPending ? "Назначаю…" : "Назначить"}
         </button>
       </div>
     </Modal>
   );
 }
 
-// ===== Activity tab =====
+// ============ Activity ============
 
 function ActivityTab({ studentId }: { studentId: string }) {
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: ["student-activity", studentId],
     queryFn: () => listStudentActivity(studentId, 200),
   });
-  if (isLoading) return <PageLoader />;
+
+  if (isLoading)
+    return (
+      <div className="card card-pad flex justify-center">
+        <Spinner />
+      </div>
+    );
+  if (isError)
+    return (
+      <div className="card card-pad text-[13px] text-text-3">
+        Не удалось загрузить активность.
+      </div>
+    );
+
   const items = data ?? [];
+  if (items.length === 0)
+    return (
+      <div className="card card-pad text-[13px] text-text-3">
+        История активности пуста.
+      </div>
+    );
+
   return (
-    <div className="space-y-2">
-      {items.length === 0 && (
-        <div className="card p-6 text-text-3 text-[13px]">История активности пуста.</div>
-      )}
-      {items.map((e) => (
-        <div key={e.id} className="elevated p-4 flex items-start gap-3">
-          <div
-            className="w-9 h-9 rounded-md grid place-items-center bg-bg border border-border text-text-2 font-mono text-[12px] shrink-0"
-            style={{ color: colorForActivity(e.type) }}
-          >
-            {iconForActivity(e.type)}
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="text-[13px] font-medium">{labelForActivity(e.type, e.metadata)}</div>
-            <div className="font-mono text-[11px] text-text-3 mt-0.5">
-              {formatDateTime(e.created_at)} · {relativeDays(e.created_at)}
+    <div className="card card-pad">
+      <div className="feed">
+        {items.map((e) => (
+          <div className="ev" key={e.id}>
+            <span className={`dot ${activityDot(e.type)}`} />
+            <div>
+              <div className="tx">{activityLabel(e.type, e.metadata)}</div>
+              <div className="tm">
+                {formatDateTime(e.created_at)} · {relativeDays(e.created_at)}
+              </div>
             </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }
 
-function colorForActivity(t: string): string {
-  if (t.includes("approved")) return "var(--success)";
-  if (t.includes("achievement")) return "var(--secondary)";
-  if (t.includes("interview")) return "var(--primary)";
-  if (t.includes("final")) return "var(--warning)";
-  return "var(--text-2)";
+function activityDot(t: string): string {
+  if (t.includes("approved") || t.includes("completed")) return "s";
+  if (t.includes("material") || t.includes("viewed")) return "p";
+  return "";
 }
 
-function iconForActivity(t: string): string {
-  if (t.includes("material_viewed")) return "≣";
-  if (t.includes("block_approved")) return "✓";
-  if (t.includes("achievement")) return "★";
-  if (t.includes("interview")) return "M";
-  if (t.includes("final")) return "F";
-  if (t.includes("bonus")) return "$";
-  return "·";
-}
-
-function labelForActivity(t: string, meta: Record<string, unknown>): string {
+function activityLabel(t: string, meta: Record<string, unknown>): React.ReactNode {
+  const title = typeof meta?.title === "string" ? meta.title : undefined;
   switch (t) {
     case "material_viewed":
-      return `Просмотрел материал${meta?.title ? ": " + meta.title : ""}`;
+      return (
+        <>
+          Просмотрен материал{title ? <> <b>«{title}»</b></> : ""}
+        </>
+      );
     case "block_approved":
-      return "Buddy подтвердил блок";
+      return (
+        <>
+          Блок{title ? <> <b>«{title}»</b></> : ""} подтверждён
+        </>
+      );
+    case "block_waiting_confirmation":
+      return (
+        <>
+          Отмечен последний материал блока{title ? <> <b>«{title}»</b></> : ""} — ждёт
+          подтверждения
+        </>
+      );
     case "achievement_unlocked":
-      return `Получено достижение: ${meta?.title ?? ""}`;
+      return (
+        <>
+          Получено достижение{title ? <> <b>«{title}»</b></> : ""}
+        </>
+      );
     case "interview_added":
     case "interview_added_real":
-      return "Добавлено real-собеседование";
+      return <>Добавлено real-собеседование{meta?.company ? <> — <b>{String(meta.company)}</b></> : ""}</>;
     case "mock_created":
       return "Назначено mock-собеседование";
     case "mock_completed":
-      return "Mock-собеседование завершено";
+      return "Mock-собеседование завершено, оставлен фидбэк";
     case "interview_updated":
       return "Собеседование обновлено";
     case "final_scheduled":
-      return "Финалка назначена";
+      return "Финальный этап назначен";
     case "final_completed":
-      return "Финалка пройдена";
+      return "Финальный этап пройден";
     case "final_failed":
-      return "Финалка не пройдена";
-    case "bonus_credited":
-      return `Начислены бонусы (+${meta?.amount ?? "?"})`;
-    case "bonus_debited":
-      return `Списаны бонусы (-${meta?.amount ?? "?"})`;
+      return "Финальный этап не пройден";
     default:
       return t;
   }
 }
 
-// ===== Calendar tab =====
+// ============ Profile ============
 
-function CalendarTab({ studentId }: { studentId: string }) {
-  const [month, setMonth] = useState(new Date());
-  const [createOpen, setCreateOpen] = useState(false);
-  const queryClient = useQueryClient();
-
-  const range = useMemo(() => {
-    const s = new Date(month.getFullYear(), month.getMonth() - 1, 1);
-    const e = new Date(month.getFullYear(), month.getMonth() + 2, 1);
-    return { from: s.toISOString(), to: e.toISOString() };
-  }, [month]);
-
-  const eventsQ = useQuery({
-    queryKey: ["buddy-calendar", studentId, month.getFullYear(), month.getMonth()],
-    queryFn: () => listEvents({ student_id: studentId, from: range.from, to: range.to }),
-  });
-
-  if (eventsQ.isLoading) return <PageLoader />;
-  const events = eventsQ.data ?? [];
-
-  return (
-    <div>
-      <div className="flex items-center justify-end mb-4">
-        <button className="btn btn-primary" onClick={() => setCreateOpen(true)}>
-          + Создать событие
-        </button>
-      </div>
-      <CalendarGrid
-        events={events}
-        month={month}
-        onPrev={() => setMonth(new Date(month.getFullYear(), month.getMonth() - 1, 1))}
-        onNext={() => setMonth(new Date(month.getFullYear(), month.getMonth() + 1, 1))}
-      />
-      <CreateEventModal
-        open={createOpen}
-        onClose={() => setCreateOpen(false)}
-        defaultStudentId={studentId}
-        onCreated={() => queryClient.invalidateQueries({ queryKey: ["buddy-calendar"] })}
-      />
-    </div>
-  );
-}
-
-export function CreateEventModal({
-  open,
-  onClose,
-  defaultStudentId,
-  studentChoices,
-  onCreated,
+function ProfileTab({
+  studentId,
+  about,
+  progress,
 }: {
-  open: boolean;
-  onClose: () => void;
-  defaultStudentId?: string;
-  studentChoices?: { id: string; display_name: string }[];
-  onCreated: () => void;
+  studentId: string;
+  about?: string;
+  progress: {
+    overall_percent: number;
+    approved_blocks: number;
+    total_active_blocks: number;
+  };
 }) {
-  const [title, setTitle] = useState("");
-  const [type, setType] = useState<"mock_interview" | "real_interview" | "block_review" | "final_technical" | "final_roast" | "custom">("mock_interview");
-  const [start, setStart] = useState("");
-  const [end, setEnd] = useState("");
-  const [description, setDescription] = useState("");
-  const [reminder, setReminder] = useState(true);
-  const [studentId, setStudentId] = useState(defaultStudentId ?? "");
-
-  const mut = useMutation({
-    mutationFn: () =>
-      createEvent({
-        title,
-        type,
-        start_datetime: new Date(start).toISOString(),
-        end_datetime: end ? new Date(end).toISOString() : undefined,
-        description: description || undefined,
-        reminder_enabled: reminder,
-        student_id: studentId || undefined,
-      }),
-    onSuccess: () => {
-      onCreated();
-      onClose();
-      setTitle("");
-      setStart("");
-      setEnd("");
-      setDescription("");
-    },
+  // Mock / Real счётчики — из реальных данных собеседований
+  const ivQ = useQuery({
+    queryKey: ["student-interviews", studentId],
+    queryFn: () => studentInterviews(studentId),
   });
+  const all = ivQ.data ?? [];
+  const mockCount = all.filter((i) => i.type === "mock").length;
+  const realCount = all.filter((i) => i.type === "real").length;
 
   return (
-    <Modal open={open} onClose={onClose} title="Новое событие" width={580}>
-      <div className="grid grid-cols-2 gap-3">
-        <div className="col-span-2">
-          <label className="caption mb-1.5 block">Название</label>
-          <input className="input" value={title} onChange={(e) => setTitle(e.target.value)} />
+    <div className="cols c-1-1" style={{ alignItems: "start" }}>
+      <div className="card card-pad">
+        <div className="card-head">
+          <h3>О себе</h3>
         </div>
-        <div>
-          <label className="caption mb-1.5 block">Тип</label>
-          <select className="select" value={type} onChange={(e) => setType(e.target.value as any)}>
-            <option value="mock_interview">Mock</option>
-            <option value="real_interview">Real-разбор</option>
-            <option value="block_review">Ревью блока</option>
-            <option value="final_technical">Финал · Техничка</option>
-            <option value="final_roast">Финал · Прожарка</option>
-            <option value="custom">Custom</option>
-          </select>
-        </div>
-        {studentChoices && (
-          <div>
-            <label className="caption mb-1.5 block">Ученик</label>
-            <select
-              className="select"
-              value={studentId}
-              onChange={(e) => setStudentId(e.target.value)}
-            >
-              <option value="">— не выбран —</option>
-              {studentChoices.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.display_name}
-                </option>
-              ))}
-            </select>
-          </div>
+        {about ? (
+          <p
+            style={{
+              margin: 0,
+              fontSize: "13.5px",
+              color: "var(--ink-2)",
+              lineHeight: 1.6,
+            }}
+          >
+            {about}
+          </p>
+        ) : (
+          <p className="text-[13px] text-text-3 m-0">Ученик ещё не заполнил «О себе».</p>
         )}
-        <div>
-          <label className="caption mb-1.5 block">Начало</label>
-          <input type="datetime-local" className="input" value={start} onChange={(e) => setStart(e.target.value)} />
-        </div>
-        <div>
-          <label className="caption mb-1.5 block">Конец (опц.)</label>
-          <input type="datetime-local" className="input" value={end} onChange={(e) => setEnd(e.target.value)} />
-        </div>
-        <div className="col-span-2">
-          <label className="caption mb-1.5 block">Описание</label>
-          <textarea
-            className="textarea"
-            rows={3}
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
-        </div>
-        <label className="col-span-2 flex items-center gap-2 caption normal-case font-sans tracking-normal text-text-2">
-          <input
-            type="checkbox"
-            checked={reminder}
-            onChange={(e) => setReminder(e.target.checked)}
-          />
-          Напоминание
-        </label>
       </div>
-      <div className="flex gap-3 justify-end mt-5">
-        <button className="btn" onClick={onClose}>
-          Отмена
-        </button>
-        <button
-          className="btn btn-primary"
-          disabled={mut.isPending || !title || !start}
-          onClick={() => mut.mutate()}
+
+      <div className="card card-pad">
+        <div className="card-head">
+          <h3>Сводка</h3>
+        </div>
+        <div
+          className="bal-facts"
+          style={{
+            border: 0,
+            padding: 0,
+            margin: 0,
+            flexWrap: "wrap",
+            gap: "22px 30px",
+          }}
         >
-          Создать
-        </button>
+          <div className="f">
+            <div className="k">Прогресс программы</div>
+            <div className="n num">{progress.overall_percent}%</div>
+          </div>
+          <div className="f">
+            <div className="k">Блоков подтверждено</div>
+            <div className="n num">
+              {progress.approved_blocks} / {progress.total_active_blocks}
+            </div>
+          </div>
+          <div className="f">
+            <div className="k">Mock / Real</div>
+            <div className="n num">
+              {ivQ.isLoading ? "…" : `${mockCount} / ${realCount}`}
+            </div>
+          </div>
+        </div>
       </div>
-    </Modal>
+    </div>
   );
 }

@@ -1,194 +1,263 @@
 import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { listMyStudents } from "@/api/users";
-import { PageHeader } from "@/components/PageHeader";
 import { PageLoader } from "@/components/Spinner";
 import { Avatar } from "@/components/Sidebar";
-import { ProgressBar } from "@/components/ProgressBar";
 import { daysSince, relativeDays } from "@/lib/format";
+import type { BuddyStudent } from "@/api/types";
 import clsx from "clsx";
 
-type SortKey = "name" | "progress" | "waiting" | "activity";
+type Filter = "all" | "waiting" | "cold";
+
+const STALE_DAYS = 7;
+
+/**
+ * Производный статус ученика из доступных полей BuddyStudent.
+ * Бэк не отдаёт enum статуса в списке — выводим его из чисел блоков/прогресса.
+ * waiting → ученик ждёт подтверждения блока buddy.
+ */
+type DerivedStatus = "waiting" | "approved" | "in_progress" | "not_started";
+
+function deriveStatus(s: BuddyStudent): DerivedStatus {
+  if (s.waiting_blocks > 0) return "waiting";
+  if (s.overall_percent >= 100) return "approved";
+  if (s.overall_percent > 0 || s.approved_blocks > 0) return "in_progress";
+  return "not_started";
+}
+
+const STATUS_META: Record<
+  DerivedStatus,
+  { cls: string; label: string }
+> = {
+  waiting: { cls: "waiting", label: "Ждёт вас" },
+  approved: { cls: "approved", label: "Подтверждён" },
+  in_progress: { cls: "in-progress", label: "В работе" },
+  not_started: { cls: "not-started", label: "Не начат" },
+};
+
+function activityClass(s: BuddyStudent): "" | "stale" | "cold" {
+  const d = daysSince(s.last_activity_at);
+  if (!s.last_activity_at) return "cold";
+  if (d >= 14) return "cold";
+  if (d > STALE_DAYS) return "stale";
+  return "";
+}
+
+function activityLabel(s: BuddyStudent): string {
+  if (!s.last_activity_at) return "нет активности";
+  const d = daysSince(s.last_activity_at);
+  if (d > STALE_DAYS) return `${d} дней без активности`;
+  return relativeDays(s.last_activity_at);
+}
 
 export function BuddyStudents() {
-  const { data, isLoading } = useQuery({
+  const navigate = useNavigate();
+  const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ["buddy-students"],
     queryFn: listMyStudents,
   });
-  const [search, setSearch] = useState("");
-  const [sortKey, setSortKey] = useState<SortKey>("progress");
-  const [statusFilter, setStatusFilter] = useState<"all" | "waiting" | "stale">("all");
+
+  const [filter, setFilter] = useState<Filter>("all");
+
+  const all = useMemo(() => data ?? [], [data]);
+
+  const waitingCount = all.filter((s) => s.waiting_blocks > 0).length;
+  const coldCount = all.filter(
+    (s) => activityClass(s) === "cold" || activityClass(s) === "stale",
+  ).length;
 
   const filtered = useMemo(() => {
-    const items = (data ?? []).slice();
-    let r = items.filter((s) =>
-      s.display_name.toLowerCase().includes(search.toLowerCase()),
-    );
-    if (statusFilter === "waiting") r = r.filter((s) => s.waiting_blocks > 0);
-    if (statusFilter === "stale")
-      r = r.filter((s) => daysSince(s.last_activity_at) > 7);
-    r.sort((a, b) => {
-      switch (sortKey) {
-        case "name":
-          return a.display_name.localeCompare(b.display_name);
-        case "progress":
-          return b.overall_percent - a.overall_percent;
-        case "waiting":
-          return b.waiting_blocks - a.waiting_blocks;
-        case "activity":
-          return (
-            (new Date(b.last_activity_at ?? 0).getTime() || 0) -
-            (new Date(a.last_activity_at ?? 0).getTime() || 0)
-          );
+    const rows = all.slice().sort((a, b) => {
+      // Ждущие подтверждения — наверх, затем по убыванию прогресса.
+      if ((b.waiting_blocks > 0 ? 1 : 0) !== (a.waiting_blocks > 0 ? 1 : 0)) {
+        return (b.waiting_blocks > 0 ? 1 : 0) - (a.waiting_blocks > 0 ? 1 : 0);
       }
+      return b.overall_percent - a.overall_percent;
     });
-    return r;
-  }, [data, search, sortKey, statusFilter]);
+    if (filter === "waiting") return rows.filter((s) => s.waiting_blocks > 0);
+    if (filter === "cold")
+      return rows.filter(
+        (s) => activityClass(s) === "cold" || activityClass(s) === "stale",
+      );
+    return rows;
+  }, [all, filter]);
 
   if (isLoading) return <PageLoader />;
 
-  const all = data ?? [];
-  const waitingCount = all.filter((s) => s.waiting_blocks > 0).length;
-  const staleCount = all.filter((s) => daysSince(s.last_activity_at) > 7).length;
+  if (isError) {
+    return (
+      <div>
+        <div className="page-head">
+          <div>
+            <h1>Мои ученики</h1>
+          </div>
+        </div>
+        <div className="card flat" style={{ marginTop: 18, padding: 32, textAlign: "center" }}>
+          <div className="text-[14px] font-semibold" style={{ color: "var(--danger)" }}>
+            Не удалось загрузить список учеников
+          </div>
+          <button className="btn secondary sm" style={{ marginTop: 14 }} onClick={() => refetch()}>
+            Повторить
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div>
-      <PageHeader
-        eyebrow="Buddy"
-        title="Мои ученики"
-        description="Сопровождайте учеников, подтверждайте блоки, проводите mock-собеседования и финалки."
-        right={
-          <div className="flex items-center gap-3">
-            <Counter label="Учеников" value={all.length} />
-            <Counter label="Ждут подтверждения" value={waitingCount} tone="warning" />
-            <Counter label="Без активности 7 дн." value={staleCount} tone="danger" />
+    <div className="flex flex-col" style={{ minHeight: "100%" }}>
+      <div className="page-head">
+        <div>
+          <h1>Мои ученики</h1>
+          <div className="sub">
+            <b className="num">{all.length}</b> учеников ·{" "}
+            <b className="num">{waitingCount}</b> ждут подтверждения блока ·{" "}
+            <b className="num">{coldCount}</b> без активности
           </div>
-        }
-      />
-
-      {/* Filters */}
-      <div className="card p-4 mb-5 flex items-center gap-3 flex-wrap">
-        <input
-          className="input flex-1 min-w-[200px]"
-          placeholder="Поиск по имени..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-        <div className="flex items-center gap-2">
-          <span className="caption">Фильтр</span>
-          {(["all", "waiting", "stale"] as const).map((k) => (
-            <button
-              key={k}
-              onClick={() => setStatusFilter(k)}
-              className={clsx(
-                "btn btn-sm",
-                statusFilter === k && "btn-primary",
-              )}
-            >
-              {k === "all" ? "Все" : k === "waiting" ? "Ждут Buddy" : "7+ дней молчат"}
-            </button>
-          ))}
         </div>
-        <div className="flex items-center gap-2">
-          <span className="caption">Сортировка</span>
-          <select
-            className="select !w-auto"
-            value={sortKey}
-            onChange={(e) => setSortKey(e.target.value as SortKey)}
-          >
-            <option value="progress">По прогрессу</option>
-            <option value="waiting">По ожиданию</option>
-            <option value="activity">По активности</option>
-            <option value="name">По имени</option>
-          </select>
+        <div className="right">
+          <div className="seg stu-filter">
+            <button
+              type="button"
+              className={clsx(filter === "all" && "active")}
+              onClick={() => setFilter("all")}
+            >
+              Все <span className="c">{all.length}</span>
+            </button>
+            <button
+              type="button"
+              className={clsx(filter === "waiting" && "active")}
+              onClick={() => setFilter("waiting")}
+            >
+              Ждут <span className="c">{waitingCount}</span>
+            </button>
+            <button
+              type="button"
+              className={clsx(filter === "cold" && "active")}
+              onClick={() => setFilter("cold")}
+            >
+              Без активности <span className="c">{coldCount}</span>
+            </button>
+          </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        {filtered.length === 0 && (
-          <div className="card p-8 col-span-2 text-text-3 text-center">
-            Учеников по фильтру нет.
-          </div>
-        )}
-        {filtered.map((s) => {
-          const stale = daysSince(s.last_activity_at) > 7;
-          return (
-            <Link
-              key={s.id}
-              to={`/buddy/students/${s.id}`}
-              className="elevated p-5 flex gap-4 hover:border-border-bright transition-all relative overflow-hidden"
+      <div
+        className="card flat"
+        style={{ flex: 1, padding: 0, overflow: "hidden", marginTop: 18 }}
+      >
+        <div className="stu-head stu-cols">
+          <div>Ученик</div>
+          <div>Текущий блок</div>
+          <div>Статус</div>
+          <div className="stu-col-act">Активность</div>
+          <div></div>
+        </div>
+
+        <div className="stu">
+          {filtered.length === 0 && (
+            <div
+              style={{
+                padding: 48,
+                textAlign: "center",
+                color: "var(--ink-3)",
+                fontSize: 14,
+                fontWeight: 600,
+              }}
             >
-              {s.waiting_blocks > 0 && (
+              {all.length === 0
+                ? "У вас пока нет закреплённых учеников."
+                : "Нет учеников по выбранному фильтру."}
+            </div>
+          )}
+
+          {filtered.map((s) => {
+            const status = deriveStatus(s);
+            const meta = STATUS_META[status];
+            const actCls = activityClass(s);
+            const pct = Math.max(0, Math.min(100, s.overall_percent));
+            const barCls =
+              pct >= 100 ? "success" : actCls ? "mute" : "";
+            // Номер текущего блока: первый неподтверждённый = approved + 1 (с потолком).
+            const currentBlockNo = Math.min(
+              s.approved_blocks + 1,
+              Math.max(s.total_blocks, 1),
+            );
+
+            return (
+              <div
+                key={s.id}
+                className="stu-row stu-cols"
+                data-s={status === "waiting" ? "waiting" : ""}
+                onClick={() => navigate(`/buddy/students/${s.id}`)}
+                style={{ cursor: "pointer" }}
+              >
+                <div className="stu-name">
+                  <Avatar name={s.display_name} url={s.avatar_url} role="student" size={38} />
+                  <div style={{ minWidth: 0 }}>
+                    <div className="nm">{s.display_name}</div>
+                    {s.telegram_username && (
+                      <div className="tg">@{s.telegram_username}</div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="stu-block">
+                  <div className="bt">
+                    <span className="bn">
+                      {String(currentBlockNo).padStart(2, "0")}
+                    </span>
+                    Блок {s.approved_blocks} / {s.total_blocks}
+                  </div>
+                  <div className="row2">
+                    <span className="pct">{pct}%</span>
+                    <div className={clsx("bar", barCls)}>
+                      <i style={{ width: `${pct}%` }} />
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <span className={clsx("pill", meta.cls)}>
+                    <span className="led" />
+                    {meta.label}
+                  </span>
+                </div>
+
+                <div className={clsx("stu-act", actCls)}>
+                  <span className="adot" />
+                  {activityLabel(s)}
+                </div>
+
                 <div
-                  className="absolute -top-12 -right-12 w-40 h-40 rounded-full pointer-events-none"
-                  style={{
-                    background:
-                      "radial-gradient(closest-side, rgba(169,132,47,0.20), transparent 70%)",
-                  }}
-                />
-              )}
-              <Avatar name={s.display_name} url={s.avatar_url} role="student" size={52} />
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
-                  <h3 className="font-semibold text-[15px] truncate">{s.display_name}</h3>
-                  {s.waiting_blocks > 0 && (
-                    <span className="status-badge warning text-[10px]">
-                      <span className="dot" />
-                      Ждёт {s.waiting_blocks}
-                    </span>
+                  className="stu-actions"
+                  style={{ display: "flex", justifyContent: "flex-end" }}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {s.waiting_blocks > 0 ? (
+                    <button
+                      type="button"
+                      className="btn secondary sm"
+                      onClick={() => navigate(`/buddy/students/${s.id}`)}
+                    >
+                      Подтвердить блок
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      className="btn ghost sm"
+                      onClick={() => navigate(`/buddy/students/${s.id}`)}
+                    >
+                      Открыть
+                    </button>
                   )}
-                  {stale && (
-                    <span className="status-badge danger text-[10px]">
-                      <span className="dot" />
-                      {daysSince(s.last_activity_at)} дн.
-                    </span>
-                  )}
-                </div>
-                <div className="text-[12px] text-text-2 mb-3">
-                  Блоков: {s.approved_blocks} / {s.total_blocks} · Материалов:{" "}
-                  {s.viewed_required} / {s.total_required}
-                </div>
-                <ProgressBar value={s.overall_percent} height={6} />
-                <div className="flex items-center justify-between mt-2">
-                  <span className="font-mono text-[12px] text-text-2">
-                    {s.overall_percent}%
-                  </span>
-                  <span className="font-mono text-[11px] text-text-3">
-                    Активн.: {relativeDays(s.last_activity_at)}
-                  </span>
                 </div>
               </div>
-            </Link>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
-    </div>
-  );
-}
-
-function Counter({
-  label,
-  value,
-  tone,
-}: {
-  label: string;
-  value: number;
-  tone?: "warning" | "danger";
-}) {
-  return (
-    <div className="elevated px-4 py-2.5 flex flex-col items-end">
-      <span className="caption">{label}</span>
-      <span
-        className={clsx(
-          "font-mono font-bold text-[20px]",
-          tone === "warning" && "text-warning",
-          tone === "danger" && value > 0 && "text-danger",
-          !tone && "text-primary",
-        )}
-      >
-        {value}
-      </span>
     </div>
   );
 }

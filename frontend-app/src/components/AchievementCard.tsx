@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import clsx from "clsx";
 import type { AchievementProgressItem } from "@/api/types";
 import { HexBadge } from "./HexBadge";
 import { BonusCoin } from "./BonusCoin";
@@ -23,79 +24,39 @@ export function AchievementCard({ item, variantAccent = "primary" }: Props) {
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35 }}
-      className="elevated relative overflow-hidden flex flex-col items-center gap-3.5 p-6"
-      style={{
-        minHeight: 340,
-        // soft glow on top
-        backgroundImage: !lockedState
-          ? `radial-gradient(closest-side at 50% 0%, color-mix(in oklab, ${accent === "primary" ? "var(--primary)" : "var(--secondary)"} 20%, transparent), transparent 70%)`
-          : "none",
-      }}
+      className={clsx("ach", lockedState && "locked")}
     >
-      {/* lock pip / check pip */}
-      {lockedState ? (
-        <div className="absolute top-4 right-4 w-[26px] h-[26px] rounded-full bg-bg border border-border grid place-items-center text-text-2 text-[12px]">
-          🔒
-        </div>
-      ) : (
-        <div
-          className="absolute top-4 right-4 w-[26px] h-[26px] rounded-full grid place-items-center font-bold text-[12px]"
-          style={{
-            background: accent === "primary" ? "var(--primary)" : "var(--secondary)",
-            color: accent === "primary" ? "#FFFFFF" : "#fff",
-            boxShadow: `0 0 18px color-mix(in oklab, ${accent === "primary" ? "var(--primary)" : "var(--secondary)"} 60%, transparent)`,
-          }}
-        >
-          ✓
-        </div>
-      )}
+      {/* check pip (получено) */}
+      {!lockedState && <div className="got">✓</div>}
 
       <HexBadge
         glyph={glyphForTitle(a.title)}
         locked={lockedState}
         accent={accent}
         imageUrl={a.image_url}
-        size={108}
+        size={86}
       />
 
-      <h3 className="text-[15px] font-semibold text-center -tracking-tight mt-1">{a.title}</h3>
-      {a.description && (
-        <p className="text-[12px] text-text-2 text-center leading-snug max-w-[220px]">
-          {a.description}
-        </p>
-      )}
+      <div className="at">{a.title}</div>
+      {a.description && <div className="ad">{a.description}</div>}
 
       {/* progress for locked */}
       {lockedState && target > 1 && (
-        <div className="w-full mt-1 flex flex-col gap-1.5">
-          <div className="w-full h-1.5 rounded-[3px] border border-border bg-bg overflow-hidden">
-            <div
-              className="h-full pbar-fill transition-all"
-              style={{ width: `${progressPct}%` }}
-            />
+        <div className="lockprog">
+          <span>
+            {current} / {target}
+          </span>
+          <div className="bar">
+            <i style={{ width: `${progressPct}%` }} />
           </div>
-          <div className="text-[11px] font-mono text-text-2 flex items-center justify-between">
-            <span>
-              {current} / {target}
-            </span>
-            <span>{Math.round(progressPct)}%</span>
-          </div>
+          <span>{Math.round(progressPct)}%</span>
         </div>
       )}
 
       {/* reward */}
-      <div
-        className="flex items-center gap-2 px-3 py-2 rounded-full mt-auto"
-        style={{
-          background: lockedState ? "transparent" : "rgba(178,107,69,0.08)",
-          border: lockedState
-            ? "1px solid var(--border)"
-            : "1px solid color-mix(in oklab, var(--secondary) 30%, transparent)",
-        }}
-      >
-        <BonusCoin size={16} variant={lockedState ? "primary" : "secondary"} />
-        <span className="font-mono font-bold text-[13px] text-text">+{reward}</span>
-        <span className="text-[11px] text-text-2">бонусов</span>
+      <div className="reward">
+        <BonusCoin size={13} variant={lockedState ? "primary" : "secondary"} />
+        <span>+{reward}</span>
       </div>
     </motion.div>
   );

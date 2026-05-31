@@ -61,60 +61,42 @@ export function NotificationToaster() {
   return (
     <div className="fixed top-6 right-6 z-50 flex flex-col gap-3 w-[360px]">
       <AnimatePresence>
-        {stack.map((n) => (
-          <motion.div
-            key={n.id}
-            initial={{ opacity: 0, x: 60, scale: 0.95 }}
-            animate={{ opacity: 1, x: 0, scale: 1 }}
-            exit={{ opacity: 0, x: 60, scale: 0.92 }}
-            transition={{ type: "spring", stiffness: 220, damping: 22 }}
-            className="card relative overflow-hidden"
-            onClick={() => handleDismiss(n.id)}
-            style={{ cursor: "pointer" }}
-          >
-            <div
-              className="absolute left-0 top-0 bottom-0 w-1"
-              style={{
-                background:
-                  n.type === "achievement_unlocked"
-                    ? "linear-gradient(180deg,var(--primary),var(--secondary))"
-                    : "var(--secondary)",
-              }}
-            />
-            <div className="flex items-start gap-3 p-4 pl-5">
+        {stack.map((n) => {
+          const reward = n.metadata?.reward_bonus;
+          return (
+            <motion.div
+              key={n.id}
+              initial={{ opacity: 0, x: 40 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 40 }}
+              transition={{ type: "spring", stiffness: 240, damping: 24 }}
+              className="toast !w-full"
+              onClick={() => handleDismiss(n.id)}
+              style={{ cursor: "pointer" }}
+            >
               {n.type === "achievement_unlocked" ? (
-                <div className="shrink-0">
-                  <HexBadge
-                    glyph="★"
-                    size={56}
-                    accent="primary"
-                    imageUrl={(n.metadata?.image_url as string | undefined) ?? undefined}
-                  />
-                </div>
+                <HexBadge
+                  glyph="★"
+                  size={48}
+                  accent="primary"
+                  imageUrl={(n.metadata?.image_url as string | undefined) ?? undefined}
+                />
               ) : (
-                <div className="shrink-0 w-10 h-10 rounded-md grid place-items-center bg-elevated border border-border text-primary font-mono">
+                <div className="shrink-0 w-12 h-12 rounded-md grid place-items-center bg-bg border border-border text-primary">
                   ✦
                 </div>
               )}
-              <div className="flex-1 min-w-0">
-                <div className="caption mb-1">
-                  {prettyType(n.type)}
-                </div>
-                <div className="text-[14px] font-semibold leading-snug">{n.title}</div>
-                {n.body && (
-                  <div className="text-[12px] text-text-2 mt-1 leading-snug line-clamp-2">
-                    {n.body}
-                  </div>
-                )}
-                {typeof n.metadata?.reward_bonus === "number" && (n.metadata.reward_bonus as number) > 0 && (
-                  <div className="mt-2 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-secondary/10 border border-secondary/30 font-mono text-[11px] text-secondary">
-                    +{n.metadata.reward_bonus as number} бонусов
-                  </div>
-                )}
+              <div className="tb">
+                <div className="e">{prettyType(n.type)}</div>
+                <b>{n.title}</b>
+                {n.body && <span className="line-clamp-2">{n.body}</span>}
               </div>
-            </div>
-          </motion.div>
-        ))}
+              {typeof reward === "number" && reward > 0 && (
+                <div className="rw">+{reward}</div>
+              )}
+            </motion.div>
+          );
+        })}
       </AnimatePresence>
     </div>
   );

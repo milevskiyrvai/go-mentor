@@ -27,34 +27,30 @@ export function Modal({ open, onClose, title, children, width = 520 }: Props) {
     <AnimatePresence>
       {open && (
         <motion.div
-          className="fixed inset-0 z-40 grid place-items-center px-4"
+          className="modal-bg"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
+          onClick={onClose}
         >
-          <div
-            className="absolute inset-0 bg-black/70 backdrop-blur-sm"
-            onClick={onClose}
-          />
           <motion.div
-            className="card relative overflow-hidden"
-            style={{ maxWidth: width, width: "100%" }}
-            initial={{ y: 30, opacity: 0, scale: 0.95 }}
-            animate={{ y: 0, opacity: 1, scale: 1 }}
-            exit={{ y: 30, opacity: 0, scale: 0.95 }}
+            className="modal"
+            style={{ width, maxWidth: "100%" }}
+            initial={{ y: 8, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 8, opacity: 0 }}
+            transition={{ duration: 0.16 }}
+            onClick={(e) => e.stopPropagation()}
           >
             {title && (
-              <div className="px-6 pt-5 pb-4 border-b border-border flex items-center justify-between">
-                <h3 className="font-semibold text-[17px] -tracking-tight">{title}</h3>
-                <button
-                  onClick={onClose}
-                  className="text-text-3 hover:text-text text-[20px] leading-none"
-                >
+              <div className="modal-head">
+                <h3>{title}</h3>
+                <button onClick={onClose} className="modal-x" aria-label="Закрыть">
                   ×
                 </button>
               </div>
             )}
-            <div className="p-6">{children}</div>
+            <div className="modal-body">{children}</div>
           </motion.div>
         </motion.div>
       )}

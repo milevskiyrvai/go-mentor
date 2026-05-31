@@ -2,10 +2,23 @@ import { FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login, me } from "@/api/auth";
 import { useAuth } from "@/stores/auth";
-import { Logo } from "@/components/Logo";
-import { Spinner } from "@/components/Spinner";
 import { extractError } from "@/api/client";
+import { Spinner } from "@/components/Spinner";
+import type { Role } from "@/api/types";
 
+/**
+ * Login + выбор роли.
+ * Верстка повторяет design-output/screens/login.html (auth-stage → .auth
+ * двухколоночная карта: бренд-панель слева, форма справа).
+ *
+ * Поток (рабочий API — переиспользуем как есть):
+ *   login(login, pass) → me() → сохраняем в auth-стор →
+ *     1 роль  → сразу в раздел роли
+ *     >1 роли → /pick-role (RolePicker владеет шагом «Выбор роли»)
+ *
+ * ВАЖНО (ТЗ §5.5): здесь нет никаких бонусов/баланса/истории ученика —
+ * это публичный экран входа, никаких приватных данных не показываем.
+ */
 export function LoginPage() {
   const navigate = useNavigate();
   const { set } = useAuth();
@@ -14,8 +27,16 @@ export function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const routeForRole = (role: Role) =>
+    role === "buddy"
+      ? "/buddy/students"
+      : role === "admin"
+        ? "/pick-role" // admin живёт в отдельной панели — отправляем к picker'у
+        : "/student/dashboard";
+
   const handle = async (e: FormEvent) => {
     e.preventDefault();
+    if (loading) return;
     setError(null);
     setLoading(true);
     try {
@@ -24,17 +45,12 @@ export function LoginPage() {
       set({
         user: meRes.user,
         roles: meRes.roles,
-        selectedRole: (meRes.selected_role || null) as any,
+        selectedRole: (meRes.selected_role || null) as Role | null,
         loaded: true,
       });
-      // auto-redirect by role
+      // Авто-переход по роли: одна роль → сразу в раздел, иначе → выбор роли.
       if (res.roles.length === 1) {
-        const only = res.roles[0];
-        if (only === "buddy") navigate("/buddy/students", { replace: true });
-        else if (only === "admin") {
-          // admin живёт в отдельной панели; для DX перекинем на /pick-role
-          navigate("/pick-role", { replace: true });
-        } else navigate("/student/dashboard", { replace: true });
+        navigate(routeForRole(res.roles[0]), { replace: true });
       } else {
         navigate("/pick-role", { replace: true });
       }
@@ -43,7 +59,7 @@ export function LoginPage() {
       setError(
         e.code === "invalid_credentials"
           ? "Неверный логин или пароль"
-          : "Не удалось войти. Проверьте сервер.",
+          : "Не удалось войти. Проверьте соединение с сервером.",
       );
     } finally {
       setLoading(false);
@@ -51,81 +67,89 @@ export function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen grid place-items-center px-6">
-      <div
-        className="card relative overflow-hidden w-full max-w-[440px] p-10"
-        style={{
-          background:
-            "linear-gradient(180deg, color-mix(in oklab, var(--primary) 5%, var(--surface)), var(--surface))",
-        }}
-      >
-        <div
-          className="absolute -top-24 -right-24 w-72 h-72 rounded-full pointer-events-none"
-          style={{
-            background:
-              "radial-gradient(closest-side, rgba(95,130,104,0.18), transparent 70%)",
-          }}
-        />
-        <div
-          className="absolute -bottom-32 -left-24 w-80 h-80 rounded-full pointer-events-none"
-          style={{
-            background:
-              "radial-gradient(closest-side, rgba(178,107,69,0.16), transparent 70%)",
-          }}
-        />
-
-        <div className="relative flex flex-col items-center gap-4 mb-8">
-          <Logo size={56} />
-          <div className="text-center">
-            <div className="caption mb-2">Go Mentor</div>
-            <h1 className="text-[28px] font-bold -tracking-[0.02em] leading-tight">
-              Платформа менторства
-            </h1>
-            <p className="text-text-2 text-[13px] mt-2 leading-snug">
-              Войдите с выданными администратором логином и паролем
-            </p>
+    <div className="auth-stage">
+      <div className="auth">
+        {/* ===== Бренд-панель ===== */}
+        <div className="auth-brand">
+          <div className="mark">G</div>
+          <div className="bn">Go Mentor</div>
+          <div className="bt">
+            Маршрут обучения Go, наставник рядом и видимый прогресс — от первого
+            дня до оффера.
           </div>
+          <div className="bf">Платформа менторства</div>
         </div>
 
-        <form onSubmit={handle} className="relative space-y-3.5">
-          <div>
-            <label className="caption mb-1.5 block">Логин</label>
-            <input
-              className="input"
-              value={loginName}
-              onChange={(e) => setLoginName(e.target.value)}
-              autoFocus
-              required
-              placeholder="student.alice"
-            />
-          </div>
-          <div>
-            <label className="caption mb-1.5 block">Пароль</label>
-            <input
-              className="input"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              placeholder="••••••••"
-            />
-          </div>
+        {/* ===== Форма входа ===== */}
+        <div className="auth-form">
+          <h2>Вход</h2>
+          <div className="h-sub">Войдите по логину и паролю</div>
+
           {error && (
-            <div className="text-[13px] px-3 py-2 rounded-md border border-danger/40 bg-danger/10 text-danger">
+            <div className="form-err" role="alert">
+              <svg
+                className="i"
+                style={{ width: 16, height: 16 }}
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <circle cx="12" cy="12" r="9" />
+                <path d="M12 8v5M12 16h.01" strokeLinecap="round" />
+              </svg>
               {error}
             </div>
           )}
-          <button
-            type="submit"
-            className="btn btn-primary w-full !h-12 font-semibold !text-[15px]"
-            disabled={loading}
-          >
-            {loading ? <Spinner size={18} /> : "Войти"}
-          </button>
-          <p className="caption text-center mt-4 text-text-3">
-            Забыли пароль? Обратитесь к администратору.
-          </p>
-        </form>
+
+          <form onSubmit={handle} noValidate>
+            <div className="field">
+              <label htmlFor="f-login">Логин</label>
+              <input
+                id="f-login"
+                className={`input${error ? " err" : ""}`}
+                type="text"
+                autoComplete="username"
+                autoFocus
+                value={loginName}
+                onChange={(e) => {
+                  setLoginName(e.target.value);
+                  if (error) setError(null);
+                }}
+                placeholder="Введите логин"
+              />
+            </div>
+            <div className="field">
+              <label htmlFor="f-pass">Пароль</label>
+              <input
+                id="f-pass"
+                className={`input${error ? " err" : ""}`}
+                type="password"
+                autoComplete="current-password"
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  if (error) setError(null);
+                }}
+                placeholder="Введите пароль"
+              />
+            </div>
+
+            <button
+              type="submit"
+              className="btn secondary"
+              style={{
+                width: "100%",
+                justifyContent: "center",
+                height: 42,
+                marginTop: 6,
+              }}
+              disabled={loading || !loginName.trim() || !password.trim()}
+            >
+              {loading ? <Spinner size={18} /> : "Войти"}
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   );

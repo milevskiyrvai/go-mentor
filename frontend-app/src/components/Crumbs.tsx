@@ -38,10 +38,7 @@ export function Crumbs({ segments, liveSegment }: CrumbsProps) {
         );
       })}
       <span className="inline-flex items-center gap-1.5 text-primary">
-        <span
-          className="w-1.5 h-1.5 rounded-full bg-current"
-          style={{ boxShadow: "0 0 8px currentColor" }}
-        />
+        <span className="w-1.5 h-1.5 rounded-full bg-current" />
         {liveSegment}
       </span>
       <span className="ml-auto">{ts}</span>

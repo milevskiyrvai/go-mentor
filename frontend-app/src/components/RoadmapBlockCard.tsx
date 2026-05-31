@@ -60,75 +60,42 @@ export function RoadmapBlockCard({
     <div
       onClick={onClick}
       role={onClick ? "button" : undefined}
-      data-status={dataStatus}
-      className={clsx(
-        "elevated p-5 flex flex-col gap-4 relative overflow-hidden transition-all",
-        onClick && "cursor-pointer hover:border-border-bright",
-        active && "ring-1 ring-primary/40",
-      )}
+      data-s={dataStatus}
+      className={clsx("block", active && "sel", onClick && "cursor-pointer")}
     >
-      {/* glow */}
-      {(dataStatus === "in_progress" || dataStatus === "waiting") && (
-        <div
-          className="absolute -top-12 -right-12 w-40 h-40 rounded-full pointer-events-none"
-          style={{
-            background:
-              dataStatus === "waiting"
-                ? "radial-gradient(closest-side, rgba(169,132,47,0.18), transparent 70%)"
-                : "radial-gradient(closest-side, rgba(95,130,104,0.18), transparent 70%)",
-          }}
-        />
-      )}
-      <div className="flex gap-3.5 items-start">
-        <div
-          className={clsx(
-            "w-12 h-12 rounded-[10px] border border-border bg-bg grid place-items-center font-mono font-bold text-[18px] shrink-0",
-            dataStatus === "in_progress" &&
-              "text-primary shadow-[inset_0_0_0_1px_rgba(95,130,104,0.4)]",
-            dataStatus === "waiting" && "text-warning",
-            dataStatus === "approved" && "text-success",
-            dataStatus === "not_started" && "text-text-2",
-          )}
-        >
-          {String(index + 1).padStart(2, "0")}
-        </div>
-        <div className="flex-1 min-w-0">
-          <h4 className="text-[16px] font-semibold -tracking-tight">{block.title}</h4>
-          {block.description && (
-            <p className="text-[12px] text-text-2 mt-1 line-clamp-2">{block.description}</p>
-          )}
+      <div className="block-head">
+        <div className="block-num">{String(index + 1).padStart(2, "0")}</div>
+        <div className="block-title">
+          <h4>{block.title}</h4>
+          {block.description && <small className="line-clamp-2">{block.description}</small>}
         </div>
         <StatusBadge status={status} />
       </div>
 
-      <ProgressBar
-        value={pct}
-        variant={dataStatus === "approved" ? "success" : dataStatus === "waiting" ? "warn" : "default"}
-        showLabel
-      />
+      <div className="block-prog">
+        <ProgressBar
+          value={pct}
+          variant={
+            dataStatus === "approved" ? "success" : dataStatus === "waiting" ? "warn" : "default"
+          }
+          className="flex-1"
+        />
+        <span className="pct">{Math.round(pct)}%</span>
+      </div>
 
-      <div className="grid grid-cols-4 gap-2">
+      <div className="block-sec">
         {sections.map((s) => (
           <div
             key={s.label}
             className={clsx(
-              "border border-border rounded-[8px] bg-bg p-3 flex flex-col gap-1.5",
-              s.done > 0 && s.done === s.total && "border-success/40",
-              s.done > 0 && s.done < s.total && "border-primary/40",
+              "bs",
+              s.done > 0 && s.done === s.total && "done",
+              s.done > 0 && s.done < s.total && "active",
             )}
           >
-            <div className="text-[10px] text-text-3 uppercase font-mono tracking-wider">
-              {s.label}
-            </div>
-            <div
-              className={clsx(
-                "font-mono text-[13px] font-semibold",
-                s.done === s.total && s.total > 0 && "text-success",
-                s.done > 0 && s.done < s.total && "text-primary",
-              )}
-            >
-              {s.done}
-              <span className="text-text-3 font-normal"> / {s.total}</span>
+            <div className="k">{s.label}</div>
+            <div className="vv">
+              {s.done} / {s.total}
             </div>
           </div>
         ))}

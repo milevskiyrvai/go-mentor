@@ -2,7 +2,7 @@ import clsx from "clsx";
 
 interface Props {
   value: number; // 0..100
-  variant?: "default" | "warn" | "success" | "mute";
+  variant?: "default" | "sage" | "warn" | "success" | "mute";
   showLabel?: boolean;
   className?: string;
   height?: number;
@@ -19,26 +19,19 @@ export function ProgressBar({
   return (
     <div className={clsx("flex items-center gap-3", className)}>
       <div
-        className="flex-1 rounded-[4px] border border-border bg-bg overflow-hidden relative"
+        className={clsx(
+          "bar flex-1",
+          variant === "sage" && "sage",
+          variant === "warn" && "warn",
+          variant === "success" && "success",
+          variant === "mute" && "mute",
+        )}
         style={{ height }}
       >
-        <div
-          className={clsx(
-            "h-full transition-all duration-500",
-            variant === "default" && "pbar-fill",
-            variant === "warn" &&
-              "bg-gradient-to-r from-warning to-yellow-300 shadow-[0_0_14px_rgba(169,132,47,0.3)]",
-            variant === "success" &&
-              "bg-gradient-to-r from-success to-emerald-300 shadow-[0_0_14px_rgba(95,130,104,0.3)]",
-            variant === "mute" && "bg-[#3a3f52]",
-          )}
-          style={{ width: `${clamped}%` }}
-        />
+        <i style={{ width: `${clamped}%` }} />
       </div>
       {showLabel && (
-        <span className="font-mono font-bold text-sm text-text min-w-[48px] text-right">
-          {clamped}%
-        </span>
+        <span className="num text-sm text-text min-w-[44px] text-right">{clamped}%</span>
       )}
     </div>
   );

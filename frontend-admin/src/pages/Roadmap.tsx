@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   DndContext,
@@ -20,7 +20,6 @@ import { Crumbs } from "@/components/Crumbs";
 import { PageHead } from "@/components/PageHead";
 import { Button } from "@/components/Button";
 import { Drawer } from "@/components/Drawer";
-import { TextField } from "@/components/TextField";
 import {
   listBlocks,
   getBlock,
@@ -36,45 +35,99 @@ import {
   type CreateMaterialBody,
 } from "@/api/roadmap";
 import type {
+  BlockDetailResponse,
   ContentType,
   MaterialKind,
   RoadmapBlock,
   RoadmapMaterial,
 } from "@/api/types";
 
-const KIND_LABEL: Record<MaterialKind, string> = {
+/* ------------------------------------------------------------------ */
+/*  Static maps (mirror mockup)                                        */
+/* ------------------------------------------------------------------ */
+
+const SECTIONS: { value: MaterialKind; label: string }[] = [
+  { value: "theory", label: "Теория" },
+  { value: "questions", label: "Вопросы" },
+  { value: "practice", label: "Практика" },
+  { value: "homework", label: "Домашка" },
+];
+
+const SECTION_LABEL: Record<MaterialKind, string> = {
   theory: "Теория",
   questions: "Вопросы",
   practice: "Практика",
   homework: "Домашка",
 };
 
-const CONTENT_TYPES: { value: ContentType; label: string }[] = [
-  { value: "url", label: "URL" },
-  { value: "youtube", label: "YouTube" },
-  { value: "github", label: "GitHub" },
-  { value: "article", label: "Статья" },
-  { value: "text", label: "Текст" },
-  { value: "file", label: "Файл" },
-];
+interface CTypeMeta {
+  thumb: string;
+  tag: string;
+  ic: string;
+  field: "url" | "text" | "file";
+  nm: string;
+}
+
+const CTYPE: Record<ContentType, CTypeMeta> = {
+  url: { thumb: "url", tag: "↗ URL", ic: "↗ URL", field: "url", nm: "Ссылка" },
+  youtube: { thumb: "yt", tag: "▶ YOUTUBE", ic: "▶ YouTube", field: "url", nm: "Видео" },
+  github: { thumb: "gh", tag: "◍ GITHUB", ic: "◍ GitHub", field: "url", nm: "Репозиторий" },
+  article: { thumb: "art", tag: "¶ СТАТЬЯ", ic: "¶ Статья", field: "url", nm: "Веб-статья" },
+  text: { thumb: "txt", tag: "¶ ТЕКСТ", ic: "¶ Текст", field: "text", nm: "Свой текст" },
+  file: { thumb: "file", tag: "▤ ФАЙЛ", ic: "▤ Файл", field: "file", nm: "Загрузка" },
+};
+
+const CTYPE_ORDER: ContentType[] = ["url", "youtube", "github", "article", "text", "file"];
+
+const Grip = () => (
+  <svg viewBox="0 0 24 24" width={16} height={16} fill="none" stroke="currentColor" strokeWidth={1.8}>
+    <circle cx="9" cy="6" r="1" /><circle cx="9" cy="12" r="1" /><circle cx="9" cy="18" r="1" />
+    <circle cx="15" cy="6" r="1" /><circle cx="15" cy="12" r="1" /><circle cx="15" cy="18" r="1" />
+  </svg>
+);
+const Pencil = () => (
+  <svg viewBox="0 0 24 24" width={15} height={15} fill="none" stroke="currentColor" strokeWidth={1.8}>
+    <path d="M4 20h4L18 10l-4-4L4 16v4Z" strokeLinejoin="round" /><path d="M14 6l4 4" />
+  </svg>
+);
+const Trash = () => (
+  <svg viewBox="0 0 24 24" width={15} height={15} fill="none" stroke="currentColor" strokeWidth={1.8}>
+    <path d="M5 7h14M10 7V5h4v2M6 7l1 13h10l1-13" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+const Plus = ({ s = 15 }: { s?: number }) => (
+  <svg viewBox="0 0 24 24" width={s} height={s} fill="none" stroke="currentColor" strokeWidth={2.1}>
+    <path d="M12 5v14M5 12h14" strokeLinecap="round" />
+  </svg>
+);
+
+/* ------------------------------------------------------------------ */
+/*  Page                                                               */
+/* ------------------------------------------------------------------ */
 
 export function RoadmapPage() {
   const qc = useQueryClient();
-  const blocksQ = useQuery({ queryKey: ["admin", "roadmap", "blocks"], queryFn: () => listBlocks(true) });
-  const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
-  const [createBlockOpen, setCreateBlockOpen] = useState(false);
-  const [editingBlock, setEditingBlock] = useState<RoadmapBlock | null>(null);
-  const [createMaterialOpen, setCreateMaterialOpen] = useState(false);
-  const [editingMaterial, setEditingMaterial] = useState<RoadmapMaterial | null>(null);
+  const blocksQ = useQuery({
+    queryKey: ["admin", "roadmap", "blocks"],
+    queryFn: () => listBlocks(true),
+  });
 
-  // Default-select first block once loaded
+  const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
+  const [blockDrawer, setBlockDrawer] = useState<"create" | RoadmapBlock | null>(null);
+  const [matDrawer, setMatDrawer] = useState<
+    | { mode: "create"; section: MaterialKind }
+    | { mode: "edit"; material: RoadmapMaterial }
+    | null
+  >(null);
+
+  // default-select first block
   useEffect(() => {
     if (!selectedBlockId && blocksQ.data && blocksQ.data.length > 0) {
       setSelectedBlockId(blocksQ.data[0].id);
     }
   }, [blocksQ.data, selectedBlockId]);
 
-  const blockDetailQ = useQuery({
+  const detailQ = useQuery({
     queryKey: ["admin", "roadmap", "block", selectedBlockId],
     queryFn: () => getBlock(selectedBlockId!, true),
     enabled: !!selectedBlockId,
@@ -106,215 +159,315 @@ export function RoadmapPage() {
       qc.invalidateQueries({ queryKey: ["admin", "roadmap", "block", selectedBlockId] }),
   });
 
-  const toggleBlockActiveMut = useMutation({
-    mutationFn: (b: RoadmapBlock) => updateBlock(b.id, { is_active: !b.is_active }),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["admin", "roadmap"] }),
-  });
-
-  const toggleMaterialActiveMut = useMutation({
-    mutationFn: (m: RoadmapMaterial) => updateMaterial(m.id, { is_active: !m.is_active }),
-    onSuccess: () =>
-      qc.invalidateQueries({ queryKey: ["admin", "roadmap", "block", selectedBlockId] }),
-  });
-
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 4 } }));
 
+  const blocks = blocksQ.data ?? [];
+  const detail = detailQ.data;
+
+  /* group materials by section, preserving sort order inside each group */
+  const grouped = useMemo(() => {
+    const map: Record<MaterialKind, RoadmapMaterial[]> = {
+      theory: [],
+      questions: [],
+      practice: [],
+      homework: [],
+    };
+    (detail?.materials ?? []).forEach((m) => map[m.type].push(m));
+    return map;
+  }, [detail]);
+
+  /* ---- block dnd ---- */
   const onBlocksDragEnd = (e: DragEndEvent) => {
     if (!e.over || e.over.id === e.active.id) return;
-    const ids = (blocksQ.data ?? []).map((b) => b.id);
-    const fromIdx = ids.indexOf(String(e.active.id));
-    const toIdx = ids.indexOf(String(e.over.id));
-    if (fromIdx < 0 || toIdx < 0) return;
-    const newOrder = arrayMove(ids, fromIdx, toIdx);
-    // optimistic
+    const ids = blocks.map((b) => b.id);
+    const from = ids.indexOf(String(e.active.id));
+    const to = ids.indexOf(String(e.over.id));
+    if (from < 0 || to < 0) return;
+    const next = arrayMove(ids, from, to);
     qc.setQueryData<RoadmapBlock[]>(["admin", "roadmap", "blocks"], (prev) =>
       prev
-        ? newOrder
+        ? next
             .map((id) => prev.find((b) => b.id === id)!)
             .filter(Boolean)
             .map((b, idx) => ({ ...b, sort_order: idx }))
         : prev
     );
-    reorderBlocksMut.mutate(newOrder);
+    reorderBlocksMut.mutate(next);
   };
 
-  const onMaterialsDragEnd = (e: DragEndEvent) => {
-    if (!e.over || e.over.id === e.active.id || !blockDetailQ.data) return;
-    const ids = blockDetailQ.data.materials.map((m) => m.id);
-    const fromIdx = ids.indexOf(String(e.active.id));
-    const toIdx = ids.indexOf(String(e.over.id));
-    if (fromIdx < 0 || toIdx < 0) return;
-    const newOrder = arrayMove(ids, fromIdx, toIdx);
-    qc.setQueryData(["admin", "roadmap", "block", selectedBlockId], (prev: any) =>
-      prev
-        ? {
-            ...prev,
-            materials: newOrder.map((id) => prev.materials.find((m: RoadmapMaterial) => m.id === id)!).filter(Boolean),
-          }
-        : prev
+  /* ---- material dnd (within a section group) ---- */
+  const onMaterialsDragEnd = (section: MaterialKind) => (e: DragEndEvent) => {
+    if (!e.over || e.over.id === e.active.id || !detail) return;
+    const sectionIds = grouped[section].map((m) => m.id);
+    const from = sectionIds.indexOf(String(e.active.id));
+    const to = sectionIds.indexOf(String(e.over.id));
+    if (from < 0 || to < 0) return;
+    const reordered = arrayMove(sectionIds, from, to);
+
+    // rebuild the full flat order: replace this section's slice in place
+    const reorderedSet = new Set(reordered);
+    let cursor = 0;
+    const fullOrder = detail.materials.map((m) =>
+      m.type === section && reorderedSet.has(m.id) ? reordered[cursor++] : m.id
     );
-    reorderMaterialsMut.mutate({ blockId: selectedBlockId!, ids: newOrder });
+
+    qc.setQueryData<BlockDetailResponse>(
+      ["admin", "roadmap", "block", selectedBlockId],
+      (prev) =>
+        prev
+          ? {
+              ...prev,
+              materials: fullOrder
+                .map((id) => prev.materials.find((m) => m.id === id)!)
+                .filter(Boolean),
+            }
+          : prev
+    );
+    reorderMaterialsMut.mutate({ blockId: selectedBlockId!, ids: fullOrder });
   };
+
+  const selectedBlock = blocks.find((b) => b.id === selectedBlockId) ?? null;
 
   return (
     <>
-      <Crumbs segments={[{ label: "GO_MENTOR", to: "/admin/dashboard" }, { label: "ADMIN", to: "/admin/dashboard" }]} liveSegment="ROADMAP" />
+      <Crumbs
+        segments={[
+          { label: "GO_MENTOR", to: "/admin/dashboard" },
+          { label: "ADMIN", to: "/admin/dashboard" },
+        ]}
+        liveSegment="ROADMAP"
+      />
       <PageHead
         eyebrow="ADMIN · ROADMAP"
-        title="Roadmap"
+        title="Roadmap-менеджер"
+        description={
+          <>
+            {blocksQ.isLoading ? (
+              "Загрузка программы…"
+            ) : (
+              <>
+                <b>{blocks.length}</b>{" "}
+                {plural(blocks.length, "блок", "блока", "блоков")} ·{" "}
+                <b>{blocks.filter((b) => b.is_active).length}</b> активных. Перетаскивай блоки и
+                материалы, чтобы менять порядок. У материала — тип секции, тип контента,
+                обязательность и активность (§6.6 / §6.9 / §20).
+              </>
+            )}
+          </>
+        }
         right={
-          <Button variant="warn" arrow onClick={() => setCreateBlockOpen(true)}>
-            + Новый блок
+          <Button variant="warn" arrow onClick={() => setBlockDrawer("create")}>
+            + Блок
           </Button>
         }
       />
 
-      <div className="grid grid-cols-[340px_minmax(0,1fr)] gap-4 items-start">
-        {/* Blocks column */}
-        <section
-          className="card-base p-4 flex flex-col gap-3"
-          style={{ background: "var(--surface)" }}
-        >
-          <div className="caption">Блоки · {blocksQ.data?.length ?? 0}</div>
-          {blocksQ.isLoading && (
-            <div className="text-text-3 text-[12px] py-4">Загрузка...</div>
+      {blocksQ.isError && (
+        <div className="card-base p-5 mt-4" style={{ color: "var(--danger)" }}>
+          Не удалось загрузить блоки. Обнови страницу.
+        </div>
+      )}
+
+      <div className="cols c-roadmap mt-5 items-start">
+        {/* ----------- LEFT: blocks rail ----------- */}
+        <div className="flex flex-col gap-2.5">
+          {blocksQ.isLoading &&
+            [0, 1, 2, 3].map((i) => (
+              <div
+                key={i}
+                className="block"
+                style={{ height: 74, opacity: 0.45 }}
+              />
+            ))}
+
+          {!blocksQ.isLoading && blocks.length === 0 && (
+            <div className="block" style={{ cursor: "default", alignItems: "center", gap: 8 }}>
+              <div className="text-[13px]" style={{ color: "var(--ink-2)" }}>
+                Блоков пока нет.
+              </div>
+              <Button size="sm" variant="warn" onClick={() => setBlockDrawer("create")}>
+                Создать первый блок
+              </Button>
+            </div>
           )}
-          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onBlocksDragEnd}>
-            <SortableContext
-              items={(blocksQ.data ?? []).map((b) => b.id)}
-              strategy={verticalListSortingStrategy}
+
+          {!blocksQ.isLoading && blocks.length > 0 && (
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={onBlocksDragEnd}
             >
-              <div className="flex flex-col gap-2">
-                {(blocksQ.data ?? []).map((b, idx) => (
-                  <SortableBlockCard
+              <SortableContext
+                items={blocks.map((b) => b.id)}
+                strategy={verticalListSortingStrategy}
+              >
+                {blocks.map((b, idx) => (
+                  <BlockRailCard
                     key={b.id}
                     block={b}
                     index={idx}
                     selected={selectedBlockId === b.id}
+                    count={selectedBlockId === b.id ? detail?.materials.length : undefined}
                     onSelect={() => setSelectedBlockId(b.id)}
-                    onEdit={() => setEditingBlock(b)}
-                    onToggleActive={() => toggleBlockActiveMut.mutate(b)}
-                    onDelete={() => {
-                      if (confirm(`Удалить блок «${b.title}»? (soft-delete)`)) {
-                        deleteBlockMut.mutate(b.id);
-                      }
-                    }}
                   />
                 ))}
-              </div>
-            </SortableContext>
-          </DndContext>
-        </section>
+              </SortableContext>
+            </DndContext>
+          )}
+        </div>
 
-        {/* Materials column */}
-        <section
-          className="card-base p-5 flex flex-col gap-4"
-          style={{ background: "var(--surface)" }}
-        >
+        {/* ----------- RIGHT: block editor ----------- */}
+        <div className="card-base" style={{ padding: 18 }}>
           {!selectedBlockId && (
-            <div className="text-center text-text-3 py-12 caption">
-              Выбери блок слева, чтобы управлять материалами
+            <div
+              className="text-center py-16 text-[13px]"
+              style={{ color: "var(--ink-3)" }}
+            >
+              Выбери блок слева, чтобы управлять материалами.
             </div>
           )}
-          {selectedBlockId && blockDetailQ.isLoading && (
-            <div className="text-text-3 text-[12px]">Загрузка...</div>
+
+          {selectedBlockId && detailQ.isLoading && (
+            <div className="text-[13px] py-10 text-center" style={{ color: "var(--ink-3)" }}>
+              Загрузка материалов…
+            </div>
           )}
-          {selectedBlockId && blockDetailQ.data && (
+
+          {selectedBlockId && detailQ.isError && (
+            <div className="text-[13px] py-10 text-center" style={{ color: "var(--danger)" }}>
+              Ошибка загрузки блока.
+            </div>
+          )}
+
+          {selectedBlockId && detail && (
             <>
-              <div className="flex items-end justify-between gap-4">
-                <div>
-                  <div className="caption mb-1">МАТЕРИАЛЫ БЛОКА</div>
-                  <h2 className="m-0 text-[22px] font-semibold tracking-tight">
-                    {blockDetailQ.data.block.title}
-                  </h2>
-                  {blockDetailQ.data.block.description && (
-                    <p className="m-0 mt-2 text-text-2 text-[13px] leading-relaxed max-w-[60ch]">
-                      {blockDetailQ.data.block.description}
-                    </p>
-                  )}
+              {/* head */}
+              <div
+                className="flex items-center gap-2 pb-3 mb-1"
+                style={{ borderBottom: "1px solid var(--line)" }}
+              >
+                <div className="blk-admin block-title" style={{ flex: 1 }}>
+                  <input
+                    type="text"
+                    value={detail.block.title}
+                    readOnly
+                    aria-label="название блока"
+                  />
                 </div>
-                <Button variant="warn" arrow onClick={() => setCreateMaterialOpen(true)}>
-                  + Материал
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => selectedBlock && setBlockDrawer(selectedBlock)}
+                >
+                  Редактировать блок
+                </Button>
+                <Button
+                  size="sm"
+                  variant="danger-ghost"
+                  onClick={() => {
+                    if (
+                      selectedBlock &&
+                      confirm(`Удалить блок «${selectedBlock.title}»? (soft-delete)`)
+                    ) {
+                      deleteBlockMut.mutate(selectedBlock.id);
+                    }
+                  }}
+                >
+                  Удалить блок
                 </Button>
               </div>
 
-              <DndContext
-                sensors={sensors}
-                collisionDetection={closestCenter}
-                onDragEnd={onMaterialsDragEnd}
-              >
-                <SortableContext
-                  items={blockDetailQ.data.materials.map((m) => m.id)}
-                  strategy={verticalListSortingStrategy}
+              {detail.materials.length === 0 && (
+                <div
+                  className="text-center text-[13px] py-6"
+                  style={{ color: "var(--ink-3)" }}
                 >
-                  <div className="flex flex-col gap-2">
-                    {blockDetailQ.data.materials.length === 0 && (
-                      <div className="text-center text-text-3 py-8 caption">
-                        Материалов пока нет
-                      </div>
-                    )}
-                    {blockDetailQ.data.materials.map((m) => (
-                      <SortableMaterialCard
-                        key={m.id}
-                        material={m}
-                        onEdit={() => setEditingMaterial(m)}
-                        onToggleActive={() => toggleMaterialActiveMut.mutate(m)}
-                        onDelete={() => {
-                          if (confirm(`Удалить материал «${m.title}»? (soft-delete)`)) {
-                            deleteMaterialMut.mutate(m.id);
-                          }
-                        }}
-                      />
-                    ))}
+                  В блоке ещё нет материалов — добавь первый в любую секцию ниже.
+                </div>
+              )}
+
+              {/* sections */}
+              {SECTIONS.map(({ value: section, label }) => (
+                <div key={section} style={{ marginTop: 14 }}>
+                  <div className="matgrp-head">
+                    <span className="gt">{label}</span>
+                    <span className="ln" />
                   </div>
-                </SortableContext>
-              </DndContext>
+
+                  <DndContext
+                    sensors={sensors}
+                    collisionDetection={closestCenter}
+                    onDragEnd={onMaterialsDragEnd(section)}
+                  >
+                    <SortableContext
+                      items={grouped[section].map((m) => m.id)}
+                      strategy={verticalListSortingStrategy}
+                    >
+                      <div className="matlist">
+                        {grouped[section].map((m) => (
+                          <MaterialRow
+                            key={m.id}
+                            material={m}
+                            onEdit={() => setMatDrawer({ mode: "edit", material: m })}
+                            onDelete={() => {
+                              if (confirm(`Удалить материал «${m.title}»? (soft-delete)`)) {
+                                deleteMaterialMut.mutate(m.id);
+                              }
+                            }}
+                          />
+                        ))}
+                      </div>
+                    </SortableContext>
+                  </DndContext>
+
+                  <button
+                    type="button"
+                    className="add-row"
+                    onClick={() => setMatDrawer({ mode: "create", section })}
+                  >
+                    <Plus />
+                    Добавить материал в «{label}»
+                  </button>
+                </div>
+              ))}
             </>
           )}
-        </section>
+        </div>
       </div>
 
-      {createBlockOpen && (
+      {/* drawers */}
+      {blockDrawer && (
         <BlockDrawer
-          mode="create"
-          onClose={() => setCreateBlockOpen(false)}
+          mode={blockDrawer === "create" ? "create" : "edit"}
+          block={blockDrawer === "create" ? undefined : blockDrawer}
+          onClose={() => setBlockDrawer(null)}
           onSaved={(b) => {
-            setCreateBlockOpen(false);
-            setSelectedBlockId(b.id);
+            setBlockDrawer(null);
+            qc.invalidateQueries({ queryKey: ["admin", "roadmap"] });
+            if (b) setSelectedBlockId(b.id);
+          }}
+          onDeleted={() => {
+            setBlockDrawer(null);
+            setSelectedBlockId(null);
             qc.invalidateQueries({ queryKey: ["admin", "roadmap"] });
           }}
         />
       )}
-      {editingBlock && (
-        <BlockDrawer
-          mode="edit"
-          block={editingBlock}
-          onClose={() => setEditingBlock(null)}
-          onSaved={() => {
-            setEditingBlock(null);
-            qc.invalidateQueries({ queryKey: ["admin", "roadmap"] });
-          }}
-        />
-      )}
-      {createMaterialOpen && selectedBlockId && (
+
+      {matDrawer && selectedBlockId && (
         <MaterialDrawer
-          mode="create"
+          key={matDrawer.mode === "edit" ? matDrawer.material.id : `new-${matDrawer.section}`}
+          mode={matDrawer.mode}
           blockId={selectedBlockId}
-          onClose={() => setCreateMaterialOpen(false)}
+          material={matDrawer.mode === "edit" ? matDrawer.material : undefined}
+          defaultSection={matDrawer.mode === "create" ? matDrawer.section : undefined}
+          onClose={() => setMatDrawer(null)}
           onSaved={() => {
-            setCreateMaterialOpen(false);
+            setMatDrawer(null);
             qc.invalidateQueries({ queryKey: ["admin", "roadmap", "block", selectedBlockId] });
           }}
-        />
-      )}
-      {editingMaterial && (
-        <MaterialDrawer
-          mode="edit"
-          blockId={editingMaterial.block_id}
-          material={editingMaterial}
-          onClose={() => setEditingMaterial(null)}
-          onSaved={() => {
-            setEditingMaterial(null);
+          onDeleted={() => {
+            setMatDrawer(null);
             qc.invalidateQueries({ queryKey: ["admin", "roadmap", "block", selectedBlockId] });
           }}
         />
@@ -323,22 +476,22 @@ export function RoadmapPage() {
   );
 }
 
-function SortableBlockCard({
+/* ------------------------------------------------------------------ */
+/*  Block rail card (sortable)                                         */
+/* ------------------------------------------------------------------ */
+
+function BlockRailCard({
   block,
   index,
   selected,
+  count,
   onSelect,
-  onEdit,
-  onToggleActive,
-  onDelete,
 }: {
   block: RoadmapBlock;
   index: number;
   selected: boolean;
+  count?: number;
   onSelect: () => void;
-  onEdit: () => void;
-  onToggleActive: () => void;
-  onDelete: () => void;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: block.id,
@@ -346,95 +499,51 @@ function SortableBlockCard({
   const style: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.6 : 1,
+    cursor: "pointer",
   };
   return (
     <div
       ref={setNodeRef}
       style={style}
-      className={clsx(
-        "rounded-md p-3 cursor-pointer transition-colors",
-        selected ? "" : "hover:border-border-bright"
-      )}
+      className={clsx("block blk-admin", selected && "sel", isDragging && "dragging")}
+      data-s={selected ? "in_progress" : undefined}
       onClick={onSelect}
-      // selected styling via inline style
     >
-      <div
-        className="flex items-center gap-3 p-3 rounded-md"
-        style={
-          selected
-            ? {
-                background: "rgba(169,132,47,0.08)",
-                border: "1px solid rgba(169,132,47,0.4)",
-                boxShadow: "0 0 14px -8px var(--warning)",
-              }
-            : {
-                background: "var(--bg)",
-                border: "1px solid var(--border)",
-              }
-        }
-      >
-        <button
-          type="button"
-          className="cursor-grab active:cursor-grabbing select-none px-1 text-text-3 hover:text-text-2"
-          style={{ touchAction: "none" }}
+      <div className="block-head">
+        <span
+          className="handle"
+          style={{ alignSelf: "center", touchAction: "none" }}
           {...attributes}
           {...listeners}
           onClick={(e) => e.stopPropagation()}
-          aria-label="Drag handle"
+          aria-label="перетащить блок"
         >
-          ⋮⋮
-        </button>
-        <span
-          className="font-mono font-bold text-[10px] uppercase tracking-wider"
-          style={{ color: selected ? "var(--warning)" : "var(--text-3)" }}
-        >
-          #{index + 1}
+          <Grip />
         </span>
-        <div className="flex-1 min-w-0">
-          <div className="text-[13.5px] font-semibold truncate">{block.title}</div>
-          {block.description && (
-            <div className="text-[11.5px] text-text-3 truncate mt-0.5">{block.description}</div>
-          )}
+        <div className="block-num">{String(index + 1).padStart(2, "0")}</div>
+        <div className="block-title">
+          <h4>{block.title}</h4>
+          <small>
+            {count !== undefined ? `${count} ${plural(count, "материал", "материала", "материалов")}` : block.description || "—"}
+            {!block.is_active && " · черновик"}
+          </small>
         </div>
-        {!block.is_active && (
-          <span
-            className="font-mono uppercase px-1.5 py-0.5 rounded"
-            style={{
-              fontSize: "9.5px",
-              color: "var(--danger)",
-              border: "1px solid rgba(175,88,64,0.3)",
-              background: "rgba(175,88,64,0.08)",
-            }}
-          >
-            off
-          </span>
-        )}
-      </div>
-
-      {/* Actions row */}
-      <div className="flex items-center gap-1 px-3 mt-1.5">
-        <SmallAction onClick={(e) => { e.stopPropagation(); onEdit(); }}>ред.</SmallAction>
-        <SmallAction onClick={(e) => { e.stopPropagation(); onToggleActive(); }}>
-          {block.is_active ? "скрыть" : "включить"}
-        </SmallAction>
-        <SmallAction danger onClick={(e) => { e.stopPropagation(); onDelete(); }}>
-          удал.
-        </SmallAction>
       </div>
     </div>
   );
 }
 
-function SortableMaterialCard({
+/* ------------------------------------------------------------------ */
+/*  Material row (sortable)                                            */
+/* ------------------------------------------------------------------ */
+
+function MaterialRow({
   material,
   onEdit,
-  onToggleActive,
   onDelete,
 }: {
   material: RoadmapMaterial;
   onEdit: () => void;
-  onToggleActive: () => void;
   onDelete: () => void;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
@@ -443,159 +552,95 @@ function SortableMaterialCard({
   const style: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.6 : 1,
   };
+  const ct = CTYPE[material.content_type] ?? CTYPE.url;
+  const source = material.source || material.url || ct.nm;
 
   return (
     <div
       ref={setNodeRef}
       style={style}
-      className="rounded-md p-3 flex items-center gap-3"
-      // background depends on active state
+      className={clsx("mat adm", !material.is_active && "inactive", isDragging && "dragging")}
     >
-      <div
-        className="flex items-center gap-3 p-3 rounded-md w-full"
-        style={{
-          background: "var(--bg)",
-          border: "1px solid var(--border)",
-        }}
+      <span
+        className="handle"
+        style={{ touchAction: "none" }}
+        {...attributes}
+        {...listeners}
+        aria-label="перетащить материал"
       >
-        <button
-          type="button"
-          className="cursor-grab active:cursor-grabbing select-none px-1 text-text-3 hover:text-text-2"
-          style={{ touchAction: "none" }}
-          {...attributes}
-          {...listeners}
-          aria-label="Drag handle"
-        >
-          ⋮⋮
+        <Grip />
+      </span>
+      <div className={clsx("mat-thumb", ct.thumb)}>
+        <span className="tg">{ct.tag}</span>
+      </div>
+      <div className="mat-body">
+        <div className="mat-meta">
+          <span className={clsx("tag-mini", material.is_required ? "req" : "opt")}>
+            {material.is_required ? "Обязательно" : "Опционально"}
+          </span>
+          <span>
+            {source}
+            {!material.is_active && " · выкл"}
+          </span>
+        </div>
+        <div className="mat-title">{material.title}</div>
+      </div>
+      <div className="mrow-acts">
+        <button className="iconbtn" type="button" aria-label="изменить" onClick={onEdit}>
+          <Pencil />
         </button>
-        <span
-          className="font-mono px-2 py-1 rounded uppercase font-bold"
-          style={{
-            fontSize: "10px",
-            letterSpacing: "0.08em",
-            color: "var(--text-2)",
-            border: "1px solid var(--border)",
-            background: "var(--surface)",
-          }}
+        <button
+          className="iconbtn danger"
+          type="button"
+          aria-label="удалить"
+          onClick={onDelete}
         >
-          {KIND_LABEL[material.type]}
-        </span>
-        <span
-          className="font-mono uppercase tracking-wider"
-          style={{ fontSize: "10px", color: "var(--text-3)" }}
-        >
-          {material.content_type}
-        </span>
-        <div className="flex-1 min-w-0">
-          <div className="text-[13px] font-semibold truncate">{material.title}</div>
-          {material.url && (
-            <div className="text-[11px] font-mono text-text-3 truncate mt-0.5">
-              {material.url}
-            </div>
-          )}
-        </div>
-        {material.is_required ? (
-          <span
-            className="font-mono uppercase px-2 py-1 rounded"
-            style={{
-              fontSize: "9.5px",
-              color: "var(--warning)",
-              border: "1px solid rgba(169,132,47,0.4)",
-              background: "rgba(169,132,47,0.08)",
-            }}
-          >
-            обязательный
-          </span>
-        ) : (
-          <span
-            className="font-mono uppercase px-2 py-1 rounded"
-            style={{
-              fontSize: "9.5px",
-              color: "var(--text-3)",
-              border: "1px solid var(--border)",
-            }}
-          >
-            опционально
-          </span>
-        )}
-        {!material.is_active && (
-          <span
-            className="font-mono uppercase px-1.5 py-0.5 rounded"
-            style={{
-              fontSize: "9.5px",
-              color: "var(--danger)",
-              border: "1px solid rgba(175,88,64,0.3)",
-              background: "rgba(175,88,64,0.08)",
-            }}
-          >
-            скрыт
-          </span>
-        )}
-        <div className="flex items-center gap-1">
-          <SmallAction onClick={onEdit}>ред.</SmallAction>
-          <SmallAction onClick={onToggleActive}>
-            {material.is_active ? "скрыть" : "включить"}
-          </SmallAction>
-          <SmallAction danger onClick={onDelete}>
-            удал.
-          </SmallAction>
-        </div>
+          <Trash />
+        </button>
       </div>
     </div>
   );
 }
 
-function SmallAction({
-  children,
-  danger,
-  onClick,
-}: {
-  children: React.ReactNode;
-  danger?: boolean;
-  onClick: (e: React.MouseEvent) => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="h-6 px-2 rounded font-mono cursor-pointer transition-colors"
-      style={{
-        fontSize: "10.5px",
-        letterSpacing: "0.06em",
-        color: danger ? "var(--danger)" : "var(--text-2)",
-        border: "1px solid var(--border)",
-        background: "transparent",
-      }}
-    >
-      {children}
-    </button>
-  );
-}
-
-/* =========== BLOCK DRAWER =========== */
+/* ------------------------------------------------------------------ */
+/*  Block drawer (create / edit)                                       */
+/* ------------------------------------------------------------------ */
 
 function BlockDrawer({
   mode,
   block,
   onClose,
   onSaved,
+  onDeleted,
 }: {
   mode: "create" | "edit";
   block?: RoadmapBlock;
   onClose: () => void;
-  onSaved: (b: RoadmapBlock) => void;
+  onSaved: (b?: RoadmapBlock) => void;
+  onDeleted: () => void;
 }) {
   const [title, setTitle] = useState(block?.title ?? "");
   const [description, setDescription] = useState(block?.description ?? "");
+  const [status, setStatus] = useState<"active" | "draft">(
+    block && !block.is_active ? "draft" : "active"
+  );
 
-  const mut = useMutation({
+  const saveMut = useMutation({
     mutationFn: () =>
       mode === "create"
-        ? createBlock({ title: title.trim(), description: description.trim() })
-        : updateBlock(block!.id, { title: title.trim(), description: description.trim() }),
-    onSuccess: onSaved,
+        ? createBlock({ title: title.trim(), description: description.trim() || undefined })
+        : updateBlock(block!.id, {
+            title: title.trim(),
+            description: description.trim() || undefined,
+            is_active: status === "active",
+          }),
+    onSuccess: (b) => onSaved(b),
+  });
+
+  const delMut = useMutation({
+    mutationFn: () => deleteBlock(block!.id),
+    onSuccess: () => onDeleted(),
   });
 
   return (
@@ -604,91 +649,110 @@ function BlockDrawer({
       onClose={onClose}
       title={mode === "create" ? "Новый блок" : "Редактирование блока"}
       footer={
-        <div className="flex gap-2.5">
-          <Button
-            variant="warn"
-            className="flex-1"
-            onClick={() => mut.mutate()}
-            disabled={!title || mut.isPending}
-          >
-            {mut.isPending ? "Сохранение..." : mode === "create" ? "Создать" : "Сохранить"}
-          </Button>
+        <>
+          {mode === "edit" && (
+            <button
+              type="button"
+              className="del"
+              onClick={() => {
+                if (confirm(`Удалить блок «${block!.title}»? (soft-delete)`)) delMut.mutate();
+              }}
+            >
+              Удалить блок
+            </button>
+          )}
           <Button variant="ghost" onClick={onClose}>
             Отмена
           </Button>
-        </div>
+          <Button
+            variant="warn"
+            onClick={() => saveMut.mutate()}
+            disabled={!title.trim() || saveMut.isPending}
+          >
+            {saveMut.isPending ? "Сохранение…" : "Сохранить"}
+          </Button>
+        </>
       }
     >
-      <div className="flex flex-col gap-4">
-        <TextField
-          label="Название"
-          required
+      <div className="field">
+        <label>Название блока</label>
+        <input
+          className="input"
+          type="text"
+          placeholder="например, Concurrency"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          placeholder="Блок 1 · Основы Go"
         />
-        <div className="flex flex-col">
-          <div
-            className="font-mono uppercase tracking-[0.14em] mb-2"
-            style={{ fontSize: "10px", color: "var(--text-2)" }}
-          >
-            Описание
-          </div>
-          <textarea
-            className="input-base"
-            style={{
-              minHeight: "120px",
-              padding: "12px 14px",
-              alignItems: "flex-start",
-              height: "auto",
-              fontFamily: "var(--sans)",
-              fontSize: "13.5px",
-            }}
-            placeholder="Что в этом блоке"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
+      </div>
+      <div className="field">
+        <label>Описание</label>
+        <textarea
+          className="textarea"
+          rows={3}
+          placeholder="О чём блок и какие навыки даёт"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+        />
+      </div>
+      <div className="field">
+        <label>Статус</label>
+        <div className="select" style={{ display: "block" }}>
+          <select value={status} onChange={(e) => setStatus(e.target.value as "active" | "draft")}>
+            <option value="active">Активен</option>
+            <option value="draft">Черновик</option>
+          </select>
         </div>
       </div>
     </Drawer>
   );
 }
 
-/* =========== MATERIAL DRAWER =========== */
+/* ------------------------------------------------------------------ */
+/*  Material drawer (create / edit) — ALL fields per §6.6 / §20        */
+/* ------------------------------------------------------------------ */
 
 function MaterialDrawer({
   mode,
   blockId,
   material,
+  defaultSection,
   onClose,
   onSaved,
+  onDeleted,
 }: {
   mode: "create" | "edit";
   blockId: string;
   material?: RoadmapMaterial;
+  defaultSection?: MaterialKind;
   onClose: () => void;
   onSaved: () => void;
+  onDeleted: () => void;
 }) {
   const [title, setTitle] = useState(material?.title ?? "");
   const [description, setDescription] = useState(material?.description ?? "");
-  const [type, setType] = useState<MaterialKind>(material?.type ?? "theory");
+  const [section, setSection] = useState<MaterialKind>(
+    material?.type ?? defaultSection ?? "theory"
+  );
   const [contentType, setContentType] = useState<ContentType>(material?.content_type ?? "url");
   const [url, setUrl] = useState(material?.url ?? "");
   const [content, setContent] = useState(material?.content ?? "");
-  const [previewTitle, setPreviewTitle] = useState(material?.preview_title ?? "");
-  const [previewDescription, setPreviewDescription] = useState(material?.preview_description ?? "");
-  const [previewImage, setPreviewImage] = useState(material?.preview_image ?? "");
   const [source, setSource] = useState(material?.source ?? "");
+  const [previewTitle, setPreviewTitle] = useState(material?.preview_title ?? "");
+  const [previewDescription, setPreviewDescription] = useState(
+    material?.preview_description ?? ""
+  );
+  const [previewImage, setPreviewImage] = useState(material?.preview_image ?? "");
   const [isRequired, setIsRequired] = useState(material?.is_required ?? true);
-  const [fetchingPreview, setFetchingPreview] = useState(false);
+  const [isActive, setIsActive] = useState(material?.is_active ?? true);
+  const [fetching, setFetching] = useState(false);
 
-  const isText = contentType === "text";
+  const ct = CTYPE[contentType];
 
   const handleFetchPreview = async () => {
-    if (!url) return;
-    setFetchingPreview(true);
+    if (!url.trim()) return;
+    setFetching(true);
     try {
-      const p = await fetchPreview(url);
+      const p = await fetchPreview(url.trim());
       if (p.title) setPreviewTitle(p.title);
       if (p.description) setPreviewDescription(p.description);
       if (p.image) setPreviewImage(p.image);
@@ -696,20 +760,20 @@ function MaterialDrawer({
     } catch {
       /* ignore */
     } finally {
-      setFetchingPreview(false);
+      setFetching(false);
     }
   };
 
-  const mut = useMutation({
+  const saveMut = useMutation({
     mutationFn: () => {
       const body: CreateMaterialBody = {
         block_id: blockId,
         title: title.trim(),
         description: description.trim() || undefined,
-        type,
+        type: section,
         content_type: contentType,
-        url: !isText ? url.trim() || undefined : undefined,
-        content: isText ? content : undefined,
+        url: ct.field !== "text" ? url.trim() || undefined : undefined,
+        content: ct.field === "text" ? content : undefined,
         preview_title: previewTitle.trim() || undefined,
         preview_description: previewDescription.trim() || undefined,
         preview_image: previewImage.trim() || undefined,
@@ -730,205 +794,303 @@ function MaterialDrawer({
             preview_image: body.preview_image,
             source: body.source,
             is_required: body.is_required,
+            is_active: isActive,
           });
     },
     onSuccess: onSaved,
   });
 
+  const delMut = useMutation({
+    mutationFn: () => deleteMaterial(material!.id),
+    onSuccess: onDeleted,
+  });
+
+  const pvTitle = previewTitle || title || "Заголовок материала";
+  const pvSrc = source || "источник";
+  const pvDesc = previewDescription || description || "Описание превью";
+
   return (
     <Drawer
       open
       onClose={onClose}
+      width={560}
       title={mode === "create" ? "Новый материал" : "Редактирование материала"}
       footer={
-        <div className="flex gap-2.5">
-          <Button
-            variant="warn"
-            className="flex-1"
-            onClick={() => mut.mutate()}
-            disabled={!title || mut.isPending}
-          >
-            {mut.isPending ? "Сохранение..." : mode === "create" ? "Создать" : "Сохранить"}
-          </Button>
+        <>
+          {mode === "edit" && (
+            <button
+              type="button"
+              className="del"
+              onClick={() => {
+                if (confirm(`Удалить материал «${material!.title}»? (soft-delete)`)) {
+                  delMut.mutate();
+                }
+              }}
+            >
+              Удалить материал
+            </button>
+          )}
           <Button variant="ghost" onClick={onClose}>
             Отмена
           </Button>
-        </div>
+          <Button
+            variant="warn"
+            onClick={() => saveMut.mutate()}
+            disabled={!title.trim() || saveMut.isPending}
+          >
+            {saveMut.isPending ? "Сохранение…" : "Сохранить"}
+          </Button>
+        </>
       }
     >
-      <div className="flex flex-col gap-4">
-        <TextField
-          label="Заголовок"
-          required
+      {/* basics */}
+      <div className="field">
+        <label>Заголовок</label>
+        <input
+          className="input"
+          type="text"
+          placeholder="например, Горутины и каналы"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
-
-        <div className="grid grid-cols-2 gap-3">
-          <div className="flex flex-col">
-            <div className="caption mb-2">Тип</div>
-            <select
-              className="input-base"
-              value={type}
-              onChange={(e) => setType(e.target.value as MaterialKind)}
-            >
-              {Object.entries(KIND_LABEL).map(([k, l]) => (
-                <option key={k} value={k}>
-                  {l}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="flex flex-col">
-            <div className="caption mb-2">Тип контента</div>
-            <select
-              className="input-base"
-              value={contentType}
-              onChange={(e) => setContentType(e.target.value as ContentType)}
-            >
-              {CONTENT_TYPES.map((c) => (
-                <option key={c.value} value={c.value}>
-                  {c.label}
-                </option>
-              ))}
-            </select>
-          </div>
+      </div>
+      <div className="field">
+        <label>Описание</label>
+        <textarea
+          className="textarea"
+          rows={2}
+          placeholder="Короткое описание для студента"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+        />
+      </div>
+      <div className="field">
+        <label>Тип секции</label>
+        <div className="select" style={{ display: "block" }}>
+          <select
+            value={section}
+            onChange={(e) => setSection(e.target.value as MaterialKind)}
+          >
+            {SECTIONS.map((s) => (
+              <option key={s.value} value={s.value}>
+                {s.label}
+              </option>
+            ))}
+          </select>
         </div>
+      </div>
 
-        {!isText && (
-          <div className="flex flex-col">
-            <div
-              className="font-mono uppercase tracking-[0.14em] flex items-center gap-2 mb-2"
-              style={{ fontSize: "10px", color: "var(--text-2)" }}
-            >
-              <span>URL</span>
-              <button
-                type="button"
-                onClick={handleFetchPreview}
-                disabled={!url || fetchingPreview}
-                className="ml-auto font-mono cursor-pointer px-2 py-0.5 rounded normal-case lowercase"
-                style={{
-                  fontSize: "10px",
-                  letterSpacing: "0.06em",
-                  color: "var(--warning)",
-                  border: "1px solid rgba(169,132,47,0.4)",
-                  background: "rgba(169,132,47,0.06)",
-                }}
-              >
-                {fetchingPreview ? "..." : "fetch preview"}
-              </button>
-            </div>
-            <div className="input-base">
-              <input
-                className="flex-1 bg-transparent border-0 outline-none text-text text-[13.5px] font-mono"
-                value={url}
-                onChange={(e) => setUrl(e.target.value)}
-                placeholder="https://..."
-              />
-            </div>
-          </div>
-        )}
+      <div className="divider" />
+      <div className="divider-lbl">Контент</div>
 
-        {isText && (
-          <div className="flex flex-col">
-            <div className="caption mb-2">Контент</div>
-            <textarea
-              className="input-base"
+      <div className="field">
+        <label>Тип контента</label>
+        <div className="ctype">
+          {CTYPE_ORDER.map((value) => {
+            const meta = CTYPE[value];
+            return (
+              <label key={value}>
+                <input
+                  type="radio"
+                  name="md-ct"
+                  value={value}
+                  checked={contentType === value}
+                  onChange={() => setContentType(value)}
+                />
+                <span className="ic">{meta.ic}</span>
+                <span className="nm">{meta.nm}</span>
+              </label>
+            );
+          })}
+        </div>
+      </div>
+
+      {ct.field === "url" && (
+        <div className="field">
+          <label className="flex items-center justify-between">
+            <span>URL</span>
+            <button
+              type="button"
+              onClick={handleFetchPreview}
+              disabled={!url.trim() || fetching}
               style={{
-                minHeight: "120px",
-                padding: "12px 14px",
-                alignItems: "flex-start",
-                height: "auto",
-                fontFamily: "var(--sans)",
-                fontSize: "13.5px",
+                background: "var(--primary-soft)",
+                color: "var(--primary-ink)",
+                border: 0,
+                borderRadius: 6,
+                padding: "3px 8px",
+                fontSize: 10,
+                fontWeight: 700,
+                letterSpacing: "0.04em",
+                cursor: url.trim() ? "pointer" : "not-allowed",
+                textTransform: "none",
               }}
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-            />
-          </div>
-        )}
-
-        <div className="flex flex-col">
-          <div className="caption mb-2">Описание (опционально)</div>
-          <textarea
-            className="input-base"
-            style={{
-              minHeight: "60px",
-              padding: "12px 14px",
-              alignItems: "flex-start",
-              height: "auto",
-              fontFamily: "var(--sans)",
-              fontSize: "13.5px",
-            }}
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            >
+              {fetching ? "…" : "получить превью"}
+            </button>
+          </label>
+          <input
+            className="input"
+            type="text"
+            placeholder="https://"
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
           />
         </div>
+      )}
 
-        <div className="grid grid-cols-2 gap-3">
-          <TextField
-            label="Заголовок превью"
+      {ct.field === "text" && (
+        <div className="field">
+          <label>Текст материала</label>
+          <textarea
+            className="textarea"
+            rows={4}
+            placeholder="Markdown / обычный текст"
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+          />
+        </div>
+      )}
+
+      {ct.field === "file" && (
+        <div className="field">
+          <label>Файл (URL)</label>
+          <input
+            className="input"
+            type="text"
+            placeholder="ссылка на загруженный файл · pdf, zip, до 25 MB"
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+          />
+          <div className="imgslot" style={{ marginTop: 8 }}>
+            <span className="t">перетащите файл сюда · pdf, zip, до 25 MB</span>
+          </div>
+        </div>
+      )}
+
+      <div className="field">
+        <label>Источник</label>
+        <input
+          className="input"
+          type="text"
+          placeholder="например, youtube.com · 28 мин"
+          value={source}
+          onChange={(e) => setSource(e.target.value)}
+        />
+      </div>
+
+      <div className="divider" />
+      <div className="divider-lbl">Превью</div>
+
+      <div className="row">
+        <div className="field" style={{ marginBottom: 0 }}>
+          <label>Заголовок превью</label>
+          <input
+            className="input"
+            type="text"
+            placeholder="как в карточке"
             value={previewTitle}
             onChange={(e) => setPreviewTitle(e.target.value)}
           />
-          <TextField
-            label="Источник"
-            value={source}
-            onChange={(e) => setSource(e.target.value)}
-          />
         </div>
-
-        <TextField
-          label="Картинка превью (URL)"
-          value={previewImage}
-          onChange={(e) => setPreviewImage(e.target.value)}
+        {ct.field !== "text" && (
+          <div className="field" style={{ marginBottom: 0 }}>
+            <label>Картинка (URL)</label>
+            <input
+              className="input"
+              type="text"
+              placeholder="https:// · 16:10"
+              value={previewImage}
+              onChange={(e) => setPreviewImage(e.target.value)}
+            />
+          </div>
+        )}
+      </div>
+      <div className="field" style={{ marginTop: 13 }}>
+        <label>Описание превью</label>
+        <input
+          className="input"
+          type="text"
+          placeholder="одна строка под заголовком"
+          value={previewDescription}
+          onChange={(e) => setPreviewDescription(e.target.value)}
         />
+      </div>
 
-        <div className="flex flex-col">
-          <div className="caption mb-2">Описание превью</div>
-          <textarea
-            className="input-base"
-            style={{
-              minHeight: "60px",
-              padding: "12px 14px",
-              alignItems: "flex-start",
-              height: "auto",
-              fontFamily: "var(--sans)",
-              fontSize: "13.5px",
-            }}
-            value={previewDescription}
-            onChange={(e) => setPreviewDescription(e.target.value)}
-          />
-        </div>
-
-        <label className="flex items-center gap-3 cursor-pointer mt-2 select-none">
+      {/* live preview */}
+      <div className="preview-wrap" style={{ marginBottom: 6 }}>
+        <div className="pv-cap">
           <span
-            className="w-5 h-5 rounded grid place-items-center font-mono font-bold transition-colors"
-            style={
-              isRequired
-                ? {
-                    fontSize: "11px",
-                    background: "var(--warning)",
-                    color: "#1e1700",
-                    border: "1px solid var(--warning)",
-                  }
-                : {
-                    fontSize: "11px",
-                    border: "1px solid var(--border-bright)",
-                    background: "var(--surface)",
-                    color: "transparent",
-                  }
-            }
-            onClick={() => setIsRequired(!isRequired)}
-          >
-            ✓
-          </span>
-          <span className="text-[13px]">
-            Обязательный материал{" "}
-            <span className="text-text-3 text-[11.5px]">— нужен для закрытия блока</span>
-          </span>
-        </label>
+            style={{
+              width: 6,
+              height: 6,
+              borderRadius: "50%",
+              background: "var(--primary)",
+              display: "inline-block",
+            }}
+          />
+          Как увидит студент
+        </div>
+        <div className="mat" style={{ gridTemplateColumns: "96px 1fr" }}>
+          <div className={clsx("mat-thumb", ct.thumb)}>
+            <span className="tg">{ct.tag}</span>
+          </div>
+          <div className="mat-body">
+            <div className="mat-meta">
+              <span className={clsx("tag-mini", isRequired ? "req" : "opt")}>
+                {isRequired ? "Обязательно" : "Опционально"}
+              </span>
+              <span>{pvSrc}</span>
+            </div>
+            <div className="mat-title">{pvTitle}</div>
+            <div className="mat-desc">{pvDesc}</div>
+          </div>
+        </div>
+      </div>
+
+      <div className="divider" />
+      <div className="divider-lbl">Настройки</div>
+
+      <div className="setrow">
+        <div>
+          <div className="lbl">Обязательный материал</div>
+          <div className="sub">Влияет на закрытие блока (§6.9). Выкл = опциональный.</div>
+        </div>
+        <button
+          type="button"
+          className={clsx("switch", isRequired && "on")}
+          aria-pressed={isRequired}
+          onClick={() => setIsRequired((v) => !v)}
+        >
+          <span className="track" />
+        </button>
+      </div>
+      <div className="setrow">
+        <div>
+          <div className="lbl">Активен</div>
+          <div className="sub">Выключенный материал скрыт у студентов, но виден админу.</div>
+        </div>
+        <button
+          type="button"
+          className={clsx("switch", isActive && "on")}
+          aria-pressed={isActive}
+          onClick={() => setIsActive((v) => !v)}
+        >
+          <span className="track" />
+        </button>
       </div>
     </Drawer>
   );
+}
+
+/* ------------------------------------------------------------------ */
+/*  utils                                                              */
+/* ------------------------------------------------------------------ */
+
+function plural(n: number, one: string, few: string, many: string): string {
+  const m10 = n % 10;
+  const m100 = n % 100;
+  if (m10 === 1 && m100 !== 11) return one;
+  if (m10 >= 2 && m10 <= 4 && (m100 < 10 || m100 >= 20)) return few;
+  return many;
 }

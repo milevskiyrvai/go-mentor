@@ -15,18 +15,15 @@ export function PageHead({ eyebrow, title, description, right }: PageHeadProps) 
     >
       <div>
         <div
-          className="inline-flex items-center gap-2.5 font-mono uppercase font-semibold mb-2"
-          style={{ fontSize: "11px", color: "var(--warning)", letterSpacing: "0.18em" }}
+          className="inline-flex items-center gap-2 uppercase font-bold mb-2"
+          style={{ fontSize: "11px", color: "var(--warning)", letterSpacing: "0.13em" }}
         >
-          <span
-            className="w-1.5 h-1.5 rounded-full"
-            style={{ background: "currentColor", boxShadow: "0 0 8px currentColor" }}
-          />
+          <span className="w-1.5 h-1.5 rounded-full" style={{ background: "currentColor" }} />
           {eyebrow}
         </div>
         <h1
-          className="m-0 text-text font-bold leading-none"
-          style={{ fontSize: "30px", letterSpacing: "-0.02em" }}
+          className="m-0 text-text font-bold leading-tight"
+          style={{ fontSize: "26px", letterSpacing: "-0.02em" }}
         >
           {title}
         </h1>

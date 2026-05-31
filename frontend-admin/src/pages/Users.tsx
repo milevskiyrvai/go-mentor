@@ -1,11 +1,5 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Crumbs } from "@/components/Crumbs";
-import { PageHead } from "@/components/PageHead";
-import { Button } from "@/components/Button";
-import { StatusBadge } from "@/components/StatusBadge";
-import { Drawer } from "@/components/Drawer";
-import { TextField } from "@/components/TextField";
 import {
   listUsers,
   createUser,
@@ -19,544 +13,435 @@ import type { Role, UserListItem } from "@/api/types";
 import { getApiErrorCode } from "@/api/client";
 import clsx from "clsx";
 
-type RoleFilter = "" | Role;
+type RoleFilter = "all" | Role;
+
+const ROLE_LABEL: Record<Role, string> = {
+  student: "Студент",
+  buddy: "Buddy",
+  admin: "Админ",
+};
+
+/* ===================== PAGE ===================== */
 
 export function UsersPage() {
   const qc = useQueryClient();
-  const [search, setSearch] = useState("");
-  const [roleFilter, setRoleFilter] = useState<RoleFilter>("");
+  const [filter, setFilter] = useState<RoleFilter>("all");
   const [showDeleted, setShowDeleted] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
   const [editing, setEditing] = useState<UserListItem | null>(null);
-  const [assigningBuddyFor, setAssigningBuddyFor] = useState<UserListItem | null>(null);
-  const [resettingPwdFor, setResettingPwdFor] = useState<UserListItem | null>(null);
 
+  // Полный список (с учётом архива) — для таблицы и счётчиков табов.
   const usersQuery = useQuery({
-    queryKey: ["admin", "users", { role: roleFilter, showDeleted, search }],
-    queryFn: () =>
-      listUsers({
-        role: roleFilter || undefined,
-        include_deleted: showDeleted,
-        q: search || undefined,
-      }),
-  });
-
-  // Стабильные счётчики ролей: считаются на **полном** списке (без role/search фильтров),
-  // только showDeleted применяется — это согласуется с переключателем "Активные/Удалённые".
-  const allUsersQuery = useQuery({
-    queryKey: ["admin", "users", "counts", { showDeleted }],
+    queryKey: ["admin", "users", { showDeleted }],
     queryFn: () => listUsers({ include_deleted: showDeleted }),
   });
 
-  const items = usersQuery.data ?? [];
-  const allUsers = allUsersQuery.data ?? [];
+  const all = usersQuery.data ?? [];
 
-  const allRoleCounts = useMemo(() => {
-    const all = allUsers.length;
-    const s = allUsers.filter((u) => u.roles.includes("student")).length;
-    const b = allUsers.filter((u) => u.roles.includes("buddy")).length;
-    const a = allUsers.filter((u) => u.roles.includes("admin")).length;
-    return { all, s, b, a };
-  }, [allUsers]);
+  const counts = useMemo(() => {
+    const active = all.filter((u) => !u.is_deleted);
+    return {
+      all: active.length,
+      student: active.filter((u) => u.roles.includes("student")).length,
+      buddy: active.filter((u) => u.roles.includes("buddy")).length,
+      admin: active.filter((u) => u.roles.includes("admin")).length,
+    };
+  }, [all]);
 
-  const deleteMut = useMutation({
-    mutationFn: (id: string) => deleteUser(id),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["admin", "users"] }),
-  });
+  const rows = useMemo(() => {
+    return all.filter((u) => {
+      if (!showDeleted && u.is_deleted) return false;
+      if (filter === "all") return true;
+      return u.roles.includes(filter);
+    });
+  }, [all, filter, showDeleted]);
 
-  const handleDelete = (u: UserListItem) => {
-    if (u.is_deleted) return;
-    if (!confirm(`Soft delete пользователя «${u.display_name}»? Его можно будет видеть в фильтре "deleted".`)) {
-      return;
-    }
-    deleteMut.mutate(u.id);
-  };
+  const invalidate = () => qc.invalidateQueries({ queryKey: ["admin", "users"] });
 
   return (
     <>
-      <Crumbs segments={[{ label: "GO_MENTOR", to: "/admin/dashboard" }, { label: "ADMIN", to: "/admin/dashboard" }]} liveSegment="ПОЛЬЗОВАТЕЛИ" />
-      <PageHead
-        eyebrow="ADMIN · USERS"
-        title="Пользователи"
-        description={
-          <>
-            <b>{items.length}</b> найдено. Поиск по имени или логину. Можно создавать,
-            редактировать, менять пароль, назначать Buddy, soft-delete.
-          </>
-        }
-        right={
-          <Button variant="warn" arrow onClick={() => setCreateOpen(true)}>
-            + Создать пользователя
-          </Button>
-        }
-      />
-
-      {/* Toolbar */}
-      <div
-        className="flex items-center gap-3.5 flex-wrap p-2.5 rounded-lg"
-        style={{
-          background: "var(--surface)",
-          border: "1px solid var(--border)",
-        }}
-      >
-        <div
-          className="input-base flex-1"
-          style={{ height: "38px", maxWidth: "340px" }}
-        >
-          <span className="text-text-3">⌕</span>
-          <input
-            className="flex-1 bg-transparent border-0 outline-none text-text text-[13px]"
-            placeholder="Поиск..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+      {/* ===== Page head ===== */}
+      <div className="page-head">
+        <div>
+          <h1>Пользователи</h1>
+          <div className="sub">
+            <b className="num">{counts.all}</b> активных аккаунтов · {counts.student} студентов ·{" "}
+            {counts.buddy} Buddy · {counts.admin} админа
+          </div>
         </div>
-        <FilterGroup label="роль:">
-          <FilterPill active={roleFilter === ""} onClick={() => setRoleFilter("")}>
-            Все · {allRoleCounts.all}
-          </FilterPill>
-          <FilterPill active={roleFilter === "student"} onClick={() => setRoleFilter("student")}>
-            Студенты · {allRoleCounts.s}
-          </FilterPill>
-          <FilterPill active={roleFilter === "buddy"} onClick={() => setRoleFilter("buddy")}>
-            Buddy · {allRoleCounts.b}
-          </FilterPill>
-          <FilterPill active={roleFilter === "admin"} onClick={() => setRoleFilter("admin")}>
-            Админы · {allRoleCounts.a}
-          </FilterPill>
-        </FilterGroup>
-        <FilterGroup label="статус:">
-          <FilterPill active={!showDeleted} onClick={() => setShowDeleted(false)}>
-            Активные
-          </FilterPill>
-          <FilterPill active={showDeleted} onClick={() => setShowDeleted(true)}>
-            Удалённые
-          </FilterPill>
-        </FilterGroup>
+        <div className="right" style={{ display: "flex", alignItems: "center", gap: 14 }}>
+          <label
+            className={clsx("switch", showDeleted && "on")}
+            style={{ gap: 9 }}
+            onClick={() => setShowDeleted((v) => !v)}
+          >
+            <span className="track" />
+            <span className="lab" style={{ fontSize: 13 }}>
+              Показать архив
+            </span>
+          </label>
+          <button className="btn secondary" onClick={() => setCreateOpen(true)}>
+            <svg
+              className="i"
+              style={{ width: 16, height: 16 }}
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2.2}
+            >
+              <path d="M12 5v14M5 12h14" strokeLinecap="round" />
+            </svg>
+            Добавить
+          </button>
+        </div>
       </div>
 
-      {/* Table */}
-      <section
-        className="rounded-lg overflow-hidden"
-        style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
-      >
-        <table className="w-full" style={{ borderCollapse: "separate", borderSpacing: 0, fontSize: "13px" }}>
-          <thead>
-            <tr>
-              <Th>Пользователь</Th>
-              <Th width="140px">Роли</Th>
-              <Th width="170px">Buddy</Th>
-              <Th width="140px">Telegram</Th>
-              <Th width="120px">Старт</Th>
-              <Th width="120px">Статус</Th>
-              <Th width="220px" align="right">Действия</Th>
-            </tr>
-          </thead>
-          <tbody>
-            {usersQuery.isLoading && (
-              <tr>
-                <td colSpan={7} className="p-8 text-center text-text-3">
-                  <span className="inline-block w-5 h-5 rounded-full border-2 border-warning border-t-transparent spin" />
-                </td>
-              </tr>
-            )}
-            {!usersQuery.isLoading && items.length === 0 && (
-              <tr>
-                <td colSpan={7} className="p-8 text-center text-text-3 font-mono uppercase text-[11px] tracking-wider">
-                  Ничего не найдено
-                </td>
-              </tr>
-            )}
-            {items.map((u) => (
-              <UserRow
-                key={u.id}
-                user={u}
-                onEdit={() => setEditing(u)}
-                onAssignBuddy={() => setAssigningBuddyFor(u)}
-                onResetPwd={() => setResettingPwdFor(u)}
-                onDelete={() => handleDelete(u)}
-              />
-            ))}
-          </tbody>
-        </table>
-        <div
-          className="flex items-center gap-2.5 px-4.5 py-3 font-mono uppercase tracking-wider"
-          style={{
-            borderTop: "1px solid var(--border)",
-            background: "var(--surface)",
-            fontSize: "11px",
-            color: "var(--text-3)",
-          }}
-        >
-          <span>
-            Показано <b className="text-text-2">{items.length}</b>
-          </span>
+      {/* ===== Tabs ===== */}
+      <div className="tabs" style={{ marginBottom: 16 }}>
+        <Tab active={filter === "all"} onClick={() => setFilter("all")} label="Все" count={counts.all} />
+        <Tab
+          active={filter === "student"}
+          onClick={() => setFilter("student")}
+          label="Студенты"
+          count={counts.student}
+        />
+        <Tab
+          active={filter === "buddy"}
+          onClick={() => setFilter("buddy")}
+          label="Buddy"
+          count={counts.buddy}
+        />
+        <Tab
+          active={filter === "admin"}
+          onClick={() => setFilter("admin")}
+          label="Админы"
+          count={counts.admin}
+        />
+      </div>
+
+      {/* ===== Table ===== */}
+      <div className="card flat" style={{ flex: 1, padding: 0, overflow: "hidden" }}>
+        <div className="usr-head usr-cols">
+          <div>Пользователь</div>
+          <div>Роль</div>
+          <div>Поток / привязка</div>
+          <div>Telegram</div>
+          <div />
         </div>
-      </section>
+
+        <div>
+          {usersQuery.isLoading && <TableLoading />}
+
+          {usersQuery.isError && !usersQuery.isLoading && (
+            <div className="usr-empty">
+              <b>Не удалось загрузить пользователей</b>
+              <button className="btn ghost sm" onClick={() => usersQuery.refetch()}>
+                Повторить
+              </button>
+            </div>
+          )}
+
+          {!usersQuery.isLoading && !usersQuery.isError && rows.length === 0 && (
+            <div className="usr-empty">
+              <b>Здесь пока пусто</b>
+              <span>
+                {filter === "all"
+                  ? "Ни одного аккаунта не найдено."
+                  : `Нет пользователей с ролью «${ROLE_LABEL[filter as Role]}».`}
+              </span>
+              <button className="btn secondary sm" onClick={() => setCreateOpen(true)}>
+                Добавить пользователя
+              </button>
+            </div>
+          )}
+
+          {!usersQuery.isLoading &&
+            !usersQuery.isError &&
+            rows.map((u) => (
+              <UserRow key={u.id} user={u} onEdit={() => setEditing(u)} onInvalidate={invalidate} />
+            ))}
+        </div>
+      </div>
 
       {createOpen && (
-        <CreateUserDrawer
+        <UserDrawer
+          mode="create"
           onClose={() => setCreateOpen(false)}
-          onCreated={() => {
+          onSaved={() => {
             setCreateOpen(false);
-            qc.invalidateQueries({ queryKey: ["admin", "users"] });
+            invalidate();
           }}
         />
       )}
 
       {editing && (
-        <EditUserDrawer
+        <UserDrawer
+          mode="edit"
           user={editing}
           onClose={() => setEditing(null)}
           onSaved={() => {
             setEditing(null);
-            qc.invalidateQueries({ queryKey: ["admin", "users"] });
+            invalidate();
           }}
-        />
-      )}
-
-      {assigningBuddyFor && (
-        <AssignBuddyDrawer
-          student={assigningBuddyFor}
-          onClose={() => setAssigningBuddyFor(null)}
-          onSaved={() => {
-            setAssigningBuddyFor(null);
-            qc.invalidateQueries({ queryKey: ["admin", "users"] });
-          }}
-        />
-      )}
-
-      {resettingPwdFor && (
-        <ResetPasswordDrawer
-          user={resettingPwdFor}
-          onClose={() => setResettingPwdFor(null)}
         />
       )}
     </>
   );
 }
 
-function Th({
-  children,
-  width,
-  align,
-}: {
-  children: React.ReactNode;
-  width?: string;
-  align?: "right";
-}) {
-  return (
-    <th
-      style={{
-        textAlign: align ?? "left",
-        fontFamily: "var(--mono)",
-        fontSize: "10px",
-        color: "var(--text-3)",
-        fontWeight: 600,
-        letterSpacing: "0.14em",
-        textTransform: "uppercase",
-        padding: "10px 14px",
-        borderBottom: "1px solid var(--border)",
-        background: "var(--surface)",
-        width,
-      }}
-    >
-      {children}
-    </th>
-  );
-}
+/* ===================== TAB ===================== */
 
-function FilterGroup({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div className="flex items-center gap-1.5 flex-wrap">
-      <span
-        className="h-7 px-2 inline-flex items-center rounded-md font-mono uppercase tracking-wider"
-        style={{
-          fontSize: "10px",
-          color: "var(--text-3)",
-          border: "1px solid var(--border)",
-          background: "var(--surface)",
-        }}
-      >
-        {label}
-      </span>
-      {children}
-    </div>
-  );
-}
-
-function FilterPill({
+function Tab({
   active,
   onClick,
-  children,
+  label,
+  count,
 }: {
   active: boolean;
   onClick: () => void;
-  children: React.ReactNode;
+  label: string;
+  count: number;
 }) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={clsx(
-        "h-7 px-2.5 rounded-md text-[12px] cursor-pointer transition-colors",
-        active ? "" : "text-text-2 hover:border-border-bright"
-      )}
-      style={
-        active
-          ? {
-              color: "var(--warning)",
-              border: "1px solid rgba(169,132,47,0.4)",
-              background: "rgba(169,132,47,0.08)",
-              boxShadow: "0 0 14px -8px var(--warning)",
-            }
-          : {
-              border: "1px solid var(--border)",
-              background: "var(--bg)",
-            }
-      }
-    >
-      {children}
+    <button className={clsx("tab", active && "active")} type="button" onClick={onClick}>
+      {label} <span className="c num">{count}</span>
     </button>
   );
 }
 
+/* ===================== ROW ===================== */
+
 function avatarInitials(name: string) {
-  return name
-    .split(/\s+/)
-    .map((s) => s[0])
-    .filter(Boolean)
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
+  return (
+    name
+      .trim()
+      .split(/\s+/)
+      .map((s) => s[0])
+      .filter(Boolean)
+      .slice(0, 2)
+      .join("")
+      .toUpperCase() || "?"
+  );
 }
 
-function pickGradient(name: string) {
-  const palettes = [
-    "linear-gradient(140deg, #B26B45, #5F8268)",
-    "linear-gradient(140deg, #C7B8A0, #B26B45)",
-    "linear-gradient(140deg, #FF7AB3, #FFD9A8)",
-    "linear-gradient(140deg, #C9A24A, #C2705A)",
-    "linear-gradient(140deg, #7FA37E, #5F8268)",
-  ];
+function avatarColor(name: string) {
+  const palette = ["var(--primary)", "var(--secondary)", "var(--warning)", "var(--primary-ink)"];
   let h = 0;
   for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) | 0;
-  return palettes[Math.abs(h) % palettes.length];
+  return palette[Math.abs(h) % palette.length];
 }
 
-function RoleChip({ role }: { role: Role }) {
-  const colors = {
-    student: { c: "var(--primary)", bg: "rgba(95,130,104,0.1)", b: "rgba(95,130,104,0.35)" },
-    buddy: { c: "var(--secondary)", bg: "rgba(178,107,69,0.1)", b: "rgba(178,107,69,0.35)" },
-    admin: { c: "var(--warning)", bg: "rgba(169,132,47,0.1)", b: "rgba(169,132,47,0.35)" },
-  } as const;
-  const s = colors[role];
-  return (
-    <span
-      className="inline-flex items-center h-[22px] px-2 rounded font-mono font-bold uppercase mr-1"
-      style={{
-        fontSize: "10px",
-        letterSpacing: "0.08em",
-        color: s.c,
-        background: s.bg,
-        border: `1px solid ${s.b}`,
-      }}
-    >
-      {role}
-    </span>
-  );
+function RoleBadge({ role }: { role: Role }) {
+  return <span className={clsx("rolebadge", role)}>{ROLE_LABEL[role]}</span>;
+}
+
+function primaryRole(roles: Role[]): Role {
+  if (roles.includes("admin")) return "admin";
+  if (roles.includes("buddy")) return "buddy";
+  return "student";
 }
 
 function UserRow({
   user,
   onEdit,
-  onAssignBuddy,
-  onResetPwd,
-  onDelete,
+  onInvalidate,
 }: {
   user: UserListItem;
   onEdit: () => void;
-  onAssignBuddy: () => void;
-  onResetPwd: () => void;
-  onDelete: () => void;
+  onInvalidate: () => void;
 }) {
   const isStudent = user.roles.includes("student");
+  const isBuddy = user.roles.includes("buddy");
+
+  const restoreMut = useMutation({
+    mutationFn: () => updateUser(user.id, { roles: user.roles }),
+    onSuccess: onInvalidate,
+  });
+
   return (
-    <tr
-      onClick={(e) => {
-        // Не открывать редактирование при клике на кнопку.
-        const target = e.target as HTMLElement;
-        if (target.closest("button, a")) return;
-        if (user.is_deleted) return;
-        onEdit();
-      }}
-      className="hover:bg-elevated transition-colors cursor-pointer"
-      style={{
-        opacity: user.is_deleted ? 0.5 : 1,
-        cursor: user.is_deleted ? "default" : "pointer",
-      }}
-    >
-      <td className="px-3.5 py-3.5" style={{ borderBottom: "1px solid var(--border)" }}>
-        <div className="flex items-center gap-3">
-          <div
-            className="w-9 h-9 rounded-md grid place-items-center font-mono font-bold flex-shrink-0"
-            style={{
-              fontSize: "12px",
-              color: "#22050f",
-              background: user.is_deleted ? "#3a3d48" : pickGradient(user.display_name),
-            }}
+    <div className={clsx("usr-row", "usr-cols", user.is_deleted && "deleted")} data-role={primaryRole(user.roles)}>
+      <div className="usr-name">
+        <div
+          className="avatar"
+          style={{ background: user.is_deleted ? "var(--ink-3)" : avatarColor(user.display_name) }}
+        >
+          {avatarInitials(user.display_name)}
+        </div>
+        <div style={{ minWidth: 0 }}>
+          <div className="nm">{user.display_name}</div>
+          <div className="em">{user.login}</div>
+        </div>
+      </div>
+
+      <div>
+        <RoleBadge role={primaryRole(user.roles)} />
+      </div>
+
+      <div className="usr-link">
+        {user.is_deleted ? (
+          <span style={{ color: "var(--ink-3)" }}>в архиве</span>
+        ) : isBuddy && !isStudent ? (
+          <>
+            <b>{user.students_count}</b> учеников
+          </>
+        ) : isStudent ? (
+          user.buddy_name ? (
+            <>
+              Buddy <b>{user.buddy_name}</b>
+            </>
+          ) : (
+            <span style={{ color: "var(--ink-3)" }}>Buddy не назначен</span>
+          )
+        ) : (
+          <span style={{ color: "var(--ink-3)" }}>—</span>
+        )}
+      </div>
+
+      <div className={clsx("usr-tg", !user.telegram_username && "none")}>
+        {user.telegram_username ? `@${user.telegram_username.replace(/^@/, "")}` : "не задан"}
+      </div>
+
+      <div className="acts">
+        {user.is_deleted ? (
+          <button
+            className="btn ghost sm"
+            disabled={restoreMut.isPending}
+            onClick={() => restoreMut.mutate()}
           >
-            {user.is_deleted ? "??" : avatarInitials(user.display_name)}
+            {restoreMut.isPending ? "..." : "Восстановить"}
+          </button>
+        ) : isStudent && !user.buddy_id ? (
+          <button className="btn secondary sm" onClick={onEdit}>
+            Назначить
+          </button>
+        ) : (
+          <button className="btn ghost sm" onClick={onEdit}>
+            Изменить
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function TableLoading() {
+  return (
+    <>
+      {Array.from({ length: 5 }).map((_, i) => (
+        <div className="usr-row usr-cols" key={i}>
+          <div className="usr-name">
+            <div className="avatar skel" style={{ background: "var(--line)" }} />
+            <div style={{ minWidth: 0, flex: 1 }}>
+              <div className="skel-bar" style={{ width: "60%" }} />
+              <div className="skel-bar" style={{ width: "40%", marginTop: 6, height: 9 }} />
+            </div>
           </div>
-          <div className="flex flex-col">
-            <b className="text-text text-[13px] font-semibold">{user.display_name}</b>
-            <small
-              className="font-mono mt-0.5"
-              style={{ fontSize: "10.5px", color: "var(--text-3)", letterSpacing: "0.04em" }}
-            >
-              login · {user.login}
-            </small>
+          <div>
+            <div className="skel-bar" style={{ width: 64, height: 18, borderRadius: 999 }} />
+          </div>
+          <div>
+            <div className="skel-bar" style={{ width: "70%" }} />
+          </div>
+          <div>
+            <div className="skel-bar" style={{ width: 80 }} />
+          </div>
+          <div className="acts">
+            <div className="skel-bar" style={{ width: 70, height: 30, borderRadius: 6 }} />
           </div>
         </div>
-      </td>
-      <td className="px-3.5 py-3.5" style={{ borderBottom: "1px solid var(--border)" }}>
-        {user.roles.map((r) => (
-          <RoleChip key={r} role={r} />
-        ))}
-      </td>
-      <td className="px-3.5 py-3.5" style={{ borderBottom: "1px solid var(--border)" }}>
-        {isStudent ? (
-          user.buddy_name ? (
-            <span className="text-text text-[12.5px]">{user.buddy_name}</span>
-          ) : (
-            <span
-              className="font-mono text-text-3"
-              style={{ fontSize: "11px" }}
-            >
-              — нет
-            </span>
-          )
-        ) : user.roles.includes("buddy") ? (
-          <span className="font-mono text-text-3" style={{ fontSize: "11px" }}>
-            {user.students_count} учеников
-          </span>
-        ) : (
-          <span className="font-mono text-text-3" style={{ fontSize: "11px" }}>
-            —
-          </span>
-        )}
-      </td>
-      <td
-        className="px-3.5 py-3.5 font-mono"
-        style={{
-          borderBottom: "1px solid var(--border)",
-          fontSize: "12px",
-          color: "var(--text-2)",
-        }}
-      >
-        {user.telegram_username ?? <span style={{ color: "var(--text-3)" }}>—</span>}
-      </td>
-      <td
-        className="px-3.5 py-3.5 font-mono"
-        style={{
-          borderBottom: "1px solid var(--border)",
-          fontSize: "12px",
-          color: "var(--text-2)",
-        }}
-      >
-        {user.learning_started_at
-          ? new Date(user.learning_started_at).toLocaleDateString("ru-RU", {
-              day: "2-digit",
-              month: "2-digit",
-              year: "2-digit",
-            })
-          : "—"}
-      </td>
-      <td className="px-3.5 py-3.5" style={{ borderBottom: "1px solid var(--border)" }}>
-        {user.is_deleted ? (
-          <StatusBadge kind="deleted">удалён</StatusBadge>
-        ) : (
-          <StatusBadge kind="active">активен</StatusBadge>
-        )}
-      </td>
-      <td
-        className="px-3.5 py-3.5 text-right"
-        style={{ borderBottom: "1px solid var(--border)" }}
-      >
-        <ActionBtn onClick={onEdit}>ред.</ActionBtn>
-        {isStudent && <ActionBtn onClick={onAssignBuddy}>buddy</ActionBtn>}
-        <ActionBtn onClick={onResetPwd}>пароль</ActionBtn>
-        {!user.is_deleted && (
-          <ActionBtn danger onClick={onDelete}>
-            удал.
-          </ActionBtn>
-        )}
-      </td>
-    </tr>
+      ))}
+    </>
   );
 }
 
-function ActionBtn({
-  children,
-  danger,
-  onClick,
-}: {
-  children: React.ReactNode;
-  danger?: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={clsx(
-        "h-[26px] px-2.5 rounded-md font-mono cursor-pointer ml-1 transition-colors",
-        danger
-          ? "hover:text-danger hover:border-danger/40"
-          : "hover:text-text hover:border-border-bright"
-      )}
-      style={{
-        fontSize: "11px",
-        letterSpacing: "0.06em",
-        textTransform: "lowercase",
-        color: danger ? "var(--danger)" : "var(--text-2)",
-        border: "1px solid var(--border)",
-        background: "transparent",
-      }}
-    >
-      {children}
-    </button>
-  );
+/* ===================== DRAWER (create / edit) ===================== */
+
+function genPassword() {
+  const c = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789";
+  let p = "Gm-";
+  for (let i = 0; i < 8; i++) p += c[Math.floor(Math.random() * c.length)];
+  return p;
 }
 
-/* =========== CREATE DRAWER =========== */
-
-function CreateUserDrawer({
+function UserDrawer({
+  mode,
+  user,
   onClose,
-  onCreated,
+  onSaved,
 }: {
+  mode: "create" | "edit";
+  user?: UserListItem;
   onClose: () => void;
-  onCreated: () => void;
+  onSaved: () => void;
 }) {
-  const [login, setLogin] = useState("");
-  const [password, setPassword] = useState("");
-  const [displayName, setDisplayName] = useState("");
-  const [telegram, setTelegram] = useState("");
-  const [startedAt, setStartedAt] = useState("");
-  const [roles, setRoles] = useState<Role[]>(["student"]);
+  const isEdit = mode === "edit";
+
+  const [login, setLogin] = useState(user?.login ?? "");
+  const [password, setPassword] = useState(isEdit ? "" : genPassword());
+  const [displayName, setDisplayName] = useState(user?.display_name ?? "");
+  const [telegram, setTelegram] = useState(user?.telegram_username ? `@${user.telegram_username.replace(/^@/, "")}` : "");
+  const [roles, setRoles] = useState<Role[]>(user?.roles ?? ["student"]);
+  const [startedAt, setStartedAt] = useState(
+    user?.learning_started_at ? user.learning_started_at.slice(0, 10) : ""
+  );
+  const [buddyId, setBuddyId] = useState(user?.buddy_id ?? "");
+  const [showPwReset, setShowPwReset] = useState(false);
+  const [pwResetValue, setPwResetValue] = useState("");
+  const [pwResetDone, setPwResetDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const mut = useMutation({
-    mutationFn: () =>
-      createUser({
-        login: login.trim(),
-        password,
-        display_name: displayName.trim(),
-        telegram_username: telegram.trim() ? telegram.trim().replace(/^@/, "") : null,
-        learning_started_at: startedAt ? new Date(startedAt).toISOString() : null,
-        roles,
-      }),
-    onSuccess: onCreated,
+  const isStudent = roles.includes("student");
+
+  // Список Buddy для селекта (только когда нужен — для студента).
+  const buddiesQuery = useQuery({
+    queryKey: ["admin", "users", { role: "buddy" }],
+    queryFn: () => listUsers({ role: "buddy" }),
+    enabled: isStudent,
+  });
+  const buddies = buddiesQuery.data ?? [];
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
+  const toggleRole = (r: Role) => {
+    setRoles((prev) => (prev.includes(r) ? prev.filter((x) => x !== r) : [...prev, r]));
+  };
+
+  const tgClean = telegram.trim() ? telegram.trim().replace(/^@/, "") : null;
+
+  const saveMut = useMutation({
+    mutationFn: async () => {
+      if (isEdit && user) {
+        await updateUser(user.id, {
+          display_name: displayName.trim(),
+          telegram_username: tgClean,
+          learning_started_at: isStudent && startedAt ? new Date(startedAt).toISOString() : null,
+          roles,
+        });
+        // Привязка Buddy для студента — отдельным эндпоинтом.
+        if (isStudent) {
+          const prev = user.buddy_id ?? "";
+          if (buddyId && buddyId !== prev) await assignBuddy(user.id, buddyId);
+          else if (!buddyId && prev) await unassignBuddy(user.id);
+        }
+      } else {
+        const created = await createUser({
+          login: login.trim(),
+          password,
+          display_name: displayName.trim(),
+          telegram_username: tgClean,
+          learning_started_at: isStudent && startedAt ? new Date(startedAt).toISOString() : null,
+          roles,
+        });
+        if (isStudent && buddyId) await assignBuddy(created.id, buddyId);
+      }
+    },
+    onSuccess: onSaved,
     onError: (err) => {
       const code = getApiErrorCode(err);
       setError(
@@ -564,549 +449,248 @@ function CreateUserDrawer({
           ? "Такой логин уже занят"
           : code === "telegram_taken"
           ? "Этот Telegram уже используется"
-          : "Не удалось создать пользователя"
+          : "Не удалось сохранить пользователя"
       );
     },
   });
 
-  const genPassword = () => {
-    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789";
-    let p = "";
-    for (let i = 0; i < 12; i++) p += chars[Math.floor(Math.random() * chars.length)];
-    setPassword(p);
-  };
-
-  const toggleRole = (r: Role) => {
-    setRoles((prev) => (prev.includes(r) ? prev.filter((x) => x !== r) : [...prev, r]));
-  };
-
-  return (
-    <Drawer
-      open
-      onClose={onClose}
-      title="Создать пользователя"
-      footer={
-        <div className="flex gap-2.5">
-          <Button
-            variant="warn"
-            className="flex-1"
-            onClick={() => mut.mutate()}
-            disabled={!login || !password || !displayName || roles.length === 0 || mut.isPending}
-            arrow
-          >
-            {mut.isPending ? "Создание..." : "Создать"}
-          </Button>
-          <Button variant="ghost" onClick={onClose}>
-            Отмена
-          </Button>
-        </div>
-      }
-    >
-      <div className="flex flex-col gap-4">
-        <div className="grid grid-cols-2 gap-2.5">
-          <TextField
-            label="Логин"
-            required
-            value={login}
-            onChange={(e) => setLogin(e.target.value)}
-            placeholder="ivan_dev"
-          />
-          <TextField
-            label="Отображаемое имя"
-            required
-            value={displayName}
-            onChange={(e) => setDisplayName(e.target.value)}
-            placeholder="Иван Леонов"
-          />
-        </div>
-
-        <div className="flex flex-col">
-          <div
-            className="font-mono uppercase tracking-[0.14em] flex items-center gap-2 mb-2"
-            style={{ fontSize: "10px", color: "var(--text-2)" }}
-          >
-            <span>Временный пароль</span>
-            <span style={{ color: "var(--warning)" }}>*</span>
-          </div>
-          <div className="input-base">
-            <input
-              className="flex-1 bg-transparent border-0 outline-none text-text text-[13.5px]"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="введи или сгенерируй"
-              type="text"
-            />
-            <button
-              type="button"
-              onClick={genPassword}
-              className="font-mono cursor-pointer px-2 py-1 rounded"
-              style={{
-                fontSize: "9.5px",
-                color: "var(--text-3)",
-                border: "1px solid var(--border)",
-                background: "var(--bg)",
-              }}
-            >
-              сгенер.
-            </button>
-          </div>
-        </div>
-
-        <TextField
-          label="Telegram-логин"
-          hint="без @ или с @"
-          value={telegram}
-          onChange={(e) => setTelegram(e.target.value)}
-          placeholder="ivan_leo"
-        />
-
-        <div className="flex flex-col">
-          <div
-            className="font-mono uppercase tracking-[0.14em] mb-2"
-            style={{ fontSize: "10px", color: "var(--text-2)" }}
-          >
-            Роли
-          </div>
-          <div className="flex gap-2 flex-wrap">
-            {(["student", "buddy", "admin"] as Role[]).map((r) => {
-              const active = roles.includes(r);
-              return (
-                <button
-                  key={r}
-                  type="button"
-                  onClick={() => toggleRole(r)}
-                  className="inline-flex items-center gap-2 px-3 py-2 rounded-md cursor-pointer transition-colors"
-                  style={
-                    active
-                      ? {
-                          fontSize: "12.5px",
-                          color: "var(--text)",
-                          border: "1px solid rgba(169,132,47,0.45)",
-                          background: "rgba(169,132,47,0.08)",
-                          boxShadow: "0 0 14px -8px var(--warning)",
-                        }
-                      : {
-                          fontSize: "12.5px",
-                          color: "var(--text-2)",
-                          border: "1px solid var(--border)",
-                          background: "var(--bg)",
-                        }
-                  }
-                >
-                  <span
-                    className="w-4 h-4 rounded grid place-items-center font-mono font-bold"
-                    style={
-                      active
-                        ? {
-                            fontSize: "10px",
-                            background: "var(--warning)",
-                            color: "#1e1700",
-                            border: "1px solid var(--warning)",
-                          }
-                        : {
-                            fontSize: "10px",
-                            border: "1px solid var(--border-bright)",
-                            background: "var(--surface)",
-                          }
-                    }
-                  >
-                    {active ? "✓" : ""}
-                  </span>
-                  {r}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {roles.includes("student") && (
-          <TextField
-            label="Дата начала обучения"
-            hint="для Student"
-            type="date"
-            value={startedAt}
-            onChange={(e) => setStartedAt(e.target.value)}
-          />
-        )}
-
-        {error && (
-          <div
-            className="text-[12px] px-3 py-2 rounded-md"
-            style={{
-              color: "var(--danger)",
-              background: "rgba(175,88,64,0.08)",
-              border: "1px solid rgba(175,88,64,0.3)",
-            }}
-          >
-            {error}
-          </div>
-        )}
-      </div>
-    </Drawer>
-  );
-}
-
-/* =========== EDIT DRAWER =========== */
-
-function EditUserDrawer({
-  user,
-  onClose,
-  onSaved,
-}: {
-  user: UserListItem;
-  onClose: () => void;
-  onSaved: () => void;
-}) {
-  const [displayName, setDisplayName] = useState(user.display_name);
-  const [telegram, setTelegram] = useState(user.telegram_username ?? "");
-  const [startedAt, setStartedAt] = useState(
-    user.learning_started_at ? user.learning_started_at.slice(0, 10) : ""
-  );
-  const [roles, setRoles] = useState<Role[]>(user.roles);
-  const [error, setError] = useState<string | null>(null);
-
-  const mut = useMutation({
-    mutationFn: () =>
-      updateUser(user.id, {
-        display_name: displayName.trim(),
-        telegram_username: telegram.trim() ? telegram.trim().replace(/^@/, "") : null,
-        learning_started_at: startedAt ? new Date(startedAt).toISOString() : null,
-        roles,
-      }),
+  const deleteMut = useMutation({
+    mutationFn: () => deleteUser(user!.id),
     onSuccess: onSaved,
-    onError: (err) => {
-      const code = getApiErrorCode(err);
-      setError(
-        code === "telegram_taken" ? "Этот Telegram уже используется" : "Не удалось сохранить"
-      );
-    },
+    onError: () => setError("Не удалось перенести в архив"),
   });
 
-  const toggleRole = (r: Role) => {
-    setRoles((prev) => (prev.includes(r) ? prev.filter((x) => x !== r) : [...prev, r]));
-  };
-
-  return (
-    <Drawer
-      open
-      onClose={onClose}
-      title={`Редактирование · ${user.display_name}`}
-      footer={
-        <div className="flex gap-2.5">
-          <Button
-            variant="warn"
-            className="flex-1"
-            onClick={() => mut.mutate()}
-            disabled={mut.isPending || roles.length === 0}
-          >
-            {mut.isPending ? "Сохранение..." : "Сохранить"}
-          </Button>
-          <Button variant="ghost" onClick={onClose}>
-            Отмена
-          </Button>
-        </div>
-      }
-    >
-      <div className="flex flex-col gap-4">
-        <div
-          className="px-3 py-2 rounded-md font-mono"
-          style={{
-            fontSize: "11px",
-            color: "var(--text-3)",
-            background: "var(--bg)",
-            border: "1px solid var(--border)",
-          }}
-        >
-          login · {user.login} · {user.id}
-        </div>
-
-        <TextField
-          label="Отображаемое имя"
-          required
-          value={displayName}
-          onChange={(e) => setDisplayName(e.target.value)}
-        />
-
-        <TextField
-          label="Telegram-логин"
-          value={telegram}
-          onChange={(e) => setTelegram(e.target.value)}
-        />
-
-        <div className="flex flex-col">
-          <div
-            className="font-mono uppercase tracking-[0.14em] mb-2"
-            style={{ fontSize: "10px", color: "var(--text-2)" }}
-          >
-            Роли
-          </div>
-          <div className="flex gap-2 flex-wrap">
-            {(["student", "buddy", "admin"] as Role[]).map((r) => {
-              const active = roles.includes(r);
-              return (
-                <button
-                  key={r}
-                  type="button"
-                  onClick={() => toggleRole(r)}
-                  className="inline-flex items-center gap-2 px-3 py-2 rounded-md cursor-pointer transition-colors text-[12.5px]"
-                  style={
-                    active
-                      ? {
-                          color: "var(--text)",
-                          border: "1px solid rgba(169,132,47,0.45)",
-                          background: "rgba(169,132,47,0.08)",
-                        }
-                      : {
-                          color: "var(--text-2)",
-                          border: "1px solid var(--border)",
-                          background: "var(--bg)",
-                        }
-                  }
-                >
-                  <span
-                    className="w-4 h-4 rounded grid place-items-center font-mono font-bold"
-                    style={
-                      active
-                        ? {
-                            fontSize: "10px",
-                            background: "var(--warning)",
-                            color: "#1e1700",
-                            border: "1px solid var(--warning)",
-                          }
-                        : {
-                            fontSize: "10px",
-                            border: "1px solid var(--border-bright)",
-                            background: "var(--surface)",
-                          }
-                    }
-                  >
-                    {active ? "✓" : ""}
-                  </span>
-                  {r}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {roles.includes("student") && (
-          <TextField
-            label="Дата начала обучения"
-            type="date"
-            value={startedAt}
-            onChange={(e) => setStartedAt(e.target.value)}
-          />
-        )}
-
-        {error && (
-          <div
-            className="text-[12px] px-3 py-2 rounded-md"
-            style={{
-              color: "var(--danger)",
-              background: "rgba(175,88,64,0.08)",
-              border: "1px solid rgba(175,88,64,0.3)",
-            }}
-          >
-            {error}
-          </div>
-        )}
-      </div>
-    </Drawer>
-  );
-}
-
-/* =========== ASSIGN BUDDY DRAWER =========== */
-
-function AssignBuddyDrawer({
-  student,
-  onClose,
-  onSaved,
-}: {
-  student: UserListItem;
-  onClose: () => void;
-  onSaved: () => void;
-}) {
-  const buddies = useQuery({
-    queryKey: ["admin", "users", { role: "buddy" }],
-    queryFn: () => listUsers({ role: "buddy" }),
-  });
-
-  const [selected, setSelected] = useState<string>(student.buddy_id ?? "");
-
-  const assignMut = useMutation({
-    mutationFn: () => assignBuddy(student.id, selected),
-    onSuccess: onSaved,
-  });
-
-  const unassignMut = useMutation({
-    mutationFn: () => unassignBuddy(student.id),
-    onSuccess: onSaved,
-  });
-
-  return (
-    <Drawer
-      open
-      onClose={onClose}
-      title={`Buddy для · ${student.display_name}`}
-      footer={
-        <div className="flex gap-2.5">
-          <Button
-            variant="warn"
-            className="flex-1"
-            onClick={() => assignMut.mutate()}
-            disabled={!selected || assignMut.isPending}
-          >
-            {assignMut.isPending ? "Назначаю..." : "Назначить Buddy"}
-          </Button>
-          {student.buddy_id && (
-            <Button
-              variant="danger-ghost"
-              onClick={() => unassignMut.mutate()}
-              disabled={unassignMut.isPending}
-            >
-              Снять
-            </Button>
-          )}
-        </div>
-      }
-    >
-      <div className="flex flex-col gap-3">
-        <div className="caption">Выбери Buddy</div>
-        {buddies.isLoading && (
-          <div className="text-text-3 text-[12px]">Загрузка...</div>
-        )}
-        <div className="flex flex-col gap-1.5 max-h-[60vh] overflow-auto">
-          {(buddies.data ?? []).map((b) => (
-            <label
-              key={b.id}
-              className="flex items-center gap-3 p-3 rounded-md cursor-pointer transition-colors"
-              style={
-                selected === b.id
-                  ? {
-                      border: "1px solid rgba(169,132,47,0.4)",
-                      background: "rgba(169,132,47,0.08)",
-                    }
-                  : { border: "1px solid var(--border)", background: "var(--bg)" }
-              }
-            >
-              <input
-                type="radio"
-                name="buddy"
-                checked={selected === b.id}
-                onChange={() => setSelected(b.id)}
-                className="accent-warning"
-              />
-              <div
-                className="w-8 h-8 rounded-md grid place-items-center font-mono font-bold"
-                style={{
-                  fontSize: "11px",
-                  color: "#22050f",
-                  background: pickGradient(b.display_name),
-                }}
-              >
-                {avatarInitials(b.display_name)}
-              </div>
-              <div className="flex flex-col flex-1">
-                <span className="text-[13px] font-semibold">{b.display_name}</span>
-                <span className="font-mono text-[10.5px] text-text-3">
-                  @{b.login} · {b.students_count} учеников
-                </span>
-              </div>
-            </label>
-          ))}
-        </div>
-      </div>
-    </Drawer>
-  );
-}
-
-/* =========== RESET PASSWORD DRAWER =========== */
-
-function ResetPasswordDrawer({
-  user,
-  onClose,
-}: {
-  user: UserListItem;
-  onClose: () => void;
-}) {
-  const [newPwd, setNewPwd] = useState("");
-  const [done, setDone] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const mut = useMutation({
-    mutationFn: () => resetPassword(user.id, newPwd),
-    onSuccess: () => setDone(true),
+  const pwResetMut = useMutation({
+    mutationFn: () => resetPassword(user!.id, pwResetValue),
+    onSuccess: () => setPwResetDone(true),
     onError: () => setError("Не удалось сменить пароль"),
   });
 
+  const canSave =
+    displayName.trim().length > 0 &&
+    roles.length > 0 &&
+    (isEdit || (login.trim().length > 0 && password.length > 0));
+
   return (
-    <Drawer
-      open
-      onClose={onClose}
-      title={`Сменить пароль · ${user.display_name}`}
-      footer={
-        done ? (
-          <Button variant="warn" className="w-full" onClick={onClose}>
-            Готово
-          </Button>
-        ) : (
-          <div className="flex gap-2.5">
-            <Button
-              variant="warn"
-              className="flex-1"
-              onClick={() => mut.mutate()}
-              disabled={!newPwd || mut.isPending}
-            >
-              {mut.isPending ? "Сменяю..." : "Сменить пароль"}
-            </Button>
-            <Button variant="ghost" onClick={onClose}>
-              Отмена
-            </Button>
+    <div className="drawer-bg" onClick={onClose}>
+      <div className="drawer" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
+        <div className="drawer-head">
+          <h3>{isEdit ? "Редактирование" : "Новый пользователь"}</h3>
+          <button className="modal-x" type="button" aria-label="закрыть" onClick={onClose}>
+            ✕
+          </button>
+        </div>
+
+        <div className="drawer-body">
+          {/* Логин */}
+          <div className="field">
+            <label>Логин</label>
+            <input
+              className="input"
+              type="text"
+              placeholder="например, a.petrova"
+              value={login}
+              disabled={isEdit}
+              onChange={(e) => setLogin(e.target.value)}
+            />
+            {isEdit && <div className="hint">Логин нельзя изменить</div>}
           </div>
-        )
-      }
-    >
-      {!done ? (
-        <div className="flex flex-col gap-4">
-          <p className="text-[13px] m-0" style={{ color: "var(--text-2)" }}>
-            Введи новый пароль для пользователя. Старый пароль будет аннулирован сразу.
-          </p>
-          <TextField
-            label="Новый пароль"
-            required
-            value={newPwd}
-            onChange={(e) => setNewPwd(e.target.value)}
-            placeholder="минимум 8 символов"
-            type="text"
-          />
+
+          {/* Пароль: создание — temp, редактирование — кнопка смены */}
+          {!isEdit ? (
+            <div className="field">
+              <label>Временный пароль</label>
+              <div className="pw-field">
+                <input
+                  className="input"
+                  type="text"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+                <button className="btn ghost" type="button" onClick={() => setPassword(genPassword())}>
+                  Сгенерировать
+                </button>
+              </div>
+              <div className="hint">Ученик сменит пароль при первом входе</div>
+            </div>
+          ) : (
+            <div className="field">
+              <label>Пароль</label>
+              {!showPwReset ? (
+                <>
+                  <button
+                    className="btn ghost"
+                    type="button"
+                    style={{ width: "100%", justifyContent: "center" }}
+                    onClick={() => {
+                      setShowPwReset(true);
+                      setPwResetValue(genPassword());
+                    }}
+                  >
+                    Сменить пароль
+                  </button>
+                  <div className="hint">Будет задан новый временный пароль</div>
+                </>
+              ) : pwResetDone ? (
+                <div
+                  className="hint"
+                  style={{ color: "var(--success)", fontWeight: 600 }}
+                >
+                  Пароль изменён · передайте его пользователю вне платформы
+                </div>
+              ) : (
+                <>
+                  <div className="pw-field">
+                    <input
+                      className="input"
+                      type="text"
+                      value={pwResetValue}
+                      onChange={(e) => setPwResetValue(e.target.value)}
+                    />
+                    <button
+                      className="btn secondary"
+                      type="button"
+                      disabled={!pwResetValue || pwResetMut.isPending}
+                      onClick={() => pwResetMut.mutate()}
+                    >
+                      {pwResetMut.isPending ? "..." : "ОК"}
+                    </button>
+                  </div>
+                  <div className="hint">Старый пароль будет аннулирован сразу</div>
+                </>
+              )}
+            </div>
+          )}
+
+          {/* Имя */}
+          <div className="field">
+            <label>Отображаемое имя</label>
+            <input
+              className="input"
+              type="text"
+              placeholder="Имя Фамилия"
+              value={displayName}
+              onChange={(e) => setDisplayName(e.target.value)}
+            />
+          </div>
+
+          {/* Telegram */}
+          <div className="field">
+            <label>Telegram username</label>
+            <input
+              className="input"
+              type="text"
+              placeholder="@username"
+              value={telegram}
+              onChange={(e) => setTelegram(e.target.value)}
+            />
+          </div>
+
+          {/* Роли */}
+          <div className="field">
+            <label>Роли</label>
+            <div className="rolepick">
+              {(["student", "buddy", "admin"] as Role[]).map((r) => (
+                <label key={r}>
+                  <input type="checkbox" checked={roles.includes(r)} onChange={() => toggleRole(r)} />
+                  <span className="bx">
+                    <svg
+                      style={{ width: 11, height: 11 }}
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth={3.5}
+                    >
+                      <polyline points="5 12 10 17 19 7" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </span>
+                  <span className="tx">{ROLE_LABEL[r]}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          {/* Параметры студента */}
+          {isStudent && (
+            <div>
+              <div className="divider" />
+              <div className="divider-lbl">Параметры студента</div>
+              <div className="row">
+                <div className="field" style={{ marginBottom: 0 }}>
+                  <label>Дата начала</label>
+                  <input
+                    className="input"
+                    type="date"
+                    value={startedAt}
+                    onChange={(e) => setStartedAt(e.target.value)}
+                  />
+                </div>
+                <div className="field" style={{ marginBottom: 0 }}>
+                  <label>Buddy ученика</label>
+                  <div className="select" style={{ display: "block" }}>
+                    <select value={buddyId} onChange={(e) => setBuddyId(e.target.value)}>
+                      <option value="">Не назначен</option>
+                      {buddiesQuery.isLoading && <option disabled>Загрузка...</option>}
+                      {buddies.map((b) => (
+                        <option key={b.id} value={b.id}>
+                          {b.display_name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           {error && (
             <div
-              className="text-[12px] px-3 py-2 rounded-md"
               style={{
+                marginTop: 16,
+                fontSize: 12.5,
                 color: "var(--danger)",
-                background: "rgba(175,88,64,0.08)",
-                border: "1px solid rgba(175,88,64,0.3)",
+                background: "var(--danger-soft)",
+                border: "1px solid var(--danger)",
+                borderRadius: "var(--r-sm)",
+                padding: "9px 12px",
               }}
             >
               {error}
             </div>
           )}
         </div>
-      ) : (
-        <div
-          className="px-4 py-4 rounded-md flex flex-col gap-2"
-          style={{
-            background: "rgba(95,130,104,0.08)",
-            border: "1px solid rgba(95,130,104,0.3)",
-            color: "var(--success)",
-          }}
-        >
-          <b className="text-[14px]">Пароль изменён</b>
-          <span className="font-mono text-[12px] text-text">
-            Передай новый пароль пользователю вне платформы.
-          </span>
+
+        <div className="drawer-foot">
+          {isEdit && !user?.is_deleted && (
+            <button
+              className="del"
+              type="button"
+              disabled={deleteMut.isPending}
+              onClick={() => {
+                if (confirm(`Перенести «${user?.display_name}» в архив? Это soft delete — пользователя можно восстановить.`)) {
+                  deleteMut.mutate();
+                }
+              }}
+            >
+              {deleteMut.isPending ? "Удаление..." : "Удалить в архив"}
+            </button>
+          )}
+          <button className="btn ghost" type="button" onClick={onClose}>
+            Отмена
+          </button>
+          <button
+            className="btn secondary"
+            type="button"
+            disabled={!canSave || saveMut.isPending}
+            onClick={() => {
+              setError(null);
+              saveMut.mutate();
+            }}
+          >
+            {saveMut.isPending ? "Сохранение..." : "Сохранить"}
+          </button>
         </div>
-      )}
-    </Drawer>
+      </div>
+    </div>
   );
 }
