@@ -828,6 +828,44 @@ a{color:inherit;text-decoration:none}
 .blk-admin .block-title input:hover{background:var(--bg)}
 .blk-admin .block-title input:focus{outline:none;background:var(--surface-2);box-shadow:inset 0 0 0 1px var(--primary)}
 
+/* drag & drop — reorder blocks & materials (ТЗ §20) */
+.block.blk-admin,.mat.adm{transition:opacity .14s,box-shadow .14s,border-color .14s}
+.block.blk-admin .handle,.mat.adm .handle{cursor:grab}
+body.grabbing,body.grabbing *{cursor:grabbing !important}
+.dragging{opacity:.4}
+.drop-line{height:2px;background:var(--primary);border-radius:2px;margin:4px 0;box-shadow:0 0 0 3px var(--primary-soft);pointer-events:none}
+.matlist{display:flex;flex-direction:column;gap:0}
+.block.blk-admin .block-head > .handle{opacity:.45;transition:opacity .14s}
+.block.blk-admin:hover .block-head > .handle{opacity:1}
+.mat.adm.inactive{opacity:.5}
+.mat-thumb.txt{background:var(--bg)}
+.mat-thumb.url{background:var(--surface-2)}
+
+/* material/block drawer extras (content-type chips, segmented, settings, preview) */
+.drawer-wide{width:520px}
+.ctype{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.ctype label{display:flex;flex-direction:column;align-items:flex-start;gap:5px;padding:10px 12px;border:1px solid var(--line-2);border-radius:var(--r-sm);background:var(--surface-2);cursor:pointer;position:relative}
+.ctype label:hover{border-color:var(--ink-3)}
+.ctype input{position:absolute;opacity:0;width:0;height:0}
+.ctype .ic{font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--ink-2)}
+.ctype .nm{font-size:12.5px;font-weight:600;color:var(--ink-2)}
+.ctype label:has(input:checked){border-color:var(--primary);background:var(--primary-soft)}
+.ctype label:has(input:checked) .ic,.ctype label:has(input:checked) .nm{color:var(--primary-ink)}
+.seg{display:flex;gap:4px;background:var(--bg);border:1px solid var(--line);border-radius:var(--r-sm);padding:4px}
+.seg label{flex:1;text-align:center;padding:8px 6px;border-radius:6px;cursor:pointer;font-size:12.5px;font-weight:600;color:var(--ink-2);position:relative}
+.seg input{position:absolute;opacity:0;width:0;height:0}
+.seg label:has(input:checked){background:var(--surface);color:var(--ink);box-shadow:var(--shadow-sm)}
+.setrow{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:13px 0;border-top:1px solid var(--line)}
+.setrow:first-of-type{border-top:0}
+.setrow .lbl{font-size:13.5px;font-weight:600}
+.setrow .sub{font-size:11.5px;color:var(--ink-3);font-weight:500;margin-top:2px}
+.preview-wrap{border:1px dashed var(--line-2);border-radius:var(--r-sm);background:var(--bg);padding:12px}
+.preview-wrap .pv-cap{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-bottom:9px;display:flex;align-items:center;gap:7px}
+.preview-wrap .mat{margin-bottom:0;background:var(--surface)}
+.imgslot{height:96px;border:1px dashed var(--line-2);border-radius:var(--r-sm);background:repeating-linear-gradient(135deg,var(--surface-2),var(--surface-2) 9px,var(--bg) 9px,var(--bg) 18px);display:grid;place-items:center;cursor:pointer;text-align:center}
+.imgslot:hover{border-color:var(--primary)}
+.imgslot .t{font-family:ui-monospace,monospace;font-size:11px;color:var(--ink-3);font-weight:600}
+
 /* ============================================================
    Admin — achievements catalog
    ============================================================ */

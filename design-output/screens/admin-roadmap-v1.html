@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1280" />
+<title>Go Mentor · Admin · Roadmap-менеджер</title>
+<script>{const _v=new URLSearchParams(location.search).get('v');document.documentElement.className = _v==='bd' ? 'v-b v-b-dark' : _v==='b' ? 'v-b' : 'v-a';}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="../styles/base.css" rel="stylesheet">
+</head>
+<body>
+<div class="app">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">G</div>
+      <div class="brand-name">Go Mentor<small>Платформа</small></div>
+    </div>
+    <div class="sb-user">
+      <div class="avatar" style="background:var(--ink-2)">АД</div>
+      <div style="min-width:0">
+        <div class="nm">Анна Админова</div>
+        <div class="rl"><span class="role-dot"></span>Администратор<span class="swap">⇄ роль</span></div>
+      </div>
+    </div>
+
+    <div class="sb-label">Админ-панель</div>
+    <div class="nav-item"><span class="ic"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></span>Дашборд</div>
+    <div class="nav-item"><span class="ic"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c0-3 2.5-5 5.5-5s5.5 2 5.5 5" stroke-linecap="round"/><path d="M16 5.5a3 3 0 0 1 0 5.8M18.5 19c0-2.3-1.2-4-3-4.6" stroke-linecap="round"/></svg></span>Пользователи</div>
+    <div class="nav-item active"><span class="ic"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h10M4 12h16M4 18h7" stroke-linecap="round"/><circle cx="19" cy="6" r="1.6"/><circle cx="14" cy="18" r="1.6"/></svg></span>Roadmap</div>
+    <div class="nav-item"><span class="ic"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="9" r="6"/><path d="M9 14l-2 7 5-3 5 3-2-7" stroke-linejoin="round"/></svg></span>Достижения</div>
+    <div class="nav-item"><span class="ic"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M12 8v8M9.5 10.5h3.2a1.8 1.8 0 0 1 0 3.6H9.5" stroke-linecap="round"/></svg></span>Заявки 1×1<span class="tag">4</span></div>
+    <div class="nav-item"><span class="ic"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V9M10 19V5M16 19v-7M21 19H3" stroke-linecap="round"/></svg></span>Аналитика</div>
+
+    <div class="sb-foot"><span class="led"></span>142 пользователя · 4 заявки ждут</div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <main class="main">
+    <div class="page-head">
+      <div>
+        <h1>Roadmap-менеджер</h1>
+        <div class="sub">Программа <b>Go Backend</b> · 5 блоков · 43 материала</div>
+      </div>
+      <div class="right" style="display:flex;align-items:center;gap:12px">
+        <div class="select">
+          <select>
+            <option>Go Backend</option>
+            <option>Python</option>
+            <option>Frontend</option>
+          </select>
+        </div>
+        <button class="btn secondary"><svg class="i" style="width:16px;height:16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg>Блок</button>
+      </div>
+    </div>
+
+    <div class="cols c-roadmap" style="flex:1;align-items:start">
+      <!-- blocks rail -->
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div class="block sel blk-admin" data-s="in_progress" style="cursor:pointer">
+          <div class="block-head"><div class="block-num">03</div><div class="block-title"><h4>Concurrency</h4><small>12 материалов · 9 обязательных</small></div><span class="handle" style="align-self:center"><svg class="i" style="width:16px;height:16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="18" r="1"/></svg></span></div>
+        </div>
+        <div class="block blk-admin" style="cursor:pointer">
+          <div class="block-head"><div class="block-num">01</div><div class="block-title"><h4>Foundations</h4><small>12 материалов · 10 обязательных</small></div></div>
+        </div>
+        <div class="block blk-admin" style="cursor:pointer">
+          <div class="block-head"><div class="block-num">02</div><div class="block-title"><h4>Interfaces &amp; Errors</h4><small>10 материалов · 8 обязательных</small></div></div>
+        </div>
+        <div class="block blk-admin" style="cursor:pointer">
+          <div class="block-head"><div class="block-num">04</div><div class="block-title"><h4>Tests &amp; Benchmarks</h4><small>9 материалов · 6 обязательных</small></div></div>
+        </div>
+        <div class="block blk-admin" style="cursor:pointer">
+          <div class="block-head"><div class="block-num">05</div><div class="block-title"><h4>Web &amp; Storage</h4><small>0 материалов · черновик</small></div></div>
+        </div>
+      </div>
+
+      <!-- block editor -->
+      <div class="card card-pad">
+        <div class="card-head" style="align-items:center">
+          <div class="block-title blk-admin" style="flex:1"><input type="text" value="Concurrency" aria-label="название блока" /></div>
+          <button class="btn ghost sm">Удалить блок</button>
+        </div>
+
+        <!-- Теория -->
+        <div class="matgrp-head" style="margin-top:6px"><span class="gt">Теория</span><span class="ln"></span></div>
+        <div class="mat adm">
+          <span class="handle"><svg class="i" style="width:16px;height:16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="18" r="1"/></svg></span>
+          <div class="mat-thumb yt"><span class="tg">▶ YOUTUBE</span></div>
+          <div class="mat-body"><div class="mat-meta"><span class="tag-mini req">Обязательно</span><span>youtube.com · 28 мин</span></div><div class="mat-title">Concurrency в Go: горутины и каналы</div></div>
+          <div class="mrow-acts"><button class="iconbtn" aria-label="изменить"><svg class="i" style="width:15px;height:15px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20h4L18 10l-4-4L4 16v4Z" stroke-linejoin="round"/><path d="M14 6l4 4" /></svg></button><button class="iconbtn danger" aria-label="удалить"><svg class="i" style="width:15px;height:15px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 7h14M10 7V5h4v2M6 7l1 13h10l1-13" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+        </div>
+        <div class="mat adm">
+          <span class="handle"><svg class="i" style="width:16px;height:16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="18" r="1"/></svg></span>
+          <div class="mat-thumb art"><span class="tg">¶ СТАТЬЯ</span></div>
+          <div class="mat-body"><div class="mat-meta"><span class="tag-mini req">Обязательно</span><span>go.dev/blog · 12 мин</span></div><div class="mat-title">Share memory by communicating</div></div>
+          <div class="mrow-acts"><button class="iconbtn" aria-label="изменить"><svg class="i" style="width:15px;height:15px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20h4L18 10l-4-4L4 16v4Z" stroke-linejoin="round"/><path d="M14 6l4 4"/></svg></button><button class="iconbtn danger" aria-label="удалить"><svg class="i" style="width:15px;height:15px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 7h14M10 7V5h4v2M6 7l1 13h10l1-13" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+        </div>
+        <button class="add-row"><svg class="i" style="width:15px;height:15px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg>Добавить материал в «Теория»</button>
+
+        <!-- Практика -->
+        <div class="matgrp-head" style="margin-top:18px"><span class="gt">Практика</span><span class="ln"></span></div>
+        <div class="mat adm">
+          <span class="handle"><svg class="i" style="width:16px;height:16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="18" r="1"/></svg></span>
+          <div class="mat-thumb gh"><span class="tg">◍ GITHUB</span></div>
+          <div class="mat-body"><div class="mat-meta"><span class="tag-mini req">Обязательно</span><span>github.com · задача</span></div><div class="mat-title">Worker pool на каналах</div></div>
+          <div class="mrow-acts"><button class="iconbtn" aria-label="изменить"><svg class="i" style="width:15px;height:15px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20h4L18 10l-4-4L4 16v4Z" stroke-linejoin="round"/><path d="M14 6l4 4"/></svg></button><button class="iconbtn danger" aria-label="удалить"><svg class="i" style="width:15px;height:15px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 7h14M10 7V5h4v2M6 7l1 13h10l1-13" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+        </div>
+        <div class="mat adm">
+          <span class="handle"><svg class="i" style="width:16px;height:16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="18" r="1"/></svg></span>
+          <div class="mat-thumb file"><span class="tg">▤ PDF</span></div>
+          <div class="mat-body"><div class="mat-meta"><span class="tag-mini opt">Опционально</span><span>файл · 1,4 MB</span></div><div class="mat-title">Шпаргалка по sync-пакету</div></div>
+          <div class="mrow-acts"><button class="iconbtn" aria-label="изменить"><svg class="i" style="width:15px;height:15px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20h4L18 10l-4-4L4 16v4Z" stroke-linejoin="round"/><path d="M14 6l4 4"/></svg></button><button class="iconbtn danger" aria-label="удалить"><svg class="i" style="width:15px;height:15px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 7h14M10 7V5h4v2M6 7l1 13h10l1-13" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+        </div>
+        <button class="add-row"><svg class="i" style="width:15px;height:15px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg>Добавить материал в «Практика»</button>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+(function(){
+  const blocks = document.querySelectorAll('.block.blk-admin');
+  blocks.forEach(b => b.addEventListener('click', () => {
+    blocks.forEach(x => x.classList.toggle('sel', x === b));
+  }));
+})();
+</script>
+</body>
+</html>

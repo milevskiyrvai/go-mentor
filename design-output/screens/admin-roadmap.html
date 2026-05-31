@@ -53,79 +53,527 @@
             <option>Frontend</option>
           </select>
         </div>
-        <button class="btn secondary"><svg class="i" style="width:16px;height:16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg>Блок</button>
+        <button class="btn secondary" id="addBlock"><svg class="i" style="width:16px;height:16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg>Блок</button>
       </div>
     </div>
 
     <div class="cols c-roadmap" style="flex:1;align-items:start">
       <!-- blocks rail -->
-      <div style="display:flex;flex-direction:column;gap:10px">
+      <div id="blockRail" style="display:flex;flex-direction:column;gap:10px">
         <div class="block sel blk-admin" data-s="in_progress" style="cursor:pointer">
-          <div class="block-head"><div class="block-num">03</div><div class="block-title"><h4>Concurrency</h4><small>12 материалов · 9 обязательных</small></div><span class="handle" style="align-self:center"><svg class="i" style="width:16px;height:16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="18" r="1"/></svg></span></div>
+          <div class="block-head"><span class="handle" style="align-self:center"><svg class="i" style="width:16px;height:16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="18" r="1"/></svg></span><div class="block-num">03</div><div class="block-title"><h4>Concurrency</h4><small>12 материалов · 9 обязательных</small></div></div>
         </div>
         <div class="block blk-admin" style="cursor:pointer">
-          <div class="block-head"><div class="block-num">01</div><div class="block-title"><h4>Foundations</h4><small>12 материалов · 10 обязательных</small></div></div>
+          <div class="block-head"><span class="handle" style="align-self:center"><svg class="i" style="width:16px;height:16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="18" r="1"/></svg></span><div class="block-num">01</div><div class="block-title"><h4>Foundations</h4><small>12 материалов · 10 обязательных</small></div></div>
         </div>
         <div class="block blk-admin" style="cursor:pointer">
-          <div class="block-head"><div class="block-num">02</div><div class="block-title"><h4>Interfaces &amp; Errors</h4><small>10 материалов · 8 обязательных</small></div></div>
+          <div class="block-head"><span class="handle" style="align-self:center"><svg class="i" style="width:16px;height:16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="18" r="1"/></svg></span><div class="block-num">02</div><div class="block-title"><h4>Interfaces &amp; Errors</h4><small>10 материалов · 8 обязательных</small></div></div>
         </div>
         <div class="block blk-admin" style="cursor:pointer">
-          <div class="block-head"><div class="block-num">04</div><div class="block-title"><h4>Tests &amp; Benchmarks</h4><small>9 материалов · 6 обязательных</small></div></div>
+          <div class="block-head"><span class="handle" style="align-self:center"><svg class="i" style="width:16px;height:16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="18" r="1"/></svg></span><div class="block-num">04</div><div class="block-title"><h4>Tests &amp; Benchmarks</h4><small>9 материалов · 6 обязательных</small></div></div>
         </div>
         <div class="block blk-admin" style="cursor:pointer">
-          <div class="block-head"><div class="block-num">05</div><div class="block-title"><h4>Web &amp; Storage</h4><small>0 материалов · черновик</small></div></div>
+          <div class="block-head"><span class="handle" style="align-self:center"><svg class="i" style="width:16px;height:16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="18" r="1"/></svg></span><div class="block-num">05</div><div class="block-title"><h4>Web &amp; Storage</h4><small>0 материалов · черновик</small></div></div>
         </div>
       </div>
 
       <!-- block editor -->
       <div class="card card-pad">
-        <div class="card-head" style="align-items:center">
-          <div class="block-title blk-admin" style="flex:1"><input type="text" value="Concurrency" aria-label="название блока" /></div>
-          <button class="btn ghost sm">Удалить блок</button>
+        <div class="card-head" style="align-items:center;gap:8px">
+          <div class="block-title blk-admin" style="flex:1"><input type="text" id="blkNameInline" value="Concurrency" aria-label="название блока" /></div>
+          <button class="btn ghost sm" id="blkEdit">Редактировать блок</button>
+          <button class="btn ghost sm" id="blkDelete">Удалить блок</button>
         </div>
 
         <!-- Теория -->
         <div class="matgrp-head" style="margin-top:6px"><span class="gt">Теория</span><span class="ln"></span></div>
-        <div class="mat adm">
+        <div class="matlist" data-sec="theory">
+        <div class="mat adm" data-ctype="youtube" data-req="1" data-active="1" data-src="youtube.com · 28 мин" data-desc="Разбор модели памяти Go, как устроены горутины и каналы под капотом.">
           <span class="handle"><svg class="i" style="width:16px;height:16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="18" r="1"/></svg></span>
           <div class="mat-thumb yt"><span class="tg">▶ YOUTUBE</span></div>
           <div class="mat-body"><div class="mat-meta"><span class="tag-mini req">Обязательно</span><span>youtube.com · 28 мин</span></div><div class="mat-title">Concurrency в Go: горутины и каналы</div></div>
           <div class="mrow-acts"><button class="iconbtn" aria-label="изменить"><svg class="i" style="width:15px;height:15px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20h4L18 10l-4-4L4 16v4Z" stroke-linejoin="round"/><path d="M14 6l4 4" /></svg></button><button class="iconbtn danger" aria-label="удалить"><svg class="i" style="width:15px;height:15px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 7h14M10 7V5h4v2M6 7l1 13h10l1-13" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
         </div>
-        <div class="mat adm">
+        <div class="mat adm" data-ctype="article" data-req="1" data-active="1" data-src="go.dev/blog · 12 мин" data-desc="Классическая статья о философии «не общайся через память — общайся через каналы».">
           <span class="handle"><svg class="i" style="width:16px;height:16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="18" r="1"/></svg></span>
           <div class="mat-thumb art"><span class="tg">¶ СТАТЬЯ</span></div>
           <div class="mat-body"><div class="mat-meta"><span class="tag-mini req">Обязательно</span><span>go.dev/blog · 12 мин</span></div><div class="mat-title">Share memory by communicating</div></div>
           <div class="mrow-acts"><button class="iconbtn" aria-label="изменить"><svg class="i" style="width:15px;height:15px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20h4L18 10l-4-4L4 16v4Z" stroke-linejoin="round"/><path d="M14 6l4 4"/></svg></button><button class="iconbtn danger" aria-label="удалить"><svg class="i" style="width:15px;height:15px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 7h14M10 7V5h4v2M6 7l1 13h10l1-13" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
         </div>
-        <button class="add-row"><svg class="i" style="width:15px;height:15px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg>Добавить материал в «Теория»</button>
+        </div>
+        <button class="add-row" data-sec="theory"><svg class="i" style="width:15px;height:15px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg>Добавить материал в «Теория»</button>
+
+        <!-- Вопросы -->
+        <div class="matgrp-head" style="margin-top:18px"><span class="gt">Вопросы</span><span class="ln"></span></div>
+        <div class="matlist" data-sec="questions">
+        <div class="mat adm" data-ctype="url" data-req="1" data-active="1" data-src="вопросы · 8 шт" data-desc="Чек-лист вопросов для самопроверки перед практикой.">
+          <span class="handle"><svg class="i" style="width:16px;height:16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="18" r="1"/></svg></span>
+          <div class="mat-thumb txt"><span class="tg">¶ ТЕКСТ</span></div>
+          <div class="mat-body"><div class="mat-meta"><span class="tag-mini req">Обязательно</span><span>вопросы · 8 шт</span></div><div class="mat-title">Что такое data race и как его поймать</div></div>
+          <div class="mrow-acts"><button class="iconbtn" aria-label="изменить"><svg class="i" style="width:15px;height:15px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20h4L18 10l-4-4L4 16v4Z" stroke-linejoin="round"/><path d="M14 6l4 4"/></svg></button><button class="iconbtn danger" aria-label="удалить"><svg class="i" style="width:15px;height:15px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 7h14M10 7V5h4v2M6 7l1 13h10l1-13" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+        </div>
+        </div>
+        <button class="add-row" data-sec="questions"><svg class="i" style="width:15px;height:15px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg>Добавить материал в «Вопросы»</button>
 
         <!-- Практика -->
         <div class="matgrp-head" style="margin-top:18px"><span class="gt">Практика</span><span class="ln"></span></div>
-        <div class="mat adm">
+        <div class="matlist" data-sec="practice">
+        <div class="mat adm" data-ctype="github" data-req="1" data-active="1" data-src="github.com · задача" data-desc="Реализовать пул воркеров на каналах с graceful-остановкой.">
           <span class="handle"><svg class="i" style="width:16px;height:16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="18" r="1"/></svg></span>
           <div class="mat-thumb gh"><span class="tg">◍ GITHUB</span></div>
           <div class="mat-body"><div class="mat-meta"><span class="tag-mini req">Обязательно</span><span>github.com · задача</span></div><div class="mat-title">Worker pool на каналах</div></div>
           <div class="mrow-acts"><button class="iconbtn" aria-label="изменить"><svg class="i" style="width:15px;height:15px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20h4L18 10l-4-4L4 16v4Z" stroke-linejoin="round"/><path d="M14 6l4 4"/></svg></button><button class="iconbtn danger" aria-label="удалить"><svg class="i" style="width:15px;height:15px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 7h14M10 7V5h4v2M6 7l1 13h10l1-13" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
         </div>
-        <div class="mat adm">
+        <div class="mat adm" data-ctype="file" data-req="0" data-active="1" data-src="файл · 1,4 MB" data-desc="PDF-шпаргалка по пакету sync: Mutex, WaitGroup, Once, Pool.">
           <span class="handle"><svg class="i" style="width:16px;height:16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="18" r="1"/></svg></span>
-          <div class="mat-thumb file"><span class="tg">▤ PDF</span></div>
+          <div class="mat-thumb file"><span class="tg">▤ ФАЙЛ</span></div>
           <div class="mat-body"><div class="mat-meta"><span class="tag-mini opt">Опционально</span><span>файл · 1,4 MB</span></div><div class="mat-title">Шпаргалка по sync-пакету</div></div>
           <div class="mrow-acts"><button class="iconbtn" aria-label="изменить"><svg class="i" style="width:15px;height:15px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20h4L18 10l-4-4L4 16v4Z" stroke-linejoin="round"/><path d="M14 6l4 4"/></svg></button><button class="iconbtn danger" aria-label="удалить"><svg class="i" style="width:15px;height:15px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 7h14M10 7V5h4v2M6 7l1 13h10l1-13" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
         </div>
-        <button class="add-row"><svg class="i" style="width:15px;height:15px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg>Добавить материал в «Практика»</button>
+        </div>
+        <button class="add-row" data-sec="practice"><svg class="i" style="width:15px;height:15px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg>Добавить материал в «Практика»</button>
+
+        <!-- Домашка -->
+        <div class="matgrp-head" style="margin-top:18px"><span class="gt">Домашка</span><span class="ln"></span></div>
+        <div class="matlist" data-sec="homework">
+        <div class="mat adm" data-ctype="url" data-req="1" data-active="1" data-src="форма · дедлайн 7 дней" data-desc="Сдать рабочий rate-limiter на каналах со встроенными тестами.">
+          <span class="handle"><svg class="i" style="width:16px;height:16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="18" r="1"/></svg></span>
+          <div class="mat-thumb url"><span class="tg">↗ URL</span></div>
+          <div class="mat-body"><div class="mat-meta"><span class="tag-mini req">Обязательно</span><span>форма · дедлайн 7 дней</span></div><div class="mat-title">ДЗ: rate-limiter на каналах</div></div>
+          <div class="mrow-acts"><button class="iconbtn" aria-label="изменить"><svg class="i" style="width:15px;height:15px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20h4L18 10l-4-4L4 16v4Z" stroke-linejoin="round"/><path d="M14 6l4 4"/></svg></button><button class="iconbtn danger" aria-label="удалить"><svg class="i" style="width:15px;height:15px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 7h14M10 7V5h4v2M6 7l1 13h10l1-13" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+        </div>
+        </div>
+        <button class="add-row" data-sec="homework"><svg class="i" style="width:15px;height:15px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg>Добавить материал в «Домашка»</button>
       </div>
     </div>
   </main>
 </div>
 
+<!-- ===== MATERIAL DRAWER (create / edit) ===== -->
+<div class="drawer-bg" id="matDrawer" hidden>
+  <div class="drawer drawer-wide" role="dialog" aria-modal="true">
+    <div class="drawer-head">
+      <h3 id="md-title">Новый материал</h3>
+      <button class="modal-x" id="md-close" type="button" aria-label="закрыть">✕</button>
+    </div>
+    <div class="drawer-body">
+
+      <div class="field">
+        <label>Заголовок</label>
+        <input class="input" id="md-name" type="text" placeholder="например, Горутины и каналы" />
+      </div>
+      <div class="field">
+        <label>Описание</label>
+        <textarea class="textarea" id="md-desc" rows="2" placeholder="Короткое описание для студента"></textarea>
+      </div>
+      <div class="field">
+        <label>Тип секции</label>
+        <div class="select" style="display:block">
+          <select id="md-section">
+            <option value="theory">Теория</option>
+            <option value="questions">Вопросы</option>
+            <option value="practice">Практика</option>
+            <option value="homework">Домашка</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+      <div class="divider-lbl">Контент</div>
+
+      <div class="field">
+        <label>Тип контента</label>
+        <div class="ctype" id="md-ctype">
+          <label><input type="radio" name="md-ct" value="url" checked /><span class="ic">↗ URL</span><span class="nm">Ссылка</span></label>
+          <label><input type="radio" name="md-ct" value="youtube" /><span class="ic">▶ YouTube</span><span class="nm">Видео</span></label>
+          <label><input type="radio" name="md-ct" value="github" /><span class="ic">◍ GitHub</span><span class="nm">Репозиторий</span></label>
+          <label><input type="radio" name="md-ct" value="article" /><span class="ic">¶ Статья</span><span class="nm">Веб-статья</span></label>
+          <label><input type="radio" name="md-ct" value="text" /><span class="ic">¶ Текст</span><span class="nm">Свой текст</span></label>
+          <label><input type="radio" name="md-ct" value="file" /><span class="ic">▤ Файл</span><span class="nm">Загрузка</span></label>
+        </div>
+      </div>
+
+      <div class="field" id="f-url">
+        <label id="lbl-url">URL</label>
+        <input class="input" id="md-url" type="text" placeholder="https://" />
+      </div>
+      <div class="field" id="f-text" hidden>
+        <label>Текст материала</label>
+        <textarea class="textarea" id="md-text" rows="4" placeholder="Markdown / обычный текст"></textarea>
+      </div>
+      <div class="field" id="f-file" hidden>
+        <label>Файл</label>
+        <div class="imgslot" id="md-fileslot"><span class="t">перетащите файл сюда · pdf, zip, до 25 MB</span></div>
+      </div>
+
+      <div class="field">
+        <label>Источник</label>
+        <input class="input" id="md-source" type="text" placeholder="например, youtube.com · 28 мин" />
+      </div>
+
+      <div class="divider"></div>
+      <div class="divider-lbl">Превью</div>
+
+      <div class="row">
+        <div class="field" style="margin-bottom:0">
+          <label>Заголовок превью</label>
+          <input class="input" id="md-pvtitle" type="text" placeholder="как в карточке" />
+        </div>
+        <div class="field" style="margin-bottom:0" id="f-image">
+          <label>Картинка</label>
+          <div class="imgslot" id="md-imgslot"><span class="t">drop image · 16:10</span></div>
+        </div>
+      </div>
+      <div class="field" style="margin-top:13px">
+        <label>Описание превью</label>
+        <input class="input" id="md-pvdesc" type="text" placeholder="одна строка под заголовком" />
+      </div>
+
+      <div class="preview-wrap" style="margin-bottom:6px">
+        <div class="pv-cap"><span style="width:6px;height:6px;border-radius:50%;background:var(--primary);display:inline-block"></span>Как увидит студент</div>
+        <div class="mat" style="grid-template-columns:96px 1fr">
+          <div class="mat-thumb url" id="pv-thumb"><span class="tg" id="pv-tag">↗ URL</span></div>
+          <div class="mat-body"><div class="mat-meta"><span class="tag-mini req" id="pv-reqtag">Обязательно</span><span id="pv-src">источник</span></div><div class="mat-title" id="pv-title">Заголовок материала</div><div class="mat-desc" id="pv-desc">Описание превью</div></div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+      <div class="divider-lbl">Настройки</div>
+      <div class="setrow">
+        <div><div class="lbl">Обязательный материал</div><div class="sub">Влияет на закрытие блока (§6.9). Выкл = опциональный.</div></div>
+        <label class="switch on" id="md-req"><span class="track"></span></label>
+      </div>
+      <div class="setrow">
+        <div><div class="lbl">Активен</div><div class="sub">Выключенный материал скрыт у студентов, но виден админу.</div></div>
+        <label class="switch on" id="md-active"><span class="track"></span></label>
+      </div>
+
+    </div>
+    <div class="drawer-foot">
+      <button class="del" id="md-del" type="button" hidden>Удалить материал</button>
+      <button class="btn ghost" id="md-cancel" type="button">Отмена</button>
+      <button class="btn secondary" id="md-save" type="button">Сохранить</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== BLOCK DRAWER (create / edit) ===== -->
+<div class="drawer-bg" id="blkDrawer" hidden>
+  <div class="drawer" role="dialog" aria-modal="true">
+    <div class="drawer-head">
+      <h3 id="bd-title">Новый блок</h3>
+      <button class="modal-x" id="bd-close" type="button" aria-label="закрыть">✕</button>
+    </div>
+    <div class="drawer-body">
+      <div class="field">
+        <label>Название блока</label>
+        <input class="input" id="bd-name" type="text" placeholder="например, Concurrency" />
+      </div>
+      <div class="field">
+        <label>Описание</label>
+        <textarea class="textarea" id="bd-desc" rows="3" placeholder="О чём блок и какие навыки даёт"></textarea>
+      </div>
+      <div class="field">
+        <label>Статус</label>
+        <div class="select" style="display:block">
+          <select id="bd-status">
+            <option value="active">Активен</option>
+            <option value="draft">Черновик</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="drawer-foot">
+      <button class="del" id="bd-del" type="button" hidden>Удалить блок</button>
+      <button class="btn ghost" id="bd-cancel" type="button">Отмена</button>
+      <button class="btn secondary" id="bd-save" type="button">Сохранить</button>
+    </div>
+  </div>
+</div>
+
 <script>
 (function(){
-  const blocks = document.querySelectorAll('.block.blk-admin');
-  blocks.forEach(b => b.addEventListener('click', () => {
-    blocks.forEach(x => x.classList.toggle('sel', x === b));
-  }));
+  const $ = (s, r=document) => r.querySelector(s);
+  const $$ = (s, r=document) => [...r.querySelectorAll(s)];
+  const GRIP = '<svg class="i" style="width:16px;height:16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="18" r="1"/></svg>';
+  const PENCIL = '<svg class="i" style="width:15px;height:15px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20h4L18 10l-4-4L4 16v4Z" stroke-linejoin="round"/><path d="M14 6l4 4"/></svg>';
+  const TRASH = '<svg class="i" style="width:15px;height:15px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 7h14M10 7V5h4v2M6 7l1 13h10l1-13" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  const SECLABEL = { theory:'Теория', questions:'Вопросы', practice:'Практика', homework:'Домашка' };
+  const CTYPE = {
+    url:     { thumb:'url',  tag:'↗ URL',     field:'url'  },
+    youtube: { thumb:'yt',   tag:'▶ YOUTUBE', field:'url'  },
+    github:  { thumb:'gh',   tag:'◍ GITHUB',  field:'url'  },
+    article: { thumb:'art',  tag:'¶ СТАТЬЯ',  field:'url'  },
+    text:    { thumb:'txt',  tag:'¶ ТЕКСТ',   field:'text' },
+    file:    { thumb:'file', tag:'▤ ФАЙЛ',    field:'file' },
+  };
+
+  /* ---------- block selection ---------- */
+  function selectBlock(b){ $$('.block.blk-admin').forEach(x => x.classList.toggle('sel', x === b)); }
+  document.addEventListener('click', e => {
+    const b = e.target.closest('.block.blk-admin');
+    if (b && !e.target.closest('.handle')) selectBlock(b);
+  });
+
+  /* ---------- drag & drop ---------- */
+  function getAfter(c, sel, y, drag){
+    let res = null, closest = -Infinity;
+    $$(sel, c).forEach(it => {
+      if (it === drag || it.classList.contains('dragging')) return;
+      const r = it.getBoundingClientRect();
+      const off = y - r.top - r.height/2;
+      if (off < 0 && off > closest){ closest = off; res = it; }
+    });
+    return res;
+  }
+  function makeSortable(container, sel){
+    const line = document.createElement('div');
+    line.className = 'drop-line';
+    let drag = null;
+    container.addEventListener('dragstart', e => {
+      const it = e.target.closest(sel);
+      if (!it || !container.contains(it)) return;
+      drag = it;
+      e.dataTransfer.effectAllowed = 'move';
+      try { e.dataTransfer.setData('text/plain', ''); } catch(_){}
+      document.body.classList.add('grabbing');
+      setTimeout(() => it.classList.add('dragging'), 0);
+    });
+    container.addEventListener('dragend', () => {
+      if (drag) drag.classList.remove('dragging');
+      document.body.classList.remove('grabbing');
+      line.remove(); drag = null;
+    });
+    container.addEventListener('dragover', e => {
+      if (!drag) return;
+      e.preventDefault();
+      const after = getAfter(container, sel, e.clientY, drag);
+      if (after == null) container.appendChild(line);
+      else container.insertBefore(line, after);
+    });
+    container.addEventListener('drop', e => {
+      if (!drag) return;
+      e.preventDefault();
+      if (line.parentNode) line.parentNode.insertBefore(drag, line);
+      line.remove();
+    });
+  }
+  function enableDrag(el){ el.setAttribute('draggable', 'true'); }
+  $$('.block.blk-admin').forEach(enableDrag);
+  $$('.mat.adm').forEach(enableDrag);
+  makeSortable($('#blockRail'), '.block.blk-admin');
+  $$('.matlist').forEach(list => makeSortable(list, '.mat.adm'));
+
+  /* ---------- material row helpers ---------- */
+  function buildMat(d){
+    const ct = CTYPE[d.ctype] || CTYPE.url;
+    const el = document.createElement('div');
+    el.className = 'mat adm' + (d.active ? '' : ' inactive');
+    el.dataset.ctype = d.ctype; el.dataset.req = d.req ? '1' : '0';
+    el.dataset.active = d.active ? '1' : '0'; el.dataset.src = d.source || '';
+    el.dataset.desc = d.desc || '';
+    el.setAttribute('draggable', 'true');
+    el.innerHTML =
+      '<span class="handle">' + GRIP + '</span>' +
+      '<div class="mat-thumb ' + ct.thumb + '"><span class="tg">' + ct.tag + '</span></div>' +
+      '<div class="mat-body"><div class="mat-meta">' +
+        '<span class="tag-mini ' + (d.req ? 'req">Обязательно' : 'opt">Опционально') + '</span>' +
+        '<span>' + esc(d.source || '') + (d.active ? '' : ' · выкл') + '</span></div>' +
+        '<div class="mat-title">' + esc(d.title || 'Без названия') + '</div></div>' +
+      '<div class="mrow-acts"><button class="iconbtn" aria-label="изменить">' + PENCIL + '</button>' +
+      '<button class="iconbtn danger" aria-label="удалить">' + TRASH + '</button></div>';
+    return el;
+  }
+  function applyMat(el, d){
+    const ct = CTYPE[d.ctype] || CTYPE.url;
+    el.classList.toggle('inactive', !d.active);
+    el.dataset.ctype = d.ctype; el.dataset.req = d.req ? '1' : '0';
+    el.dataset.active = d.active ? '1' : '0'; el.dataset.src = d.source || '';
+    el.dataset.desc = d.desc || '';
+    const thumb = $('.mat-thumb', el);
+    thumb.className = 'mat-thumb ' + ct.thumb;
+    $('.tg', thumb).textContent = ct.tag;
+    const tagEl = $('.tag-mini', el);
+    tagEl.className = 'tag-mini ' + (d.req ? 'req' : 'opt');
+    tagEl.textContent = d.req ? 'Обязательно' : 'Опционально';
+    $('.mat-meta span:last-child', el).textContent = (d.source || '') + (d.active ? '' : ' · выкл');
+    $('.mat-title', el).textContent = d.title || 'Без названия';
+  }
+  function esc(s){ const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+  /* ---------- material drawer ---------- */
+  const matDrawer = $('#matDrawer');
+  let editingMat = null;
+  const ctRadios = $$('input[name=md-ct]');
+
+  function getCtype(){ return (ctRadios.find(r => r.checked) || ctRadios[0]).value; }
+  function setSwitch(sw, on){ sw.classList.toggle('on', !!on); }
+  function isOn(sw){ return sw.classList.contains('on'); }
+
+  function syncCtypeFields(){
+    const f = CTYPE[getCtype()].field;
+    $('#f-url').hidden  = f !== 'url';
+    $('#f-text').hidden = f !== 'text';
+    $('#f-file').hidden = f !== 'file';
+    $('#f-image').style.display = (f === 'text') ? 'none' : '';
+    updatePreview();
+  }
+  function updatePreview(){
+    const ct = CTYPE[getCtype()];
+    const thumb = $('#pv-thumb');
+    thumb.className = 'mat-thumb ' + ct.thumb;
+    $('#pv-tag').textContent = ct.tag;
+    const req = isOn($('#md-req'));
+    const rt = $('#pv-reqtag');
+    rt.className = 'tag-mini ' + (req ? 'req' : 'opt');
+    rt.textContent = req ? 'Обязательно' : 'Опционально';
+    $('#pv-src').textContent = $('#md-source').value || 'источник';
+    $('#pv-title').textContent = $('#md-pvtitle').value || $('#md-name').value || 'Заголовок материала';
+    $('#pv-desc').textContent = $('#md-pvdesc').value || $('#md-desc').value || 'Описание превью';
+  }
+
+  function openMat(mode, opts){
+    opts = opts || {};
+    editingMat = opts.mat || null;
+    $('#md-title').textContent = mode === 'edit' ? 'Редактирование материала' : 'Новый материал';
+    $('#md-del').hidden = mode !== 'edit';
+    if (mode === 'edit' && editingMat){
+      const m = editingMat;
+      $('#md-name').value = $('.mat-title', m).textContent;
+      $('#md-desc').value = m.dataset.desc || '';
+      $('#md-section').value = m.closest('.matlist').dataset.sec;
+      const ct = m.dataset.ctype || 'url';
+      (ctRadios.find(r => r.value === ct) || ctRadios[0]).checked = true;
+      $('#md-source').value = m.dataset.src || '';
+      $('#md-pvtitle').value = $('.mat-title', m).textContent;
+      $('#md-pvdesc').value = m.dataset.desc || '';
+      setSwitch($('#md-req'), m.dataset.req === '1');
+      setSwitch($('#md-active'), m.dataset.active !== '0');
+    } else {
+      $('#md-name').value = ''; $('#md-desc').value = '';
+      $('#md-section').value = opts.section || 'theory';
+      ctRadios[0].checked = true;
+      $('#md-url').value = ''; $('#md-text').value = '';
+      $('#md-source').value = ''; $('#md-pvtitle').value = ''; $('#md-pvdesc').value = '';
+      setSwitch($('#md-req'), true); setSwitch($('#md-active'), true);
+    }
+    syncCtypeFields();
+    matDrawer.hidden = false;
+  }
+  function closeMat(){ matDrawer.hidden = true; editingMat = null; }
+
+  function saveMat(){
+    const d = {
+      title: $('#md-name').value.trim() || $('#md-pvtitle').value.trim(),
+      desc: $('#md-pvdesc').value.trim() || $('#md-desc').value.trim(),
+      ctype: getCtype(),
+      source: $('#md-source').value.trim(),
+      req: isOn($('#md-req')),
+      active: isOn($('#md-active')),
+    };
+    const sec = $('#md-section').value;
+    const list = $('.matlist[data-sec=' + sec + ']');
+    if (editingMat){
+      applyMat(editingMat, d);
+      if (editingMat.closest('.matlist') !== list) list.appendChild(editingMat);
+    } else {
+      list.appendChild(buildMat(d));
+    }
+    closeMat();
+  }
+
+  $('#md-close').addEventListener('click', closeMat);
+  $('#md-cancel').addEventListener('click', closeMat);
+  $('#md-save').addEventListener('click', saveMat);
+  $('#md-del').addEventListener('click', () => { if (editingMat) editingMat.remove(); closeMat(); });
+  matDrawer.addEventListener('click', e => { if (e.target === matDrawer) closeMat(); });
+  ctRadios.forEach(r => r.addEventListener('change', syncCtypeFields));
+  ['#md-name','#md-desc','#md-source','#md-pvtitle','#md-pvdesc'].forEach(s =>
+    $(s).addEventListener('input', updatePreview));
+  $('#md-req').addEventListener('click', () => { $('#md-req').classList.toggle('on'); updatePreview(); });
+  $('#md-active').addEventListener('click', () => $('#md-active').classList.toggle('on'));
+
+  /* triggers: add-row + per-material pencil/trash (delegated) */
+  $$('.add-row').forEach(btn =>
+    btn.addEventListener('click', () => openMat('create', { section: btn.dataset.sec })));
+  document.addEventListener('click', e => {
+    const ed = e.target.closest('.mat.adm .iconbtn:not(.danger)');
+    if (ed){ openMat('edit', { mat: ed.closest('.mat.adm') }); return; }
+    const del = e.target.closest('.mat.adm .iconbtn.danger');
+    if (del) del.closest('.mat.adm').remove();
+  });
+
+  /* ---------- block drawer ---------- */
+  const blkDrawer = $('#blkDrawer');
+  let editingBlock = null;
+  function openBlk(mode){
+    $('#bd-title').textContent = mode === 'edit' ? 'Редактирование блока' : 'Новый блок';
+    $('#bd-del').hidden = mode !== 'edit';
+    if (mode === 'edit'){
+      editingBlock = $('.block.blk-admin.sel');
+      $('#bd-name').value = editingBlock ? $('h4', editingBlock).textContent : '';
+      $('#bd-desc').value = editingBlock ? (editingBlock.dataset.desc || '') : '';
+      $('#bd-status').value = 'active';
+    } else {
+      editingBlock = null;
+      $('#bd-name').value = ''; $('#bd-desc').value = ''; $('#bd-status').value = 'active';
+    }
+    blkDrawer.hidden = false;
+  }
+  function closeBlk(){ blkDrawer.hidden = true; editingBlock = null; }
+  function saveBlk(){
+    const name = $('#bd-name').value.trim() || 'Без названия';
+    const draft = $('#bd-status').value === 'draft';
+    if (editingBlock){
+      $('h4', editingBlock).textContent = name;
+      $('small', editingBlock).textContent = draft ? '0 материалов · черновик'
+        : $('small', editingBlock).textContent.replace(' · черновик', '');
+      editingBlock.dataset.desc = $('#bd-desc').value.trim();
+      const inline = $('#blkNameInline');
+      if (editingBlock.classList.contains('sel') && inline) inline.value = name;
+    } else {
+      const rail = $('#blockRail');
+      const n = String(rail.children.length + 1).padStart(2, '0');
+      const b = document.createElement('div');
+      b.className = 'block blk-admin';
+      b.style.cursor = 'pointer';
+      b.dataset.desc = $('#bd-desc').value.trim();
+      b.innerHTML = '<div class="block-head"><span class="handle" style="align-self:center">' + GRIP +
+        '</span><div class="block-num">' + n + '</div><div class="block-title"><h4>' + esc(name) +
+        '</h4><small>0 материалов · ' + (draft ? 'черновик' : 'новый') + '</small></div></div>';
+      b.setAttribute('draggable', 'true');
+      rail.appendChild(b);
+      selectBlock(b);
+    }
+    closeBlk();
+  }
+  $('#blkEdit').addEventListener('click', () => openBlk('edit'));
+  $('#addBlock').addEventListener('click', () => openBlk('create'));
+  $('#bd-close').addEventListener('click', closeBlk);
+  $('#bd-cancel').addEventListener('click', closeBlk);
+  $('#bd-save').addEventListener('click', saveBlk);
+  $('#bd-del').addEventListener('click', () => {
+    const sel = $('.block.blk-admin.sel');
+    if (sel && $$('.block.blk-admin').length > 1){
+      sel.remove();
+      const first = $('.block.blk-admin');
+      if (first) selectBlock(first);
+    }
+    closeBlk();
+  });
+  $('#blkDelete').addEventListener('click', () => {
+    const sel = $('.block.blk-admin.sel');
+    if (sel && $$('.block.blk-admin').length > 1){
+      sel.remove(); selectBlock($('.block.blk-admin'));
+    }
+  });
+
+  /* global esc-to-close */
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Escape') return;
+    if (!matDrawer.hidden) closeMat();
+    else if (!blkDrawer.hidden) closeBlk();
+  });
 })();
 </script>
 </body>
