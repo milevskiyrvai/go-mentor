@@ -777,3 +777,34 @@ a{color:inherit;text-decoration:none}
 .usr-tg{font-size:12.5px;font-weight:700;color:var(--primary-ink);white-space:nowrap}
 .usr-tg.none{color:var(--ink-3);font-weight:600;font-style:italic}
 .usr-row .acts{display:flex;gap:7px;justify-content:flex-end}
+.usr-row.deleted{opacity:.6}
+.usr-row.deleted .nm{text-decoration:line-through;text-decoration-color:var(--ink-3)}
+.usr-row.deleted .em::after{content:" · в архиве";color:var(--danger);font-style:normal}
+
+/* role checkbox chips */
+.rolepick{display:flex;gap:8px;flex-wrap:wrap}
+.rolepick label{display:inline-flex;align-items:center;gap:8px;padding:9px 13px;border:1px solid var(--line-2);border-radius:var(--r-sm);background:var(--surface-2);cursor:pointer;font-size:13px;font-weight:600;user-select:none}
+.rolepick label:hover{border-color:var(--ink-3)}
+.rolepick input{position:absolute;opacity:0;width:0;height:0}
+.rolepick .bx{width:17px;height:17px;border-radius:5px;border:1.5px solid var(--line-2);display:grid;place-items:center;color:transparent}
+.rolepick input:checked + .bx{background:var(--primary);border-color:var(--primary);color:var(--surface-2)}
+.rolepick input:checked ~ .tx{color:var(--primary-ink)}
+.rolepick label:has(input:checked){border-color:var(--primary);background:var(--primary-soft)}
+
+/* drawer (right side panel) */
+.drawer-bg{position:fixed;inset:0;background:color-mix(in oklab,var(--ink) 38%,transparent);z-index:60;display:flex;justify-content:flex-end}
+.drawer-bg[hidden]{display:none !important}
+.drawer{width:440px;max-width:100%;height:100%;background:var(--surface);border-left:1px solid var(--line);box-shadow:-18px 0 50px rgba(0,0,0,.22);display:flex;flex-direction:column;animation:drawer-in .2s ease}
+@keyframes drawer-in{from{transform:translateX(30px);opacity:.4}to{transform:none;opacity:1}}
+.drawer-head{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--line)}
+.drawer-head h3{margin:0;font-size:17px;font-weight:700;letter-spacing:-.01em}
+.drawer-body{padding:22px 24px;overflow-y:auto;flex:1}
+.drawer-body .select select,.drawer-body .input{width:100%}
+.drawer-body .row{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.pw-field{display:flex;gap:8px}
+.pw-field .input{flex:1}
+.drawer-foot{display:flex;align-items:center;gap:10px;padding:16px 24px;border-top:1px solid var(--line);background:var(--surface-2)}
+.drawer-foot .del{margin-right:auto;color:var(--danger);background:none;border:0;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;padding:6px 4px}
+.drawer-foot .del:hover{text-decoration:underline}
+.divider{height:1px;background:var(--line);margin:20px 0}
+.divider-lbl{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin:0 0 12px}

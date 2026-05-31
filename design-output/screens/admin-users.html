@@ -45,8 +45,9 @@
         <h1>Пользователи</h1>
         <div class="sub"><b class="num">142</b> аккаунта · 128 студентов · 12 Buddy · 2 админа</div>
       </div>
-      <div class="right">
-        <button class="btn secondary"><svg class="i" style="width:16px;height:16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg>Добавить</button>
+      <div class="right" style="display:flex;align-items:center;gap:14px">
+        <label class="switch" id="show-del" style="gap:9px"><span class="track"></span><span class="lab" style="font-size:13px">Показать архив</span></label>
+        <button class="btn secondary" id="add-usr"><svg class="i" style="width:16px;height:16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg>Добавить</button>
       </div>
     </div>
 
@@ -107,12 +108,12 @@
           <div class="acts"><button class="btn ghost sm">Изменить</button></div>
         </div>
 
-        <div class="usr-row usr-cols" data-role="admin">
-          <div class="usr-name"><div class="avatar" style="background:var(--ink-2)">АД</div><div style="min-width:0"><div class="nm">Анна Админова</div><div class="em">admin@gomentor.ru</div></div></div>
-          <div><span class="rolebadge admin">Админ</span></div>
-          <div class="usr-link">Полный доступ к платформе</div>
-          <div class="usr-tg">@anna_admin</div>
-          <div class="acts"><button class="btn ghost sm">Изменить</button></div>
+        <div class="usr-row usr-cols deleted" data-role="student" data-deleted="1" hidden>
+          <div class="usr-name"><div class="avatar" style="background:var(--ink-3)">ДС</div><div style="min-width:0"><div class="nm">Денис Смирнов</div><div class="em">d.smirnov@mail.ru</div></div></div>
+          <div><span class="rolebadge student">Студент</span></div>
+          <div class="usr-link">Go Backend · отчислен 12 мая</div>
+          <div class="usr-tg">@d_smirnov</div>
+          <div class="acts"><button class="btn ghost sm">Восстановить</button></div>
         </div>
 
       </div>
@@ -120,15 +121,143 @@
   </main>
 </div>
 
+<!-- ===== USER DRAWER (create / edit) ===== -->
+<div class="drawer-bg" id="drawer" hidden>
+  <div class="drawer" role="dialog" aria-modal="true">
+    <div class="drawer-head">
+      <h3 id="dr-title">Новый пользователь</h3>
+      <button class="modal-x" id="dr-close" type="button" aria-label="закрыть">✕</button>
+    </div>
+    <div class="drawer-body">
+      <div class="field">
+        <label>Логин</label>
+        <input class="input" id="dr-login" type="text" placeholder="например, a.petrova" />
+      </div>
+
+      <div class="field" id="dr-temp-pw">
+        <label>Временный пароль</label>
+        <div class="pw-field">
+          <input class="input" id="dr-pw" type="text" value="Gm-7K2p9xQ" />
+          <button class="btn ghost" type="button" id="dr-gen">Сгенерировать</button>
+        </div>
+        <div class="hint">Ученик сменит пароль при первом входе</div>
+      </div>
+
+      <div class="field" id="dr-change-pw" hidden>
+        <label>Пароль</label>
+        <button class="btn ghost" type="button" style="width:100%;justify-content:center">Сменить пароль</button>
+        <div class="hint">Будет отправлен новый временный пароль</div>
+      </div>
+
+      <div class="field">
+        <label>Отображаемое имя</label>
+        <input class="input" id="dr-name" type="text" placeholder="Имя Фамилия" />
+      </div>
+
+      <div class="field">
+        <label>Telegram username</label>
+        <input class="input" id="dr-tg" type="text" placeholder="@username" />
+      </div>
+
+      <div class="field">
+        <label>Роли</label>
+        <div class="rolepick" id="dr-roles">
+          <label><input type="checkbox" value="student" checked /><span class="bx"><svg style="width:11px;height:11px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"><polyline points="5 12 10 17 19 7" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="tx">Студент</span></label>
+          <label><input type="checkbox" value="buddy" /><span class="bx"><svg style="width:11px;height:11px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"><polyline points="5 12 10 17 19 7" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="tx">Buddy</span></label>
+          <label><input type="checkbox" value="admin" /><span class="bx"><svg style="width:11px;height:11px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"><polyline points="5 12 10 17 19 7" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="tx">Админ</span></label>
+        </div>
+      </div>
+
+      <div id="dr-student">
+        <div class="divider"></div>
+        <div class="divider-lbl">Параметры студента</div>
+        <div class="row">
+          <div class="field" style="margin-bottom:0"><label>Дата начала</label><input class="input" id="dr-start" type="date" value="2026-05-02" /></div>
+          <div class="field" style="margin-bottom:0">
+            <label>Buddy ученика</label>
+            <div class="select" style="display:block">
+              <select id="dr-buddy">
+                <option value="">Не назначен</option>
+                <option>Иван Менторов</option>
+                <option>Ольга Белова</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="drawer-foot">
+      <button class="del" id="dr-del" type="button" hidden>Удалить в архив</button>
+      <button class="btn ghost" id="dr-cancel" type="button">Отмена</button>
+      <button class="btn secondary" id="dr-save" type="button">Сохранить</button>
+    </div>
+  </div>
+</div>
+
 <script>
 (function(){
   const tabs = document.querySelectorAll('.tab');
   const rows = document.querySelectorAll('#list .usr-row');
+  const showDel = document.getElementById('show-del');
+  let curFilter = 'all';
+
+  function refresh(){
+    const withDel = showDel.classList.contains('on');
+    rows.forEach(r => {
+      const roleOk = curFilter === 'all' || r.getAttribute('data-role') === curFilter;
+      const delOk = r.getAttribute('data-deleted') !== '1' || withDel;
+      r.hidden = !(roleOk && delOk);
+    });
+  }
   tabs.forEach(t => t.addEventListener('click', () => {
     tabs.forEach(x => x.classList.toggle('active', x === t));
-    const f = t.getAttribute('data-f');
-    rows.forEach(r => r.hidden = !(f === 'all' || r.getAttribute('data-role') === f));
+    curFilter = t.getAttribute('data-f');
+    refresh();
   }));
+  showDel.addEventListener('click', () => { showDel.classList.toggle('on'); refresh(); });
+
+  // ---- drawer ----
+  const drawer = document.getElementById('drawer');
+  const drTitle = document.getElementById('dr-title');
+  const drDel = document.getElementById('dr-del');
+  const tempPw = document.getElementById('dr-temp-pw');
+  const changePw = document.getElementById('dr-change-pw');
+  const studentBox = document.getElementById('dr-student');
+  const rolesWrap = document.getElementById('dr-roles');
+
+  function syncStudent(){
+    const isStu = rolesWrap.querySelector('input[value=student]').checked;
+    studentBox.hidden = !isStu;
+  }
+  rolesWrap.addEventListener('change', syncStudent);
+
+  function openDrawer(mode){
+    const edit = mode === 'edit';
+    drTitle.textContent = edit ? 'Редактирование' : 'Новый пользователь';
+    drDel.hidden = !edit;
+    tempPw.hidden = edit;
+    changePw.hidden = !edit;
+    syncStudent();
+    drawer.hidden = false;
+  }
+  function closeDrawer(){ drawer.hidden = true; }
+
+  document.getElementById('add-usr').addEventListener('click', () => openDrawer('create'));
+  document.querySelectorAll('#list .acts .btn').forEach(b => {
+    if (b.textContent.trim() === 'Восстановить') return;
+    b.addEventListener('click', () => openDrawer('edit'));
+  });
+  document.getElementById('dr-close').addEventListener('click', closeDrawer);
+  document.getElementById('dr-cancel').addEventListener('click', closeDrawer);
+  document.getElementById('dr-save').addEventListener('click', closeDrawer);
+  drDel.addEventListener('click', closeDrawer);
+  drawer.addEventListener('click', e => { if (e.target === drawer) closeDrawer(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && !drawer.hidden) closeDrawer(); });
+  document.getElementById('dr-gen').addEventListener('click', () => {
+    const c = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
+    let p = 'Gm-'; for (let i=0;i<8;i++) p += c[Math.floor(Math.random()*c.length)];
+    document.getElementById('dr-pw').value = p;
+  });
 })();
 </script>
 </body>
