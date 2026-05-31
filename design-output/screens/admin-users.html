@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1280" />
+<title>Go Mentor · Admin · Пользователи</title>
+<script>{const _v=new URLSearchParams(location.search).get('v');document.documentElement.className = _v==='bd' ? 'v-b v-b-dark' : _v==='b' ? 'v-b' : 'v-a';}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="../styles/base.css" rel="stylesheet">
+</head>
+<body>
+<div class="app">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">G</div>
+      <div class="brand-name">Go Mentor<small>Платформа</small></div>
+    </div>
+    <div class="sb-user">
+      <div class="avatar" style="background:var(--ink-2)">АД</div>
+      <div style="min-width:0">
+        <div class="nm">Анна Админова</div>
+        <div class="rl"><span class="role-dot"></span>Администратор<span class="swap">⇄ роль</span></div>
+      </div>
+    </div>
+
+    <div class="sb-label">Админ-панель</div>
+    <div class="nav-item"><span class="ic"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></span>Дашборд</div>
+    <div class="nav-item active"><span class="ic"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c0-3 2.5-5 5.5-5s5.5 2 5.5 5" stroke-linecap="round"/><path d="M16 5.5a3 3 0 0 1 0 5.8M18.5 19c0-2.3-1.2-4-3-4.6" stroke-linecap="round"/></svg></span>Пользователи</div>
+    <div class="nav-item"><span class="ic"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h10M4 12h16M4 18h7" stroke-linecap="round"/><circle cx="19" cy="6" r="1.6"/><circle cx="14" cy="18" r="1.6"/></svg></span>Roadmap</div>
+    <div class="nav-item"><span class="ic"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="9" r="6"/><path d="M9 14l-2 7 5-3 5 3-2-7" stroke-linejoin="round"/></svg></span>Достижения</div>
+    <div class="nav-item"><span class="ic"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M12 8v8M9.5 10.5h3.2a1.8 1.8 0 0 1 0 3.6H9.5" stroke-linecap="round"/></svg></span>Заявки 1×1<span class="tag">4</span></div>
+    <div class="nav-item"><span class="ic"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V9M10 19V5M16 19v-7M21 19H3" stroke-linecap="round"/></svg></span>Аналитика</div>
+
+    <div class="sb-foot"><span class="led"></span>142 пользователя · 4 заявки ждут</div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <main class="main">
+    <div class="page-head">
+      <div>
+        <h1>Пользователи</h1>
+        <div class="sub"><b class="num">142</b> аккаунта · 128 студентов · 12 Buddy · 2 админа</div>
+      </div>
+      <div class="right">
+        <button class="btn secondary"><svg class="i" style="width:16px;height:16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg>Добавить</button>
+      </div>
+    </div>
+
+    <div class="tabs" style="margin-bottom:16px">
+      <button class="tab active" data-f="all" type="button">Все <span class="c num">142</span></button>
+      <button class="tab" data-f="student" type="button">Студенты <span class="c num">128</span></button>
+      <button class="tab" data-f="buddy" type="button">Buddy <span class="c num">12</span></button>
+      <button class="tab" data-f="admin" type="button">Админы <span class="c num">2</span></button>
+    </div>
+
+    <div class="card flat" style="flex:1;padding:0;overflow:hidden">
+      <div class="usr-head usr-cols">
+        <div>Пользователь</div>
+        <div>Роль</div>
+        <div>Поток / привязка</div>
+        <div>Telegram</div>
+        <div></div>
+      </div>
+      <div id="list">
+
+        <div class="usr-row usr-cols" data-role="student">
+          <div class="usr-name"><div class="avatar" style="background:var(--secondary)">МК</div><div style="min-width:0"><div class="nm">Михаил Кротов</div><div class="em">m.krotov@mail.ru</div></div></div>
+          <div><span class="rolebadge student">Студент</span></div>
+          <div class="usr-link">Go Backend · Buddy <b>Иван Менторов</b></div>
+          <div class="usr-tg">@mkrotov</div>
+          <div class="acts"><button class="btn ghost sm">Изменить</button></div>
+        </div>
+
+        <div class="usr-row usr-cols" data-role="student">
+          <div class="usr-name"><div class="avatar" style="background:var(--primary)">АП</div><div style="min-width:0"><div class="nm">Анна Петрова</div><div class="em">anna.p@mail.ru</div></div></div>
+          <div><span class="rolebadge student">Студент</span></div>
+          <div class="usr-link">Go Backend · Buddy <b>Иван Менторов</b></div>
+          <div class="usr-tg">@anna_petrova</div>
+          <div class="acts"><button class="btn ghost sm">Изменить</button></div>
+        </div>
+
+        <div class="usr-row usr-cols" data-role="student">
+          <div class="usr-name"><div class="avatar" style="background:var(--primary)">ПО</div><div style="min-width:0"><div class="nm">Павел Орлов</div><div class="em">p.orlov@mail.ru</div></div></div>
+          <div><span class="rolebadge student">Студент</span></div>
+          <div class="usr-link">Go Backend · <span style="color:var(--ink-3)">Buddy не назначен</span></div>
+          <div class="usr-tg none">не задан</div>
+          <div class="acts"><button class="btn secondary sm">Назначить</button></div>
+        </div>
+
+        <div class="usr-row usr-cols" data-role="buddy">
+          <div class="usr-name"><div class="avatar" style="background:var(--primary)">ИМ</div><div style="min-width:0"><div class="nm">Иван Менторов</div><div class="em">i.mentor@gomentor.ru</div></div></div>
+          <div><span class="rolebadge buddy">Buddy</span></div>
+          <div class="usr-link"><b>8</b> учеников · Go Backend</div>
+          <div class="usr-tg">@ivan_mentor</div>
+          <div class="acts"><button class="btn ghost sm">Изменить</button></div>
+        </div>
+
+        <div class="usr-row usr-cols" data-role="buddy">
+          <div class="usr-name"><div class="avatar" style="background:var(--secondary)">ОБ</div><div style="min-width:0"><div class="nm">Ольга Белова</div><div class="em">o.belova@gomentor.ru</div></div></div>
+          <div><span class="rolebadge buddy">Buddy</span></div>
+          <div class="usr-link"><b>6</b> учеников · Python</div>
+          <div class="usr-tg">@olga_belova</div>
+          <div class="acts"><button class="btn ghost sm">Изменить</button></div>
+        </div>
+
+        <div class="usr-row usr-cols" data-role="admin">
+          <div class="usr-name"><div class="avatar" style="background:var(--ink-2)">АД</div><div style="min-width:0"><div class="nm">Анна Админова</div><div class="em">admin@gomentor.ru</div></div></div>
+          <div><span class="rolebadge admin">Админ</span></div>
+          <div class="usr-link">Полный доступ к платформе</div>
+          <div class="usr-tg">@anna_admin</div>
+          <div class="acts"><button class="btn ghost sm">Изменить</button></div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+(function(){
+  const tabs = document.querySelectorAll('.tab');
+  const rows = document.querySelectorAll('#list .usr-row');
+  tabs.forEach(t => t.addEventListener('click', () => {
+    tabs.forEach(x => x.classList.toggle('active', x === t));
+    const f = t.getAttribute('data-f');
+    rows.forEach(r => r.hidden = !(f === 'all' || r.getAttribute('data-role') === f));
+  }));
+})();
+</script>
+</body>
+</html>
