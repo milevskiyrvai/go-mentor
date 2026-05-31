@@ -719,3 +719,39 @@ a{color:inherit;text-decoration:none}
 .final .fc h4{margin:0;font-size:15px;font-weight:700}
 .final .fc .fd{font-size:12.5px;color:var(--ink-2);line-height:1.5}
 .bl-note{display:flex;align-items:center;gap:8px;font-size:11.5px;font-weight:600;color:var(--ink-3);background:var(--bg);border:1px solid var(--line);border-radius:var(--r-sm);padding:9px 12px}
+
+/* ============================================================
+   Select control + filter bar + modal (Buddy calendar editing)
+   ============================================================ */
+.select{position:relative;display:inline-flex;align-items:center}
+.select select{
+  appearance:none;-webkit-appearance:none;font-family:inherit;font-size:13px;font-weight:600;color:var(--ink);
+  background:var(--surface-2);border:1px solid var(--line-2);border-radius:var(--r-sm);
+  padding:8px 32px 8px 12px;cursor:pointer;
+}
+.select select:focus{outline:none;border-color:var(--primary);box-shadow:inset 0 0 0 1px var(--primary)}
+.select::after{content:"";position:absolute;right:12px;top:50%;width:7px;height:7px;border-right:1.6px solid var(--ink-3);border-bottom:1.6px solid var(--ink-3);transform:translateY(-65%) rotate(45deg);pointer-events:none}
+
+.cal-filters{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--line)}
+.cal-filters .fl-label{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.cal-filters .clearf{font-size:12px;font-weight:600;color:var(--ink-3);cursor:pointer;background:none;border:0;font-family:inherit;padding:6px 4px}
+.cal-filters .clearf:hover{color:var(--secondary)}
+.evt{cursor:pointer}
+.evt[hidden]{display:none !important}
+.ag-item{cursor:pointer}
+
+/* modal */
+.modal-bg{position:fixed;inset:0;background:color-mix(in oklab,var(--ink) 38%,transparent);display:grid;place-items:center;z-index:50;padding:30px}
+.modal-bg[hidden]{display:none !important}
+.modal{width:480px;max-width:100%;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:0 24px 60px rgba(0,0,0,.28);overflow:hidden;animation:modal-in .16s ease}
+@keyframes modal-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--line)}
+.modal-head h3{margin:0;font-size:16px;font-weight:700;letter-spacing:-.01em}
+.modal-x{width:30px;height:30px;border:0;background:var(--bg);border-radius:var(--r-sm);cursor:pointer;color:var(--ink-2);display:grid;place-items:center;font-family:inherit}
+.modal-x:hover{background:var(--line)}
+.modal-body{padding:20px 22px;display:flex;flex-direction:column}
+.modal-body .select select,.modal-body .input,.modal-body .textarea{width:100%}
+.modal-body .row{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.modal-foot{display:flex;align-items:center;gap:10px;padding:16px 22px;border-top:1px solid var(--line);background:var(--surface-2)}
+.modal-foot .del{margin-right:auto;color:var(--danger);background:none;border:0;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;padding:6px 4px}
+.modal-foot .del:hover{text-decoration:underline}

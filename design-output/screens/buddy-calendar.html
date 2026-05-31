@@ -48,6 +48,7 @@
           <button class="active" data-view="month" type="button">Месяц</button>
           <button data-view="week" type="button">7 дней</button>
         </div>
+        <button class="btn secondary" id="new-evt"><svg class="i" style="width:16px;height:16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg>Событие</button>
       </div>
     </div>
 
@@ -58,6 +59,33 @@
           <button class="cal-nav-btn" type="button" aria-label="назад"><svg class="i" style="width:16px;height:16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
           <button class="cal-nav-btn" type="button" aria-label="вперёд"><svg class="i" style="width:16px;height:16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
         </div>
+      </div>
+
+      <!-- working filters (§18.7) -->
+      <div class="cal-filters">
+        <span class="fl-label">Фильтры</span>
+        <div class="select">
+          <select id="f-stu">
+            <option value="">Все ученики</option>
+            <option value="Михаил К.">Михаил Кротов</option>
+            <option value="Ольга З.">Ольга Зайцева</option>
+            <option value="Елена М.">Елена Морозова</option>
+            <option value="Мария В.">Мария Волкова</option>
+            <option value="Сергей К.">Сергей Кузнецов</option>
+            <option value="Анна П.">Анна Петрова</option>
+          </select>
+        </div>
+        <div class="select">
+          <select id="f-type">
+            <option value="">Все типы</option>
+            <option value="review">Ревью блока</option>
+            <option value="mock">Mock-собес</option>
+            <option value="tech">Финальная техничка</option>
+            <option value="roast">Финальная прожарка</option>
+            <option value="custom">Другое</option>
+          </select>
+        </div>
+        <button class="clearf" id="clear-f" hidden>Сбросить</button>
       </div>
 
       <div class="cal-legend">
@@ -97,20 +125,20 @@
           <div class="day"><span class="dn">16</span></div>
           <div class="day"><span class="dn">17</span></div>
 
-          <div class="day"><span class="dn">18</span><span class="evt review">Ревью · Сергей К.</span></div>
+          <div class="day"><span class="dn">18</span><span class="evt review" data-type="review" data-stu="Сергей К.">Ревью · Сергей К.</span></div>
           <div class="day"><span class="dn">19</span></div>
-          <div class="day"><span class="dn">20</span><span class="evt mock">Mock · Михаил К.</span></div>
-          <div class="day"><span class="dn">21</span><span class="evt review">Ревью · Михаил К.</span></div>
+          <div class="day"><span class="dn">20</span><span class="evt mock" data-type="mock" data-stu="Михаил К.">Mock · Михаил К.</span></div>
+          <div class="day"><span class="dn">21</span><span class="evt review" data-type="review" data-stu="Михаил К.">Ревью · Михаил К.</span></div>
           <div class="day"><span class="dn">22</span></div>
-          <div class="day"><span class="dn">23</span><span class="evt mock">Mock · Елена М.</span></div>
+          <div class="day"><span class="dn">23</span><span class="evt mock" data-type="mock" data-stu="Елена М.">Mock · Елена М.</span></div>
           <div class="day"><span class="dn">24</span></div>
 
           <div class="day"><span class="dn">25</span></div>
-          <div class="day today"><span class="dn">26</span><span class="evt review">11:00 Ревью · Михаил К.</span><span class="evt review">16:00 Ревью · Ольга З.</span></div>
-          <div class="day"><span class="dn">27</span><span class="evt mock">15:00 Mock · Михаил К.</span></div>
-          <div class="day"><span class="dn">28</span><span class="evt mock">12:00 Mock · Мария В.</span></div>
-          <div class="day"><span class="dn">29</span><span class="evt tech">14:00 Техничка · Анна П.</span></div>
-          <div class="day"><span class="dn">30</span><span class="evt mock">18:00 Mock · Сергей К.</span></div>
+          <div class="day today"><span class="dn">26</span><span class="evt review" data-type="review" data-stu="Михаил К.">11:00 Ревью · Михаил К.</span><span class="evt review" data-type="review" data-stu="Ольга З.">16:00 Ревью · Ольга З.</span></div>
+          <div class="day"><span class="dn">27</span><span class="evt mock" data-type="mock" data-stu="Михаил К.">15:00 Mock · Михаил К.</span></div>
+          <div class="day"><span class="dn">28</span><span class="evt mock" data-type="mock" data-stu="Мария В.">12:00 Mock · Мария В.</span></div>
+          <div class="day"><span class="dn">29</span><span class="evt tech" data-type="tech" data-stu="Анна П.">14:00 Техничка · Анна П.</span></div>
+          <div class="day"><span class="dn">30</span><span class="evt mock" data-type="mock" data-stu="Сергей К.">18:00 Mock · Сергей К.</span></div>
           <div class="day"><span class="dn">31</span></div>
         </div>
       </div>
@@ -119,12 +147,12 @@
       <div data-panel="week" hidden>
         <div class="ag-group">
           <div class="agh"><span class="tdy">Сегодня</span> · 26 мая, вторник</div>
-          <div class="ag-item review">
+          <div class="ag-item review" data-type="review" data-stu="Михаил К.">
             <div class="ag-time">11:00</div>
             <div><div class="ag-tt">Ревью блока «Concurrency»</div><div class="ag-ds">Михаил Кротов · блок ждёт подтверждения</div></div>
             <span class="ag-tag review">Ревью</span>
           </div>
-          <div class="ag-item review">
+          <div class="ag-item review" data-type="review" data-stu="Ольга З.">
             <div class="ag-time">16:00</div>
             <div><div class="ag-tt">Ревью блока «Concurrency»</div><div class="ag-ds">Ольга Зайцева · видеозвонок</div></div>
             <span class="ag-tag review">Ревью</span>
@@ -132,7 +160,7 @@
         </div>
         <div class="ag-group">
           <div class="agh">Завтра · 27 мая, среда</div>
-          <div class="ag-item mock">
+          <div class="ag-item mock" data-type="mock" data-stu="Михаил К.">
             <div class="ag-time">15:00</div>
             <div><div class="ag-tt">Mock · System Design</div><div class="ag-ds">Михаил Кротов · 60 мин</div></div>
             <span class="ag-tag mock">Mock</span>
@@ -140,7 +168,7 @@
         </div>
         <div class="ag-group">
           <div class="agh">28 мая, четверг</div>
-          <div class="ag-item mock">
+          <div class="ag-item mock" data-type="mock" data-stu="Мария В.">
             <div class="ag-time">12:00</div>
             <div><div class="ag-tt">Mock · Интерфейсы и ошибки</div><div class="ag-ds">Мария Волкова · 60 мин</div></div>
             <span class="ag-tag mock">Mock</span>
@@ -148,7 +176,7 @@
         </div>
         <div class="ag-group">
           <div class="agh">29 мая, пятница</div>
-          <div class="ag-item tech">
+          <div class="ag-item tech" data-type="tech" data-stu="Анна П.">
             <div class="ag-time">14:00</div>
             <div><div class="ag-tt">Финальная техничка</div><div class="ag-ds">Анна Петрова · все блоки закрыты</div></div>
             <span class="ag-tag custom">Финал</span>
@@ -156,7 +184,7 @@
         </div>
         <div class="ag-group">
           <div class="agh">30 мая, суббота</div>
-          <div class="ag-item mock">
+          <div class="ag-item mock" data-type="mock" data-stu="Сергей К.">
             <div class="ag-time">18:00</div>
             <div><div class="ag-tt">Mock · System Design</div><div class="ag-ds">Сергей Кузнецов · 60 мин</div></div>
             <span class="ag-tag mock">Mock</span>
@@ -167,14 +195,120 @@
   </main>
 </div>
 
+<!-- ===== EVENT MODAL (create / edit) ===== -->
+<div class="modal-bg" id="modal" hidden>
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="modal-head">
+      <h3 id="modal-title">Новое событие</h3>
+      <button class="modal-x" id="modal-close" type="button" aria-label="закрыть">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label>Тип события</label>
+        <div class="select" style="display:block">
+          <select id="m-type">
+            <option value="review">Ревью блока</option>
+            <option value="mock">Mock-собеседование</option>
+            <option value="tech">Финальная техничка</option>
+            <option value="roast">Финальная прожарка</option>
+            <option value="custom">Другое</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label>Ученик</label>
+        <div class="select" style="display:block">
+          <select id="m-stu">
+            <option value="Михаил К.">Михаил Кротов</option>
+            <option value="Ольга З.">Ольга Зайцева</option>
+            <option value="Елена М.">Елена Морозова</option>
+            <option value="Мария В.">Мария Волкова</option>
+            <option value="Сергей К.">Сергей Кузнецов</option>
+            <option value="Анна П.">Анна Петрова</option>
+          </select>
+        </div>
+      </div>
+      <div class="row">
+        <div class="field"><label>Дата</label><input class="input" id="m-date" type="date" value="2026-05-27" /></div>
+        <div class="field"><label>Время</label><input class="input" id="m-time" type="time" value="15:00" /></div>
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <label>Описание</label>
+        <textarea class="textarea" id="m-desc" rows="3" placeholder="Тема встречи, ссылка на звонок…"></textarea>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="del" id="m-del" type="button" hidden>Удалить</button>
+      <button class="btn ghost" id="m-cancel" type="button">Отмена</button>
+      <button class="btn secondary" id="m-save" type="button">Сохранить</button>
+    </div>
+  </div>
+</div>
+
 <script>
 (function(){
+  // view toggle
   const segs = document.querySelectorAll('.seg button');
   const panels = document.querySelectorAll('[data-panel]');
   segs.forEach(b => b.addEventListener('click', () => {
     segs.forEach(x => x.classList.toggle('active', x === b));
     panels.forEach(p => p.hidden = p.getAttribute('data-panel') !== b.getAttribute('data-view'));
   }));
+
+  // ---- filters (§18.7) ----
+  const fStu = document.getElementById('f-stu');
+  const fType = document.getElementById('f-type');
+  const clearBtn = document.getElementById('clear-f');
+  function applyFilters(){
+    const su = fStu.value, ty = fType.value;
+    document.querySelectorAll('.evt, .ag-item').forEach(el => {
+      const okS = !su || el.getAttribute('data-stu') === su;
+      const okT = !ty || el.getAttribute('data-type') === ty;
+      el.hidden = !(okS && okT);
+    });
+    // hide agenda groups with no visible items
+    document.querySelectorAll('.ag-group').forEach(g => {
+      const any = [...g.querySelectorAll('.ag-item')].some(i => !i.hidden);
+      g.hidden = !any;
+    });
+    clearBtn.hidden = !(su || ty);
+  }
+  fStu.addEventListener('change', applyFilters);
+  fType.addEventListener('change', applyFilters);
+  clearBtn.addEventListener('click', () => { fStu.value=''; fType.value=''; applyFilters(); });
+
+  // ---- modal (§18.2 create / edit) ----
+  const modal = document.getElementById('modal');
+  const title = document.getElementById('modal-title');
+  const delBtn = document.getElementById('m-del');
+  const mType = document.getElementById('m-type');
+  const mStu = document.getElementById('m-stu');
+  const mDesc = document.getElementById('m-desc');
+  function openModal(mode, data){
+    title.textContent = mode === 'edit' ? 'Редактировать событие' : 'Новое событие';
+    delBtn.hidden = mode !== 'edit';
+    if (data){ mType.value = data.type || 'mock'; mStu.value = data.stu || 'Михаил К.'; mDesc.value = data.desc || ''; }
+    else { mDesc.value = ''; }
+    modal.hidden = false;
+  }
+  function closeModal(){ modal.hidden = true; }
+
+  document.getElementById('new-evt').addEventListener('click', () => openModal('create'));
+  document.getElementById('modal-close').addEventListener('click', closeModal);
+  document.getElementById('m-cancel').addEventListener('click', closeModal);
+  document.getElementById('m-save').addEventListener('click', closeModal);
+  delBtn.addEventListener('click', closeModal);
+  modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && !modal.hidden) closeModal(); });
+
+  // click any event → edit
+  document.querySelectorAll('.evt, .ag-item').forEach(el => {
+    el.addEventListener('click', () => openModal('edit', {
+      type: el.getAttribute('data-type'),
+      stu: el.getAttribute('data-stu'),
+      desc: (el.querySelector('.ag-tt') ? el.querySelector('.ag-tt').textContent : el.textContent).trim()
+    }));
+  });
 })();
 </script>
 </body>
