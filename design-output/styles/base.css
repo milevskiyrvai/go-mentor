@@ -808,3 +808,22 @@ a{color:inherit;text-decoration:none}
 .drawer-foot .del:hover{text-decoration:underline}
 .divider{height:1px;background:var(--line);margin:20px 0}
 .divider-lbl{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin:0 0 12px}
+
+/* ============================================================
+   Admin — roadmap manager (material rows with actions)
+   ============================================================ */
+.mat.adm{grid-template-columns:22px 96px 1fr auto;cursor:default}
+.mat .handle{color:var(--ink-3);cursor:grab;display:grid;place-items:center}
+.mat .handle:hover{color:var(--ink-2)}
+.mat .mrow-acts{display:flex;gap:4px}
+.iconbtn{width:30px;height:30px;border:1px solid var(--line-2);background:var(--surface);border-radius:var(--r-sm);display:grid;place-items:center;cursor:pointer;color:var(--ink-2);padding:0}
+.iconbtn:hover{border-color:var(--ink-3);color:var(--ink)}
+.iconbtn.danger:hover{border-color:var(--danger);color:var(--danger)}
+.matgrp-head{display:flex;align-items:center;gap:9px;margin-bottom:10px}
+.matgrp-head .gt{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2)}
+.matgrp-head .ln{flex:1;height:1px;background:var(--line)}
+.add-row{display:flex;align-items:center;gap:9px;width:100%;padding:11px;border:1px dashed var(--line-2);border-radius:var(--r-sm);background:transparent;color:var(--ink-3);font-family:inherit;font-size:12.5px;font-weight:600;cursor:pointer;margin-bottom:9px}
+.add-row:hover{border-color:var(--primary);color:var(--primary-ink)}
+.blk-admin .block-title input{font-family:inherit;font-size:15px;font-weight:700;border:0;background:transparent;color:var(--ink);width:100%;padding:2px 4px;border-radius:6px}
+.blk-admin .block-title input:hover{background:var(--bg)}
+.blk-admin .block-title input:focus{outline:none;background:var(--surface-2);box-shadow:inset 0 0 0 1px var(--primary)}
