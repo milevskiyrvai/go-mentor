@@ -52,6 +52,9 @@
   <div class="grp-label">Buddy</div>
   <div id="g-buddy"></div>
 
+  <div class="grp-label">Admin</div>
+  <div id="g-admin"></div>
+
   <div class="foot">
     Канвас сравнения (<b>Go Mentor · Редизайн.html</b>) показывает все экраны рядом, но в этом превью вложенные фреймы блокируются средой — пользуйся ссылками выше, они открывают экраны напрямую.
   </div>
@@ -71,7 +74,9 @@ const common = [
   ["public-profile", "Публичный профиль", "Состояния открыт / закрыт"],
   ["login", "Login + выбор роли", "Вход по логину/паролю, ошибка, карточки ролей"],
 ];
-const buddy = [
+const admin = [
+  ["admin-dashboard", "Дашборд", "Обзор платформы: пользователи, потоки, очередь заявок 1×1, события"],
+];
   ["buddy-students", "Мои ученики", "Рабочий список: этап, прогресс, кто ждёт подтверждения, неактивность"],
   ["buddy-student-card", "Карточка ученика", "Вкладки Roadmap / Собеседования / Финал / Активность + подтверждение блока"],
   ["buddy-interviews", "Собеседования", "Общий список mock-ов: ждут фидбэка / запланированы / завершены"],
@@ -92,6 +97,7 @@ function render(list, el){
 render(student, 'g-student');
 render(common, 'g-common');
 render(buddy, 'g-buddy');
+render(admin, 'g-admin');
 const tg = document.getElementById('theme-toggle');
 tg.href = cur === 'bd' ? '?v=b' : '?v=bd';
 tg.textContent = cur === 'bd' ? 'Светлая страница' : 'Тёмная страница';
