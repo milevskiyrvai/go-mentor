@@ -827,3 +827,18 @@ a{color:inherit;text-decoration:none}
 .blk-admin .block-title input{font-family:inherit;font-size:15px;font-weight:700;border:0;background:transparent;color:var(--ink);width:100%;padding:2px 4px;border-radius:6px}
 .blk-admin .block-title input:hover{background:var(--bg)}
 .blk-admin .block-title input:focus{outline:none;background:var(--surface-2);box-shadow:inset 0 0 0 1px var(--primary)}
+
+/* ============================================================
+   Admin — achievements catalog
+   ============================================================ */
+.ach-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.ach-card{border:1px solid var(--line);background:var(--surface);border-radius:var(--r);box-shadow:var(--shadow-sm);padding:18px;display:flex;flex-direction:column;gap:12px;position:relative}
+.ach-card .seal{width:48px;height:48px;flex:0 0 48px}
+.ach-card .seal .gl{font-size:16px}
+.ach-card .at{font-size:14.5px;font-weight:700;letter-spacing:-.01em}
+.ach-card .ad{font-size:12px;color:var(--ink-2);line-height:1.45;flex:1}
+.ach-card .af{display:flex;align-items:center;justify-content:space-between;padding-top:11px;border-top:1px solid var(--line)}
+.ach-card .reward{font-size:13px;font-weight:800;color:var(--primary-ink);font-variant-numeric:tabular-nums}
+.ach-card .acard-acts{display:flex;gap:5px}
+.ach-card.draft{border-style:dashed;opacity:.85}
+.ach-card .pill{position:absolute;top:14px;right:14px}
