@@ -108,7 +108,7 @@ export function BuddyCalendar() {
       <PageHeader
         eyebrow="Календарь"
         title="События всех учеников"
-        description="Планируйте ревью блоков, mock-собеседования и финалки. Фильтруйте по ученику, типу и периоду."
+        description="Ревью блоков, mock-собеседования и финалки"
         right={
           <div className="flex items-center gap-3">
             <div className="seg">

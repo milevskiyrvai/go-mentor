@@ -54,7 +54,22 @@ export function StudentProfile() {
         is_profile_private: isPrivate,
       }),
     onSuccess: (updated) => {
-      set({ user: updated });
+      // Защита: если бэк ответил 204/пустым телом, `updated` может быть без id —
+      // не затираем пользователя undefined'ом (иначе крашится sidebar/avatar),
+      // а мёржим отправленные поля поверх текущего user.
+      const safeUser =
+        updated && updated.id
+          ? updated
+          : user
+            ? {
+                ...user,
+                display_name: displayName,
+                avatar_url: avatarUrl || undefined,
+                about,
+                is_profile_private: isPrivate,
+              }
+            : updated;
+      if (safeUser) set({ user: safeUser });
       queryClient.invalidateQueries({ queryKey: ["achievements"] });
       setSaved(true);
       window.setTimeout(() => setSaved(false), 1800);

@@ -492,10 +492,10 @@ function RequestRow({ r, index }: { r: OneOnOneRequest; index: number }) {
             ? `${created} · бонусы возвращены`
             : `${created} · отменена`;
 
-  // StatusBadge ожидает токены статусов; маппим 1×1 → его tone-ключи.
+  // StatusBadge ожидает токены статусов; маппим 1×1 → корректные tone/подписи.
   const badgeStatus =
     r.status === "approved"
-      ? "available"
+      ? "approved_request"
       : r.status === "completed"
         ? "completed"
         : r.status === "rejected"

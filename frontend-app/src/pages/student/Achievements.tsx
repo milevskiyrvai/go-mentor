@@ -52,7 +52,7 @@ export function StudentAchievements() {
         <PageHeader
           eyebrow="Коллекция"
           title="Достижения"
-          description="Открывайте печати-медальоны за пройденные этапы. Каждое достижение — это бонусы и место в коллекции."
+          description="Печати-медальоны за пройденные этапы"
         />
         <div className="card card-pad flex flex-col items-center text-center gap-3 py-16">
           <div className="text-[15px] font-semibold">Не удалось загрузить достижения</div>

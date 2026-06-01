@@ -53,7 +53,12 @@ export function BuddyStudentCard() {
   if (profileQ.isLoading || progressQ.isLoading || blocksQ.isLoading)
     return <PageLoader />;
 
-  if (profileQ.isError || !profileQ.data) {
+  if (
+    profileQ.isError ||
+    !profileQ.data ||
+    progressQ.isError ||
+    !progressQ.data
+  ) {
     return (
       <div className="card card-pad text-center text-[13px] text-text-3">
         Не удалось загрузить карточку ученика.{" "}
@@ -65,7 +70,7 @@ export function BuddyStudentCard() {
   }
 
   const p = profileQ.data;
-  const progress = progressQ.data!;
+  const progress = progressQ.data;
   const blocks = (blocksQ.data ?? [])
     .slice()
     .sort((a, b) => a.sort_order - b.sort_order);

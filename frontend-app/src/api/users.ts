@@ -15,7 +15,8 @@ export async function updateSelf(dto: UpdateSelfDto): Promise<User> {
 
 export async function getPublicProfile(id: string): Promise<PublicProfile> {
   const { data } = await api.get<PublicProfile>(`/users/${id}`);
-  return data;
+  // Go backend serializes empty/nil slices as `null` — normalize `roles` to [].
+  return { ...data, roles: data.roles ?? [] };
 }
 
 export async function listMyStudents(): Promise<BuddyStudent[]> {

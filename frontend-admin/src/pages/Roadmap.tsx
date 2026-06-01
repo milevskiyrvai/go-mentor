@@ -172,7 +172,12 @@ export function RoadmapPage() {
       practice: [],
       homework: [],
     };
-    (detail?.materials ?? []).forEach((m) => map[m.type].push(m));
+    (detail?.materials ?? []).forEach((m) => {
+      // Guard against an unexpected `type` from the backend so the editor
+      // never crashes on detail render / refetch (null-bug class).
+      const bucket = map[m.type];
+      if (bucket) bucket.push(m);
+    });
     return map;
   }, [detail]);
 
@@ -248,9 +253,7 @@ export function RoadmapPage() {
               <>
                 <b>{blocks.length}</b>{" "}
                 {plural(blocks.length, "блок", "блока", "блоков")} ·{" "}
-                <b>{blocks.filter((b) => b.is_active).length}</b> активных. Перетаскивай блоки и
-                материалы, чтобы менять порядок. У материала — тип секции, тип контента,
-                обязательность и активность (§6.6 / §6.9 / §20).
+                <b>{blocks.filter((b) => b.is_active).length}</b> активных
               </>
             )}
           </>

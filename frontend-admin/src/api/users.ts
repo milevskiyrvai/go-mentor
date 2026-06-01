@@ -1,6 +1,12 @@
 import { apiClient } from "./client";
 import type { CreateUserBody, Role, UpdateUserBody, User, UserListItem } from "./types";
 
+// Go backend serializes empty/nil slices as JSON `null`. Normalize `roles` to []
+// so consumers can safely call `.includes` / `.map` / `.length`.
+function normalizeUser<T extends { roles?: Role[] }>(u: T): T {
+  return { ...u, roles: u.roles ?? [] };
+}
+
 export interface ListUsersFilter {
   role?: "" | Role;
   include_deleted?: boolean;
@@ -17,22 +23,22 @@ export async function listUsers(filter: ListUsersFilter = {}): Promise<UserListI
   if (filter.limit) params.set("limit", String(filter.limit));
   if (filter.offset) params.set("offset", String(filter.offset));
   const { data } = await apiClient.get<{ items: UserListItem[] }>(`/admin/users/?${params.toString()}`);
-  return data.items ?? [];
+  return (data.items ?? []).map(normalizeUser);
 }
 
 export async function createUser(body: CreateUserBody): Promise<User> {
   const { data } = await apiClient.post<User>("/admin/users/", body);
-  return data;
+  return normalizeUser(data);
 }
 
 export async function getUser(id: string): Promise<User> {
   const { data } = await apiClient.get<User>(`/admin/users/${id}`);
-  return data;
+  return normalizeUser(data);
 }
 
 export async function updateUser(id: string, body: UpdateUserBody): Promise<User> {
   const { data } = await apiClient.patch<User>(`/admin/users/${id}`, body);
-  return data;
+  return normalizeUser(data);
 }
 
 export async function deleteUser(id: string): Promise<void> {

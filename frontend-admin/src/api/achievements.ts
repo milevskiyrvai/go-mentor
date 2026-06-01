@@ -15,6 +15,7 @@ export interface CreateAchievementBody {
   image_url?: string;
   condition_type: string;
   condition_params?: unknown;
+  sort_order?: number;
 }
 
 export async function createAchievement(body: CreateAchievementBody): Promise<Achievement> {
@@ -29,6 +30,7 @@ export interface UpdateAchievementBody {
   image_url?: string;
   condition_type?: string;
   condition_params?: unknown;
+  sort_order?: number;
   is_active?: boolean;
 }
 

@@ -125,9 +125,7 @@ export function AchievementsPage() {
         description={
           <>
             <b>{items.length}</b> достижений в каталоге ·{" "}
-            <b>{pendingReq.length}</b> заявок 1×1 ждут одобрения. Создавай и
-            редактируй достижения (награда, условие, порядок, вкл/выкл), смотри
-            получивших, одобряй или отклоняй запросы на 1×1.
+            <b>{pendingReq.length}</b> заявок 1×1 ждут одобрения
           </>
         }
         right={
@@ -769,6 +767,7 @@ function AchievementDrawer({
 
   const mut = useMutation({
     mutationFn: () => {
+      const parsedOrder = parseInt(order, 10);
       const body = {
         title: title.trim(),
         description: description.trim() || undefined,
@@ -776,6 +775,8 @@ function AchievementDrawer({
         image_url: imageUrl.trim() || undefined,
         condition_type: conditionType,
         condition_params: buildParams(),
+        // §15 «Порядок» — раньше собирался, но не отправлялся (тихая потеря данных).
+        sort_order: Number.isFinite(parsedOrder) ? parsedOrder : undefined,
       };
       if (mode === "create") {
         return createAchievement(body);

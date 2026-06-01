@@ -45,8 +45,12 @@ async function fetchUserAchievements(userId: string): Promise<AchievementProgres
       }[];
     }>(`/achievements`),
   ]);
-  const map = new Map(received.data.items.map((r) => [r.achievement_id, true]));
-  return all.data.items.map((a) => ({
+  // Go-бэк отдаёт пустые слайсы как null — нормализуем, иначе null.map крашит
+  // публичный профиль ученика без достижений (React Router «Application Error»).
+  const receivedItems = received.data.items ?? [];
+  const allItems = all.data.items ?? [];
+  const map = new Map(receivedItems.map((r) => [r.achievement_id, true]));
+  return allItems.map((a) => ({
     achievement: a as any,
     received: !!map.get(a.id),
     current: map.get(a.id) ? 1 : 0,
