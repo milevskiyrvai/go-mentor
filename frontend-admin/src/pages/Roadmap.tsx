@@ -377,7 +377,7 @@ export function RoadmapPage() {
                 </Button>
               </div>
 
-              {detail.materials.length === 0 && (
+              {(detail.materials ?? []).length === 0 && (
                 <div
                   className="text-center text-[13px] py-6"
                   style={{ color: "var(--ink-3)" }}

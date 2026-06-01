@@ -10,5 +10,7 @@ export async function getBlock(id: string): Promise<{ block: RoadmapBlock; mater
   const { data } = await api.get<{ block: RoadmapBlock; materials: RoadmapMaterial[] }>(
     `/roadmap/blocks/${id}`,
   );
-  return data;
+  // Backend returns `null` for empty array fields — normalize to [] so consumers
+  // can safely call `.length` / `.map` without runtime crashes.
+  return { ...data, materials: data.materials ?? [] };
 }

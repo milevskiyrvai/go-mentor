@@ -19,7 +19,9 @@ export async function getBlock(id: string, includeInactive = true): Promise<Bloc
   const { data } = await apiClient.get<BlockDetailResponse>(
     `/roadmap/blocks/${id}?include_inactive=${includeInactive}`
   );
-  return data;
+  // Backend returns `null` for empty array fields — normalize so consumers can
+  // safely use `.length` / `.map` without runtime crashes.
+  return { ...data, materials: data.materials ?? [] };
 }
 
 export interface CreateBlockBody {
